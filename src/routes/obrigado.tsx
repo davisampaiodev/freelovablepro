@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/obrigado")({
   head: () => ({
@@ -16,6 +17,15 @@ export const Route = createFileRoute("/obrigado")({
 });
 
 function ObrigadoPage() {
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "Purchase", {
+        value: 0,
+        currency: "BRL",
+      });
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-12">
       <div className="max-w-lg w-full card-glow rounded-3xl p-8 sm:p-10 border border-white/10 bg-[#0A0A0B] text-center">
@@ -68,7 +78,7 @@ function ObrigadoPage() {
           <p className="text-xs text-muted-foreground mb-3">
             Precisa de ajuda? Fale com nosso suporte:
           </p>
-          <a
+          
             href="https://wa.me/+5571983463684"
             target="_blank"
             rel="noopener noreferrer"
@@ -80,7 +90,6 @@ function ObrigadoPage() {
             WhatsApp: (71) 98346-3684
           </a>
         </div>
-
       </div>
     </main>
   );

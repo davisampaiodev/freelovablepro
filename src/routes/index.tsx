@@ -912,45 +912,51 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const plano = planoKey();
-      if (plano === "diario") {
-        window.location.href = "https://pay.cakto.com.br/tmtnfcw_926988";
-        return;
-      }
-      if (plano === "mensal") {
-        window.location.href = "https://pay.cakto.com.br/gswneg7_927010";
-        return;
-      }
-      if (plano === "trimestral") {
-        window.location.href = "https://pay.cakto.com.br/pyfdu57_927020";
-        return;
-      }
-      if (plano === "anual") {
-        window.location.href = "https://pay.cakto.com.br/eorwpqd_927027";
-        return;
-      }
-      const res = await fetch("/api/public/criar-preferencia", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome: formData.name,
-          email: formData.email,
-          telefone: formData.whatsapp,
-          plano,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Falha ao iniciar pagamento");
-      window.location.href = data.initPoint || data.sandboxInitPoint;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro inesperado");
-      setLoading(false);
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
+
+  // InitiateCheckout
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'InitiateCheckout');
+  }
+
+  try {
+    const plano = planoKey();
+    if (plano === "diario") {
+      window.location.href = "https://pay.cakto.com.br/tmtnfcw_926988";
+      return;
     }
-  };
+    if (plano === "mensal") {
+      window.location.href = "https://pay.cakto.com.br/gswneg7_927010";
+      return;
+    }
+    if (plano === "trimestral") {
+      window.location.href = "https://pay.cakto.com.br/pyfdu57_927020";
+      return;
+    }
+    if (plano === "anual") {
+      window.location.href = "https://pay.cakto.com.br/eorwpqd_927027";
+      return;
+    }
+    const res = await fetch("/api/public/criar-preferencia", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: formData.name,
+        email: formData.email,
+        telefone: formData.whatsapp,
+        plano,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Falha ao iniciar pagamento");
+    window.location.href = data.initPoint || data.sandboxInitPoint;
+  } catch (e) {
+    setError(e instanceof Error ? e.message : "Erro inesperado");
+    setLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
