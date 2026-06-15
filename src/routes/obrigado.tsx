@@ -1,3 +1,4 @@
+Set-Content -Path "src/routes/obrigado.tsx" -Encoding UTF8 -Value @'
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -32,11 +33,9 @@ function ObrigadoPage() {
         <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-violet-500 flex items-center justify-center text-3xl">
           ✓
         </div>
-
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gradient mb-3">
           Pagamento confirmado!
         </h1>
-
         <p className="text-base text-muted-foreground mb-6 leading-relaxed">
           Obrigado pela sua compra 🎉
           <br />
@@ -44,7 +43,6 @@ function ObrigadoPage() {
           <strong className="text-foreground">token de acesso</strong> no email
           informado no checkout.
         </p>
-
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 mb-6 text-left">
           <p className="text-sm text-amber-200 font-semibold mb-1">
             ⚠️ Não recebeu em até 5 minutos?
@@ -55,7 +53,6 @@ function ObrigadoPage() {
             Yahoo) costumam filtrar o email automaticamente.
           </p>
         </div>
-
         <div className="rounded-2xl border border-white/10 bg-muted/10 p-4 mb-8 text-left">
           <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
             Próximos passos
@@ -66,14 +63,12 @@ function ObrigadoPage() {
             <li>Cole na extensão FreeLovable e ative</li>
           </ol>
         </div>
-
         <Link
           to="/"
           className="btn-gradient inline-block px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm"
         >
           Voltar para a página inicial
         </Link>
-
         <div className="mt-6 pt-6 border-t border-white/10">
           <p className="text-xs text-muted-foreground mb-3">
             Precisa de ajuda? Fale com nosso suporte:
