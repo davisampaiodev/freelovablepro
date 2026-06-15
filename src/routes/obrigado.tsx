@@ -1,4 +1,3 @@
-Set-Content -Path "src/routes/obrigado.tsx" -Encoding UTF8 -Value @'
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 
