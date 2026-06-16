@@ -911,7 +911,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     return "mensal";
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError(null);
   setLoading(true);
@@ -923,40 +923,41 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
   try {
     const plano = planoKey();
-    if (plano === "diario") {
-      window.location.href = "https://pay.cakto.com.br/tmtnfcw_926988";
-      return;
+
+    // Grava o lead no Supabase externo antes de redirecionar pro checkout.
+    // Se falhar, NÃO bloqueia o pagamento — só loga.
+    try {
+      const { supabaseExternal, PLANO_CENTAVOS } = await import(
+        "@/integrations/supabase-external/client"
+      );
+      const { error: insErr } = await supabaseExternal
+        .from("assinaturas")
+        .insert({
+          nome: formData.name,
+          email: formData.email,
+          telefone: formData.whatsapp || null,
+          plano,
+          status: "pendente",
+          valor_centavos: PLANO_CENTAVOS[plano],
+        });
+      if (insErr) console.error("Falha ao gravar assinatura:", insErr);
+    } catch (err) {
+      console.error("Erro ao gravar assinatura:", err);
     }
-    if (plano === "mensal") {
-      window.location.href = "https://pay.cakto.com.br/gswneg7_927010";
-      return;
-    }
-    if (plano === "trimestral") {
-      window.location.href = "https://pay.cakto.com.br/pyfdu57_927020";
-      return;
-    }
-    if (plano === "anual") {
-      window.location.href = "https://pay.cakto.com.br/eorwpqd_927027";
-      return;
-    }
-    const res = await fetch("/api/public/criar-preferencia", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nome: formData.name,
-        email: formData.email,
-        telefone: formData.whatsapp,
-        plano,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Falha ao iniciar pagamento");
-    window.location.href = data.initPoint || data.sandboxInitPoint;
+
+    const checkoutUrls: Record<typeof plano, string> = {
+      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
+      mensal: "https://pay.cakto.com.br/gswneg7_927010",
+      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
+      anual: "https://pay.cakto.com.br/eorwpqd_927027",
+    };
+    window.location.href = checkoutUrls[plano];
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);
   }
 };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -1031,7 +1032,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
           <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-success" />
-            <span>Pagamento processado pelo Mercado Pago. Seus dados estão seguros.</span>
+            <span>Seus dados estão seguros.</span>
           </div>
         </form>
       </div>
