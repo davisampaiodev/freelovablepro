@@ -98,9 +98,11 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             </span>
           </div>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a href="#funcionalidades" className="btn-gradient inline-flex items-center gap-3 px-9 py-5 rounded-2xl font-black uppercase tracking-wide text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
-              Quero meu acesso<ArrowRight className="h-5 w-5 animate-bounce-x" />
-            </a>
+            <a href="#planos" className="btn-gradient inline-flex items-center gap-3 px-9 py-5 rounded-2xl font-black uppercase tracking-wide text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
+  Quero créditos infinitos
+  <ArrowRight className="h-5 w-5 animate-bounce-x" />
+</a>
+           
           </div>
           <div className="mt-5 flex flex-wrap justify-center gap-4 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
             <span>Pagamento seguro</span>
@@ -109,22 +111,40 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             <span className="text-white/20">·</span>
             <span>Garantia de 7 dias</span>
           </div>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <div className="flex -space-x-2">
-              {["L", "A", "R", "M"].map((letter) => (
-                <div
-                  key={letter}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-background bg-gradient-to-br from-brand-purple to-brand-pink text-xs font-black"
-                >
-                  {letter}
-                </div>
-              ))}
-            </div>
-            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-              +4.000 usuários ativos
-            </span>
-          </div>
-        </div>
+         <div className="mt-8 flex items-center justify-center gap-3">
+  <div className="flex -space-x-4">
+    <img
+      src="/avatars/avatar1.png"
+      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      alt="Usuário 1"
+    />
+
+    <img
+      src="/avatars/avatar2.png"
+      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      alt="Usuário 2"
+    />
+
+    <img
+      src="/avatars/avatar3.png"
+      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      alt="Usuário 3"
+    />
+
+    <img
+      src="/avatars/avatar4.png"
+      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      alt="Usuário 4"
+    />
+  </div>
+
+  <span className="text-sm font-black uppercase tracking-wide text-white">
+    +4.000 USUÁRIOS ATIVOS
+  </span>
+</div>
+</div>
+
+
 
         <div className="relative group mt-12 flex justify-center">
           <div className="absolute -inset-20 bg-gradient-to-br from-brand-purple/40 to-brand-pink/40 blur-[100px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
@@ -799,7 +819,7 @@ function StepByStep() {
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-14">
+    <section id="como-funciona" className="mx-auto max-w-7xl px-6 py-14">
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-5xl font-bold mb-4">Comece em menos de 1 minuto</h2>
         <p className="text-muted-foreground">Instale, ative e volte a criar sem ficar preso em créditos.</p>
@@ -1019,7 +1039,10 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
   ];
 
   return (
-    <section id="planos" className="mx-auto max-w-7xl px-6 py-14">
+    <section
+  id="planos"
+  className="scroll-mt-24 mx-auto max-w-7xl px-6 py-14"
+>
       <h2 className="text-4xl md:text-5xl font-bold">Escolha seu acesso aos créditos infinitos:</h2>
       <p className="mt-4 text-muted-foreground">
         Todos os planos liberam a mesma promessa principal: continuar criando no Lovable sem ficar sem créditos.
