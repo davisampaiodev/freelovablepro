@@ -248,7 +248,7 @@ function WhatIsFreeLovable() {
     { title: "Instala a extensão", text: "Adicione o FreeLovable ao Chrome.", icon: Download },
     { title: "Ativa com seu token", text: "Insira o token exclusivo recebido após a compra.", icon: Lock },
     { title: "Escreve seus prompts", text: "Envie seus prompts normalmente pelo painel.", icon: Wand2 },
-    { title: "Continua criando", text: "Use o Lovable sem se preocupar com créditos acabando.", icon: Check },
+    { title: "Continua criando com créditos infinitos", text: "Use o Lovable sem se preocupar com créditos acabando.", icon: Check },
   ];
 
   const highlights = [
@@ -270,8 +270,8 @@ function WhatIsFreeLovable() {
   ];
 
   return (
-    <section id="o-que-e" className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl scroll-mt-16 items-center px-6 py-8">
-      <div className="relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-5 md:p-8">
+    <section className="mx-auto flex min-h-svh max-w-7xl items-start px-4 pb-4 pt-0 md:min-h-[calc(100svh-4rem)] md:items-center md:px-6 md:py-8">
+      <div id="o-que-e" className="relative w-full scroll-mt-0 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-5 md:scroll-mt-16 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/10 via-transparent to-brand-pink/10" />
 
         <div className="relative grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -286,27 +286,11 @@ function WhatIsFreeLovable() {
 
             <p className="mt-4 text-base font-semibold leading-relaxed text-foreground/90 md:text-lg">
               Free Lovable é uma extensão para Chrome que libera créditos
-              ilimitados no Lovable durante o período do seu plano.
+              ilimitados no Lovable durante o período do seu plano, para você
+              continuar criando com créditos infinitos sem interromper seus
+              projetos.
             </p>
 
-            <div className="mt-6 grid gap-3">
-              {highlights.map(({ title, text, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 transition hover:border-brand-pink/30 hover:bg-white/[0.04]"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-brand-pink">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-black leading-tight">{title}</h3>
-                    <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">
-                      {text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="relative">
@@ -368,19 +352,14 @@ function WhatIsFreeLovable() {
 function AccessDelivery() {
   const emailItems = [
     { title: "Link para download da extensão", icon: Download },
-    { title: "Token de ativação exclusivo", icon: Lock },
-    { title: "Tutorial de instalação", icon: Eye },
-    { title: "Suporte para ativação", icon: Phone },
+    { title: "Token de ativação", icon: Lock },
+    { title: "Tutorial rápido", icon: Eye },
   ];
 
   const practicalSteps = [
     "Escolha seu plano",
-    "Pagamento aprovado",
-    "Token gerado",
-    "E-mail enviado",
-    "Baixa a extensão",
-    "Insere o token",
-    "Pronto",
+    "Receba o token por e-mail",
+    "Instale e ative",
   ];
 
   return (
@@ -393,19 +372,17 @@ function AccessDelivery() {
           </div>
 
           <h2 className="text-3xl font-black leading-tight md:text-4xl">
-            Como recebo meu <span className="text-gradient">acesso?</span>
+            Como recebo meu{" "}
+            <span className="text-gradient">token de acesso?</span>
           </h2>
 
           <p className="mt-4 max-w-2xl text-base font-semibold leading-relaxed text-foreground/85">
-            Assim que o pagamento for aprovado, seu acesso é liberado e você
-            recebe um e-mail com tudo o que precisa para começar.
+            Assim que o pagamento for aprovado, você recebe seu token por
+            e-mail junto com o link da extensão e o tutorial rápido de ativação.
           </p>
 
           <div className="mt-6 rounded-[24px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
-            <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-brand-pink">
-              Como funciona na prática
-            </p>
-            <div className="grid gap-2">
+            <div className="grid gap-2 sm:grid-cols-3">
               {practicalSteps.map((step, index) => (
                 <div key={step} className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-xs font-black text-brand-pink">
@@ -417,15 +394,9 @@ function AccessDelivery() {
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="mt-6 border-l-2 border-brand-pink pl-5">
-            <h3 className="text-lg font-black">O que é o token?</h3>
-            <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground md:text-base">
-              O token é uma chave exclusiva que ativa sua extensão durante o
-              período contratado. Não precisa criar outra conta nem fazer
-              configurações avançadas: basta instalar, colar o token e começar a
-              usar.
+            <p className="mt-4 text-sm font-medium leading-relaxed text-muted-foreground">
+              O token é sua chave de ativação. Basta colar na extensão e usar na
+              sua própria conta Lovable.
             </p>
           </div>
         </div>
