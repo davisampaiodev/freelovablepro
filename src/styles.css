@@ -150,12 +150,28 @@
   50% { transform: translateX(4px); }
 }
 
+@keyframes heart-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(var(--heart-rotate, 0deg)) scale(1);
+    opacity: var(--heart-opacity, 0.55);
+  }
+  50% {
+    transform: translate3d(var(--heart-drift-x, 12px), var(--heart-drift-y, -22px), 0) rotate(calc(var(--heart-rotate, 0deg) + 8deg)) scale(1.08);
+    opacity: calc(var(--heart-opacity, 0.55) + 0.18);
+  }
+}
+
 @utility animate-shimmer {
   animation: shimmer 2s infinite linear;
 }
 
 @utility animate-bounce-x {
   animation: bounce-x 1s infinite ease-in-out;
+}
+
+@utility animate-heart-float {
+  animation: heart-float var(--heart-duration, 7s) ease-in-out infinite;
+  animation-delay: var(--heart-delay, 0s);
 }
 
 

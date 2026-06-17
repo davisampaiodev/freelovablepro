@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type CSSProperties } from "react";
 import {
   Sparkles, Download, Eye, Wand2, Check, X, ShieldCheck, Star, Monitor,
-  Plus, Minus, ArrowRight, Zap, Play, Pause, Volume2, Maximize, User, Mail, Phone, Lock,
+  Plus, Minus, ArrowRight, Zap, Play, Pause, Volume2, Maximize, User, Mail, Phone, Lock, Heart,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -65,28 +65,28 @@ function Nav({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 
 function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   return (
-    <section className="relative mx-auto flex max-w-7xl flex-col items-center px-6 pb-10 pt-8 text-center">
+    <section className="relative overflow-hidden text-center">
       <div className="absolute inset-x-0 top-10 -z-10 mx-auto h-80 max-w-3xl bg-gradient-to-r from-brand-purple/20 via-brand-pink/20 to-brand-purple/20 blur-[120px]" />
-      <div className="flex w-full flex-col items-center">
-        <div className="flex max-w-4xl flex-col items-center">
+      <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl items-center gap-8 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:text-left">
+        <div className="flex max-w-4xl flex-col items-center lg:items-start">
           <img
             src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg"
             alt="FreeLovable"
-            className="mb-7 h-14 w-14 rounded-2xl border border-white/10 object-cover shadow-2xl"
+            className="mb-4 h-14 w-14 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-pink" />
             Nova extensão · acesso ilimitado
           </div>
-          <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight">
+          <h1 className="max-w-5xl text-5xl font-black leading-[1.03] tracking-tight sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl">
             Nunca mais fique sem{" "}
             <span className="text-gradient">créditos no Lovable.</span>
           </h1>
-          <p className="mt-8 max-w-2xl text-xl font-semibold leading-relaxed text-muted-foreground">
+          <p className="mt-5 max-w-2xl text-lg font-semibold leading-relaxed text-muted-foreground md:text-xl">
             Instale em menos de 1 minuto e continue criando apps, automações e
             projetos sem interrupções, filas ou bloqueios.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-5 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+          <div className="mt-6 flex flex-wrap justify-center gap-5 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground lg:justify-start">
             <span className="inline-flex items-center gap-2">
               <Check className="h-4 w-4 text-success" /> Windows & Mac
             </span>
@@ -97,9 +97,9 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
               <Check className="h-4 w-4 text-success" /> Instalação simples
             </span>
           </div>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a href="#planos" className="btn-gradient inline-flex items-center gap-3 px-9 py-5 rounded-2xl font-black uppercase tracking-wide text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
-  Quero créditos infinitos
+          <div className="mt-7 flex flex-wrap justify-center gap-4 lg:justify-start">
+            <a href="#o-que-e" className="btn-gradient inline-flex items-center gap-3 px-9 py-5 rounded-2xl font-black uppercase tracking-wide text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
+  Ver como funciona
   <ArrowRight className="h-5 w-5 animate-bounce-x" />
 </a>
            
@@ -111,7 +111,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             <span className="text-white/20">·</span>
             <span>Garantia de 7 dias</span>
           </div>
-         <div className="mt-8 flex items-center justify-center gap-3">
+         <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
   <div className="flex -space-x-4">
     <img
       src="/avatars/avatar1.png"
@@ -144,12 +144,10 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 </div>
 </div>
 
-
-
-        <div className="relative group mt-12 flex justify-center">
+        <div className="relative group mx-auto flex w-full justify-center lg:justify-end">
           <div className="absolute -inset-20 bg-gradient-to-br from-brand-purple/40 to-brand-pink/40 blur-[100px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
           
-          <div className="relative w-full max-w-[340px] aspect-[9/16] rounded-[48px] p-3 overflow-hidden shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] border border-white/10 bg-black/60 backdrop-blur-3xl ring-1 ring-white/20">
+          <div className="relative aspect-[9/16] w-full max-w-[230px] overflow-hidden rounded-[38px] border border-white/10 bg-black/60 p-2 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl sm:max-w-[260px] lg:max-w-[340px] lg:rounded-[48px] lg:p-3">
             {/* Phone Notch/Island */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-30 flex items-center justify-center gap-2 border-x border-b border-white/5">
                <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -245,6 +243,288 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
 }
 
 
+function WhatIsFreeLovable() {
+  const flow = [
+    { title: "Instala a extensão", text: "Adicione o FreeLovable ao Chrome.", icon: Download },
+    { title: "Ativa com seu token", text: "Insira o token exclusivo recebido após a compra.", icon: Lock },
+    { title: "Escreve seus prompts", text: "Envie seus prompts normalmente pelo painel.", icon: Wand2 },
+    { title: "Continua criando", text: "Use o Lovable sem se preocupar com créditos acabando.", icon: Check },
+  ];
+
+  const highlights = [
+    {
+      title: "Painel dentro do Lovable",
+      text: "A extensão aparece sobre a interface do Lovable no seu navegador.",
+      icon: Monitor,
+    },
+    {
+      title: "Mesma conta e projetos",
+      text: "Você não abre outro site, não cria outra conta e mantém seu fluxo normal.",
+      icon: User,
+    },
+    {
+      title: "Token libera seu plano",
+      text: "Após a compra, insira o token recebido para liberar seu acesso.",
+      icon: Lock,
+    },
+  ];
+
+  return (
+    <section id="o-que-e" className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl scroll-mt-16 items-center px-6 py-8">
+      <div className="relative w-full overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.03] p-6 md:p-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/10 via-transparent to-brand-pink/10" />
+
+        <div className="relative grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-pink">
+              Extensão para Chrome
+            </div>
+
+            <h2 className="text-4xl font-black leading-tight md:text-5xl">
+              O que é o <span className="text-gradient">FreeLovable?</span>
+            </h2>
+
+            <p className="mt-5 text-lg font-semibold leading-relaxed text-foreground/90">
+              Free Lovable é uma extensão para Chrome que libera créditos
+              ilimitados no Lovable durante o período do seu plano.
+            </p>
+
+            <div className="mt-7 grid gap-3">
+              {highlights.map(({ title, text, icon: Icon }) => (
+                <div
+                  key={title}
+                  className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 transition hover:border-brand-pink/30 hover:bg-white/[0.04]"
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-brand-pink">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-black leading-tight">{title}</h3>
+                    <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">
+                      {text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 blur-2xl" />
+            <div className="relative rounded-[32px] border border-white/10 bg-[#0A0A0B] p-5">
+              <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex gap-1.5">
+                  <span className="h-3 w-3 rounded-full bg-danger/60" />
+                  <span className="h-3 w-3 rounded-full bg-amber-400/60" />
+                  <span className="h-3 w-3 rounded-full bg-success/60" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                  Na prática
+                </span>
+              </div>
+
+              <div className="grid gap-3">
+                {flow.map(({ title, text, icon: Icon }, index) => (
+                  <div key={title}>
+                    <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-purple/25 to-brand-pink/25">
+                        <Icon className="h-5 w-5 text-brand-pink" />
+                      </div>
+                      <div>
+                        <h3 className="font-black">{title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          {text}
+                        </p>
+                      </div>
+                    </div>
+
+                    {index < flow.length - 1 && (
+                      <div className="flex justify-center py-2">
+                        <ArrowRight className="h-5 w-5 rotate-90 text-brand-pink" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-8 flex justify-center">
+          <a
+            href="#como-recebo"
+            className="btn-gradient inline-flex items-center gap-3 rounded-2xl px-7 py-4 text-sm font-black uppercase tracking-wide shadow-2xl transition-all hover:scale-105 active:scale-95"
+          >
+            Como recebo meu acesso
+            <ArrowRight className="h-5 w-5 animate-bounce-x" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function AccessDelivery() {
+  const emailItems = [
+    { title: "Link para download da extensão", icon: Download },
+    { title: "Token de ativação exclusivo", icon: Lock },
+    { title: "Tutorial de instalação", icon: Eye },
+    { title: "Suporte para ativação", icon: Phone },
+  ];
+
+  const practicalSteps = [
+    "Escolha seu plano",
+    "Pagamento aprovado",
+    "Token gerado",
+    "E-mail enviado",
+    "Baixa a extensão",
+    "Insere o token",
+    "Pronto",
+  ];
+
+  return (
+    <section id="como-recebo" className="mx-auto max-w-7xl scroll-mt-20 px-6 py-10">
+      <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+        <div>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-pink">
+            <Mail className="h-3.5 w-3.5" />
+            Entrega do acesso
+          </div>
+
+          <h2 className="text-3xl font-black leading-tight md:text-5xl">
+            Como recebo meu <span className="text-gradient">acesso?</span>
+          </h2>
+
+          <p className="mt-4 max-w-2xl text-base font-semibold leading-relaxed text-foreground/85 md:text-lg">
+            Assim que o pagamento for aprovado, seu acesso é liberado e você
+            recebe um e-mail com tudo o que precisa para começar.
+          </p>
+
+          <div className="mt-7 rounded-[28px] border border-white/10 bg-[#0A0A0B] p-5">
+            <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-brand-pink">
+              Como funciona na prática
+            </p>
+            <div className="grid gap-2">
+              {practicalSteps.map((step, index) => (
+                <div key={step} className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-xs font-black text-brand-pink">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm font-black uppercase tracking-wide">
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 border-l-2 border-brand-pink pl-5">
+            <h3 className="text-lg font-black">O que é o token?</h3>
+            <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground md:text-base">
+              O token é uma chave exclusiva que ativa sua extensão durante o
+              período contratado. Não precisa criar outra conta nem fazer
+              configurações avançadas: basta instalar, colar o token e começar a
+              usar.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-brand-purple/25 to-brand-pink/20 blur-2xl" />
+          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#0A0A0B] p-5">
+            <div className="mb-5 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-pink/10 text-brand-pink">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                    E-mail recebido
+                  </p>
+                  <h3 className="mt-1 font-black">Seu acesso FreeLovable chegou</h3>
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                {emailItems.map(({ title }) => (
+                  <div key={title} className="flex items-center gap-3 text-sm font-bold">
+                    <Check className="h-4 w-4 text-success" />
+                    <span>{title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function IncludedWithFreeLovable() {
+  const items = [
+    {
+      title: "Créditos ilimitados",
+      text: "Continue criando no Lovable sem precisar parar porque os créditos acabaram.",
+      icon: Zap,
+    },
+    {
+      title: "Download dos projetos",
+      text: "Baixe o código dos seus projetos quando quiser.",
+      icon: Download,
+    },
+    {
+      title: "Sem marca d'água",
+      text: "Remova as identificações do Lovable dos seus projetos.",
+      icon: ShieldCheck,
+    },
+    {
+      title: "Melhorador de prompts",
+      text: "Transforme prompts simples em instruções mais completas para obter resultados melhores.",
+      icon: Wand2,
+    },
+  ];
+
+  return (
+    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-12">
+      <div className="mb-8 text-center">
+        <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
+          Bônus
+        </div>
+        <h2 className="mt-4 text-4xl font-black leading-tight md:text-5xl">
+          O que vem junto com o{" "}
+          <span className="text-gradient">FreeLovable?</span>
+        </h2>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {items.map(({ title, text, icon: Icon }) => (
+          <div
+            key={title}
+            className="card-glow group relative overflow-hidden rounded-[28px] border-white/10 p-6"
+          >
+            <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br from-brand-pink/18 to-brand-purple/18 blur-2xl transition group-hover:scale-125" />
+            <div className="relative flex gap-5">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 text-brand-pink">
+                <Icon className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black">{title}</h3>
+                <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+                  {text}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
 function WhatYouGet() {
   const pains = [
     "Créditos acabando no meio do projeto",
@@ -333,70 +613,125 @@ function SocialProof() {
       name: "Lucas M.",
       role: "Criador de apps com Lovable",
       content:
-        "Eu parava toda hora por falta de crédito. Depois que ativei o FreeLovable, consegui continuar o projeto sem interrupção.",
+        "Eu estava literalmente dividindo meus prompts porque não queria gastar crédito à toa. Depois que instalei, voltei a testar as coisas sem ficar pensando nisso toda hora.",
     },
     {
       name: "Ana P.",
       role: "Freelancer",
       content:
-        "O que mais gostei foi não precisar ficar contando prompt. Agora eu testo, ajusto e continuo criando sem medo de acabar.",
+        "O que mais me surpreendeu foi continuar usando a mesma conta e os mesmos projetos. Achei que seria outra plataforma complicada, mas foi bem mais simples do que imaginei.",
     },
     {
       name: "Rafael S.",
       role: "Desenvolvedor",
       content:
-        "Instalei rápido e já consegui usar na minha própria conta. Para quem usa Lovable todo dia, muda completamente o fluxo.",
+        "Eu sempre chegava naquela parte do projeto onde precisava testar várias versões e os créditos acabavam. Agora consigo iterar muito mais rápido sem interromper o fluxo.",
     },
     {
       name: "Marina C.",
       role: "Infoprodutora",
       content:
-        "Antes eu travava no meio da criação. Com créditos infinitos, consegui finalizar páginas e variações muito mais rápido.",
+        "Confesso que fiquei desconfiada no começo. Comprei o plano diário para testar e em menos de 10 minutos já estava usando. Acabei pegando o mensal depois.",
     },
     {
       name: "Gabriel C.",
       role: "Agência digital",
       content:
-        "Finalmente consigo terminar meus projetos sem me preocupar com créditos acabando no meio da entrega.",
+        "A melhor parte não é nem economizar. É não perder o raciocínio no meio da criação porque apareceu aviso de crédito esgotado.",
     },
     {
       name: "Juliana L.",
       role: "Designer",
       content:
-        "Simples, direto e funcional. O Lovable ficou muito mais rápido para testar ideias sem medo de limite.",
+        "Antes eu evitava fazer alterações porque sabia que cada teste consumia crédito. Hoje testo muito mais ideias e os projetos ficam melhores por causa disso.",
     },
   ];
 
+  const floatingHearts = [
+    { left: "3%", top: "8%", size: "h-12 w-12", rotate: "-18deg", delay: "0s", duration: "7.4s", opacity: "0.5", driftX: "18px", driftY: "-26px", blur: "blur-[0.2px]" },
+    { left: "12%", top: "34%", size: "h-7 w-7", rotate: "14deg", delay: "-2.1s", duration: "6.2s", opacity: "0.42", driftX: "-14px", driftY: "-18px", blur: "" },
+    { left: "21%", top: "13%", size: "h-16 w-16", rotate: "10deg", delay: "-1.2s", duration: "8s", opacity: "0.36", driftX: "22px", driftY: "-30px", blur: "blur-[0.4px]" },
+    { left: "31%", top: "48%", size: "h-9 w-9", rotate: "-8deg", delay: "-3.4s", duration: "6.8s", opacity: "0.46", driftX: "-18px", driftY: "-24px", blur: "" },
+    { left: "42%", top: "6%", size: "h-8 w-8", rotate: "22deg", delay: "-4.5s", duration: "7.2s", opacity: "0.38", driftX: "16px", driftY: "-20px", blur: "" },
+    { left: "51%", top: "29%", size: "h-14 w-14", rotate: "-14deg", delay: "-1.8s", duration: "8.5s", opacity: "0.44", driftX: "-20px", driftY: "-28px", blur: "blur-[0.3px]" },
+    { left: "61%", top: "9%", size: "h-10 w-10", rotate: "18deg", delay: "-3s", duration: "6.4s", opacity: "0.5", driftX: "15px", driftY: "-22px", blur: "" },
+    { left: "70%", top: "42%", size: "h-8 w-8", rotate: "-22deg", delay: "-5.2s", duration: "7.7s", opacity: "0.4", driftX: "-16px", driftY: "-18px", blur: "" },
+    { left: "80%", top: "15%", size: "h-20 w-20", rotate: "12deg", delay: "-2.7s", duration: "9s", opacity: "0.34", driftX: "24px", driftY: "-34px", blur: "blur-[0.6px]" },
+    { left: "90%", top: "33%", size: "h-11 w-11", rotate: "-10deg", delay: "-4s", duration: "6.9s", opacity: "0.46", driftX: "-18px", driftY: "-26px", blur: "" },
+    { left: "8%", top: "72%", size: "h-16 w-16", rotate: "18deg", delay: "-5.7s", duration: "8.4s", opacity: "0.32", driftX: "20px", driftY: "-30px", blur: "blur-[0.5px]" },
+    { left: "24%", top: "82%", size: "h-8 w-8", rotate: "-12deg", delay: "-2.4s", duration: "6.5s", opacity: "0.44", driftX: "-12px", driftY: "-20px", blur: "" },
+    { left: "38%", top: "74%", size: "h-11 w-11", rotate: "8deg", delay: "-3.8s", duration: "7.1s", opacity: "0.42", driftX: "16px", driftY: "-22px", blur: "" },
+    { left: "58%", top: "83%", size: "h-7 w-7", rotate: "-18deg", delay: "-1.4s", duration: "6s", opacity: "0.5", driftX: "-14px", driftY: "-16px", blur: "" },
+    { left: "73%", top: "70%", size: "h-12 w-12", rotate: "20deg", delay: "-4.8s", duration: "8.1s", opacity: "0.38", driftX: "18px", driftY: "-28px", blur: "blur-[0.3px]" },
+    { left: "91%", top: "78%", size: "h-9 w-9", rotate: "6deg", delay: "-6s", duration: "7.5s", opacity: "0.45", driftX: "-20px", driftY: "-24px", blur: "" },
+  ];
+
   return (
-    <section className="mx-auto max-w-7xl px-6 py-14">
-      <div className="mb-10 max-w-3xl">
+    <section className="relative mx-auto max-w-7xl overflow-hidden px-6 py-16">
+      <svg className="absolute h-0 w-0" aria-hidden="true">
+        <defs>
+          <linearGradient id="lovable-heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ff6a1a" />
+            <stop offset="48%" stopColor="#ff3f8f" />
+            <stop offset="100%" stopColor="#8b5cf6" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-10 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-pink/18 via-brand-purple/16 to-orange-500/14 blur-[95px]" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-orange-500/12 via-brand-pink/12 to-brand-purple/12 blur-[90px]" />
+        {floatingHearts.map((heart, index) => (
+          <Heart
+            key={index}
+            className={`animate-heart-float absolute ${heart.size} ${heart.blur} drop-shadow-[0_0_18px_rgba(236,72,153,0.35)]`}
+            style={{
+              left: heart.left,
+              top: heart.top,
+              "--heart-delay": heart.delay,
+              "--heart-duration": heart.duration,
+              "--heart-opacity": heart.opacity,
+              "--heart-rotate": heart.rotate,
+              "--heart-drift-x": heart.driftX,
+              "--heart-drift-y": heart.driftY,
+              fill: "url(#lovable-heart-gradient)",
+              stroke: "rgba(255,255,255,0.16)",
+            } as CSSProperties & Record<string, string>}
+          />
+        ))}
+      </div>
+
+      <div className="relative mb-10 max-w-3xl">
         <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
-          Prova social
+          Feedback dos usuários
         </div>
         <h2 className="mt-4 text-4xl md:text-5xl font-black leading-tight">
-          Quem usa Lovable entende
-          <br />
-          <span className="text-gradient">o valor de não ficar sem créditos.</span>
+          Quem testou, <span className="text-gradient">continuou usando</span>
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Depoimentos de quem precisava continuar criando sem cair no aviso de
-          créditos esgotados.
+          Relatos de usuários que queriam apenas uma forma de continuar criando
+          sem interrupções.
         </p>
       </div>
 
-      <div className="mb-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="relative mb-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {testimonials.map((item) => (
           <div
             key={item.name}
-            className="card-glow flex flex-col gap-4 rounded-3xl border-white/10 p-6"
+            className="card-glow group relative flex flex-col gap-4 overflow-hidden rounded-3xl border-white/10 p-6"
           >
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  className="h-4 w-4 fill-brand-pink text-brand-pink"
-                />
-              ))}
+            <Heart className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rotate-12 fill-brand-pink/10 text-brand-pink/15 transition group-hover:scale-110 group-hover:fill-brand-pink/20" />
+
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex gap-1">
+                {[...Array(5)].map((_, index) => (
+                  <Star
+                    key={index}
+                    className="h-4 w-4 fill-brand-pink text-brand-pink"
+                  />
+                ))}
+              </div>
+              <Heart className="h-4 w-4 fill-brand-pink text-brand-pink" />
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
               "{item.content}"
@@ -1135,7 +1470,7 @@ function FAQ() {
   );
 }
 
-function FinalCTA({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
+function FinalCTA() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/20 via-background to-brand-pink/20" />
@@ -1153,12 +1488,9 @@ function FinalCTA({ onOpenModal }: { onOpenModal: (planName?: string) => void })
           A promessa principal é simples: parar de ficar sem créditos e continuar criando sem interrupções.
         </p>
         <div className="mt-10 flex flex-wrap gap-4 justify-center">
-          <button onClick={() => onOpenModal()} className="px-6 py-4 rounded-xl font-semibold border border-border bg-card/60 hover:bg-card transition">
-            Quero créditos infinitos
-          </button>
-          <button onClick={() => onOpenModal()} className="btn-gradient inline-flex items-center gap-2 px-6 py-4 rounded-xl font-semibold">
-            Liberar meu acesso agora <Zap className="h-4 w-4" />
-          </button>
+          <a href="#planos" className="btn-gradient inline-flex items-center gap-2 px-6 py-4 rounded-xl font-semibold">
+            Liberar meu acesso <Zap className="h-4 w-4" />
+          </a>
         </div>
         <div className="mt-8 flex flex-wrap gap-6 justify-center text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-brand-pink" /> Instalação em menos de 1 minuto</span>
@@ -1196,12 +1528,13 @@ function Landing() {
     <main className="min-h-screen">
       <Nav onOpenModal={openModal} />
       <Hero onOpenModal={openModal} />
-      <WhatYouGet />
-      <StepByStep />
+      <WhatIsFreeLovable />
+      <AccessDelivery />
+      <IncludedWithFreeLovable />
       <SocialProof />
       <Pricing onOpenModal={openModal} />
       <FAQ />
-      <FinalCTA onOpenModal={openModal} />
+      <FinalCTA />
       <Footer />
       
       {isModalOpen && <RegisterModal onClose={() => setIsModalOpen(false)} planName={selectedPlan} />}
