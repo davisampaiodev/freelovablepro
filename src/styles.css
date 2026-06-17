@@ -161,6 +161,43 @@
   }
 }
 
+@keyframes email-arrive {
+  0% {
+    transform: translate3d(0, -22px, 0) scale(0.94);
+    opacity: 0;
+  }
+  18%, 72% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes email-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-pink) 35%, transparent);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+@keyframes email-item-in {
+  0% {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  40%, 100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 @utility animate-shimmer {
   animation: shimmer 2s infinite linear;
 }
@@ -172,6 +209,19 @@
 @utility animate-heart-float {
   animation: heart-float var(--heart-duration, 7s) ease-in-out infinite;
   animation-delay: var(--heart-delay, 0s);
+}
+
+@utility animate-email-arrive {
+  animation: email-arrive 3.8s ease-out infinite;
+}
+
+@utility animate-email-pulse {
+  animation: email-pulse 1.8s ease-in-out infinite;
+}
+
+@utility animate-email-item-in {
+  animation: email-item-in 3.8s ease-out infinite;
+  animation-delay: var(--email-item-delay, 0s);
 }
 
 

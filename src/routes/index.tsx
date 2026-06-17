@@ -67,26 +67,26 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   return (
     <section className="relative overflow-hidden text-center">
       <div className="absolute inset-x-0 top-10 -z-10 mx-auto h-80 max-w-3xl bg-gradient-to-r from-brand-purple/20 via-brand-pink/20 to-brand-purple/20 blur-[120px]" />
-      <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl items-center gap-8 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:text-left">
-        <div className="flex max-w-4xl flex-col items-center lg:items-start">
+      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-0 pt-7">
+        <div className="flex max-w-4xl flex-col items-center">
           <img
             src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg"
             alt="FreeLovable"
-            className="mb-4 h-14 w-14 rounded-2xl border border-white/10 object-cover shadow-2xl"
+            className="mb-4 h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-pink" />
             Nova extensão · acesso ilimitado
           </div>
-          <h1 className="max-w-5xl text-5xl font-black leading-[1.03] tracking-tight sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl">
+          <h1 className="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
             Nunca mais fique sem{" "}
             <span className="text-gradient">créditos no Lovable.</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-lg font-semibold leading-relaxed text-muted-foreground md:text-xl">
+          <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-muted-foreground md:text-lg">
             Instale em menos de 1 minuto e continue criando apps, automações e
             projetos sem interrupções, filas ou bloqueios.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-5 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground lg:justify-start">
+          <div className="mt-6 flex flex-wrap justify-center gap-5 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <Check className="h-4 w-4 text-success" /> Windows & Mac
             </span>
@@ -97,8 +97,8 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
               <Check className="h-4 w-4 text-success" /> Instalação simples
             </span>
           </div>
-          <div className="mt-7 flex flex-wrap justify-center gap-4 lg:justify-start">
-            <a href="#o-que-e" className="btn-gradient inline-flex items-center gap-3 px-9 py-5 rounded-2xl font-black uppercase tracking-wide text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="#o-que-e" className="btn-gradient inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-sm font-black uppercase tracking-wide shadow-2xl transition-all hover:scale-105 active:scale-95 md:text-base">
   Ver como funciona
   <ArrowRight className="h-5 w-5 animate-bounce-x" />
 </a>
@@ -111,7 +111,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             <span className="text-white/20">·</span>
             <span>Garantia de 7 dias</span>
           </div>
-         <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
+         <div className="mt-7 flex items-center justify-center gap-3">
   <div className="flex -space-x-4">
     <img
       src="/avatars/avatar1.png"
@@ -144,10 +144,10 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 </div>
 </div>
 
-        <div className="relative group mx-auto flex w-full justify-center lg:justify-end">
+        <div className="relative group mt-10 flex w-full justify-center">
           <div className="absolute -inset-20 bg-gradient-to-br from-brand-purple/40 to-brand-pink/40 blur-[100px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
           
-          <div className="relative aspect-[9/16] w-full max-w-[230px] overflow-hidden rounded-[38px] border border-white/10 bg-black/60 p-2 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl sm:max-w-[260px] lg:max-w-[340px] lg:rounded-[48px] lg:p-3">
+          <div className="relative aspect-[9/16] w-full max-w-[280px] overflow-hidden rounded-[40px] border border-white/10 bg-black/60 p-3 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl md:max-w-[310px] md:rounded-[44px]">
             {/* Phone Notch/Island */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-30 flex items-center justify-center gap-2 border-x border-b border-white/5">
                <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -271,25 +271,25 @@ function WhatIsFreeLovable() {
 
   return (
     <section id="o-que-e" className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl scroll-mt-16 items-center px-6 py-8">
-      <div className="relative w-full overflow-hidden rounded-[36px] border border-white/10 bg-white/[0.03] p-6 md:p-10">
+      <div className="relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-5 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/10 via-transparent to-brand-pink/10" />
 
-        <div className="relative grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="relative grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-pink">
               Extensão para Chrome
             </div>
 
-            <h2 className="text-4xl font-black leading-tight md:text-5xl">
+            <h2 className="text-3xl font-black leading-tight md:text-4xl">
               O que é o <span className="text-gradient">FreeLovable?</span>
             </h2>
 
-            <p className="mt-5 text-lg font-semibold leading-relaxed text-foreground/90">
+            <p className="mt-4 text-base font-semibold leading-relaxed text-foreground/90 md:text-lg">
               Free Lovable é uma extensão para Chrome que libera créditos
               ilimitados no Lovable durante o período do seu plano.
             </p>
 
-            <div className="mt-7 grid gap-3">
+            <div className="mt-6 grid gap-3">
               {highlights.map(({ title, text, icon: Icon }) => (
                 <div
                   key={title}
@@ -310,8 +310,8 @@ function WhatIsFreeLovable() {
           </div>
 
           <div className="relative">
-            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 blur-2xl" />
-            <div className="relative rounded-[32px] border border-white/10 bg-[#0A0A0B] p-5">
+            <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 blur-2xl" />
+            <div className="relative rounded-[28px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
               <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex gap-1.5">
                   <span className="h-3 w-3 rounded-full bg-danger/60" />
@@ -384,24 +384,24 @@ function AccessDelivery() {
   ];
 
   return (
-    <section id="como-recebo" className="mx-auto max-w-7xl scroll-mt-20 px-6 py-10">
-      <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+    <section id="como-recebo" className="mx-auto max-w-7xl scroll-mt-20 px-6 py-9">
+      <div className="grid gap-7 lg:grid-cols-[1fr_0.9fr] lg:items-start">
         <div>
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-pink">
             <Mail className="h-3.5 w-3.5" />
             Entrega do acesso
           </div>
 
-          <h2 className="text-3xl font-black leading-tight md:text-5xl">
+          <h2 className="text-3xl font-black leading-tight md:text-4xl">
             Como recebo meu <span className="text-gradient">acesso?</span>
           </h2>
 
-          <p className="mt-4 max-w-2xl text-base font-semibold leading-relaxed text-foreground/85 md:text-lg">
+          <p className="mt-4 max-w-2xl text-base font-semibold leading-relaxed text-foreground/85">
             Assim que o pagamento for aprovado, seu acesso é liberado e você
             recebe um e-mail com tudo o que precisa para começar.
           </p>
 
-          <div className="mt-7 rounded-[28px] border border-white/10 bg-[#0A0A0B] p-5">
+          <div className="mt-6 rounded-[24px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
             <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-brand-pink">
               Como funciona na prática
             </p>
@@ -431,12 +431,18 @@ function AccessDelivery() {
         </div>
 
         <div className="relative">
-          <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-brand-purple/25 to-brand-pink/20 blur-2xl" />
-          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#0A0A0B] p-5">
-            <div className="mb-5 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-brand-purple/25 to-brand-pink/20 blur-2xl" />
+          <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
+            <div className="animate-email-arrive relative mb-5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-pink/70 to-transparent" />
+              <div className="pointer-events-none absolute right-5 top-5 h-16 w-16 rounded-full bg-brand-pink/20 blur-2xl" />
+
               <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-pink/10 text-brand-pink">
+                <div className="animate-email-pulse relative flex h-12 w-12 items-center justify-center rounded-xl bg-brand-pink/10 text-brand-pink">
                   <Mail className="h-5 w-5" />
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-success text-[9px] font-black text-black">
+                    1
+                  </span>
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
@@ -447,8 +453,12 @@ function AccessDelivery() {
               </div>
 
               <div className="grid gap-3">
-                {emailItems.map(({ title }) => (
-                  <div key={title} className="flex items-center gap-3 text-sm font-bold">
+                {emailItems.map(({ title }, index) => (
+                  <div
+                    key={title}
+                    className="animate-email-item-in flex items-center gap-3 text-sm font-bold opacity-0"
+                    style={{ "--email-item-delay": `${0.35 + index * 0.16}s` } as CSSProperties & Record<string, string>}
+                  >
                     <Check className="h-4 w-4 text-success" />
                     <span>{title}</span>
                   </div>
@@ -488,12 +498,12 @@ function IncludedWithFreeLovable() {
   ];
 
   return (
-    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-12">
+    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-8 text-center">
         <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
           Bônus
         </div>
-        <h2 className="mt-4 text-4xl font-black leading-tight md:text-5xl">
+        <h2 className="mt-4 text-3xl font-black leading-tight md:text-4xl">
           O que vem junto com o{" "}
           <span className="text-gradient">FreeLovable?</span>
         </h2>
@@ -503,7 +513,7 @@ function IncludedWithFreeLovable() {
         {items.map(({ title, text, icon: Icon }) => (
           <div
             key={title}
-            className="card-glow group relative overflow-hidden rounded-[28px] border-white/10 p-6"
+            className="card-glow group relative overflow-hidden rounded-[24px] border-white/10 p-5 md:p-6"
           >
             <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br from-brand-pink/18 to-brand-purple/18 blur-2xl transition group-hover:scale-125" />
             <div className="relative flex gap-5">
@@ -667,7 +677,7 @@ function SocialProof() {
   ];
 
   return (
-    <section className="relative mx-auto max-w-7xl overflow-hidden px-6 py-16">
+    <section className="relative mx-auto max-w-7xl overflow-hidden px-4 py-12 md:px-6 md:py-14">
       <svg className="absolute h-0 w-0" aria-hidden="true">
         <defs>
           <linearGradient id="lovable-heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -701,11 +711,11 @@ function SocialProof() {
         ))}
       </div>
 
-      <div className="relative mb-10 max-w-3xl">
+      <div className="relative mx-auto mb-10 max-w-3xl text-center md:mx-0 md:text-left">
         <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
           Feedback dos usuários
         </div>
-        <h2 className="mt-4 text-4xl md:text-5xl font-black leading-tight">
+        <h2 className="mt-4 text-3xl font-black leading-tight md:text-4xl">
           Quem testou, <span className="text-gradient">continuou usando</span>
         </h2>
         <p className="mt-4 text-muted-foreground">
@@ -714,11 +724,11 @@ function SocialProof() {
         </p>
       </div>
 
-      <div className="relative mb-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="relative mb-12 grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-3">
         {testimonials.map((item) => (
           <div
             key={item.name}
-            className="card-glow group relative flex flex-col gap-4 overflow-hidden rounded-3xl border-white/10 p-6"
+            className="card-glow group relative flex flex-col gap-3 overflow-hidden rounded-2xl border-white/10 p-4 md:gap-4 md:rounded-3xl md:p-6"
           >
             <Heart className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rotate-12 fill-brand-pink/10 text-brand-pink/15 transition group-hover:scale-110 group-hover:fill-brand-pink/20" />
 
@@ -727,18 +737,18 @@ function SocialProof() {
                 {[...Array(5)].map((_, index) => (
                   <Star
                     key={index}
-                    className="h-4 w-4 fill-brand-pink text-brand-pink"
+                    className="h-3 w-3 fill-brand-pink text-brand-pink md:h-4 md:w-4"
                   />
                 ))}
               </div>
-              <Heart className="h-4 w-4 fill-brand-pink text-brand-pink" />
+              <Heart className="h-3.5 w-3.5 fill-brand-pink text-brand-pink md:h-4 md:w-4" />
             </div>
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-xs leading-relaxed text-muted-foreground md:text-sm">
               "{item.content}"
             </p>
             <div className="mt-auto">
-              <div className="font-bold">{item.name}</div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <div className="text-sm font-bold md:text-base">{item.name}</div>
+              <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground md:text-[10px]">
                 {item.role}
               </div>
             </div>
@@ -746,14 +756,14 @@ function SocialProof() {
         ))}
       </div>
 
-      <div className="mx-auto mb-12 grid max-w-5xl gap-6 rounded-[28px] border border-white/10 bg-white/[0.03] p-8 text-center md:grid-cols-3">
+      <div className="mx-auto mb-12 grid max-w-5xl gap-6 rounded-[24px] border border-white/10 bg-white/[0.03] p-6 text-center md:grid-cols-3 md:p-7">
         {[
           ["+4.000", "usuários ativos"],
           ["+12 mil", "projetos criados"],
           ["97%", "satisfação"],
         ].map(([value, label]) => (
           <div key={label}>
-            <div className="text-4xl font-black text-gradient">{value}</div>
+            <div className="text-3xl font-black text-gradient md:text-4xl">{value}</div>
             <div className="mt-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
               {label}
             </div>
@@ -1320,55 +1330,38 @@ function Proof() {
 function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   const plans = [
     {
-      name: "Plano Diário", price: "R$ 9,90", period: "", note: "Utilize a ferramenta por 24h.",
-      cta: "QUERO O PLANO DIÁRIO", popular: false,
-      features: [
-        "Créditos infinitos no Lovable",
-        "Bônus: download dos projetos",
-        "Bônus: remoção de marca d'água",
-        "Bônus: melhorador de prompts",
-      ],
-    },
-    {
-      name: "Plano Mensal", price: "R$ 49,90", period: "/mês", note: "Ideal para projetos rápidos.",
+      name: "Plano Mensal", price: "R$ 47", period: "/mês", note: "Ideal para projetos rápidos.",
       cta: "QUERO O PLANO MENSAL", popular: true,
       features: [
-        "Créditos infinitos no Lovable",
-        "Bônus: download dos projetos",
-        "Bônus: remoção de marca d'água",
-        "Bônus: melhorador de prompts",
-        "Bônus: suporte 24h",
-        "Bônus: comunidade e cursos",
-        "Bônus: mentoria para projetos",
-        "Bônus: suporte para hospedagem e banco",
+        "Créditos ilimitados",
+        "Suporte prioritário",
+        "Grupo VIP",
+        "Atualizações",
+        "16 mil fluxos N8N",
+        "Bônus surpresa",
       ],
     },
     {
-      name: "Plano Trimestral", price: "R$ 42,33", period: "/mês", note: "Pagamento único de R$ 127,00.",
+      name: "Plano Trimestral", price: "R$ 97", period: "", note: "Pagamento único trimestral.",
       cta: "QUERO O PLANO TRIMESTRAL", popular: false,
       features: [
-        "Créditos infinitos no Lovable",
-        "Bônus: download dos projetos",
-        "Bônus: remoção de marca d'água",
-        "Bônus: melhorador de prompts",
-        "Bônus: suporte 24h",
-        "Bônus: comunidade e cursos",
-        "Bônus: mentoria para projetos",
-        "Bônus: suporte para hospedagem e banco",
+        "Créditos ilimitados",
+        "Suporte prioritário",
+        "Grupo VIP",
+        "Atualizações",
+        "16 mil fluxos N8N",
+        "Bônus surpresa",
       ],
     },
     {
-      name: "Plano Anual", price: "R$ 24,75", period: "/mês", note: "Pagamento único de R$ 297,00.",
+      name: "Plano Anual", price: "R$ 197", period: "", note: "Pagamento único anual.",
       cta: "QUERO O PLANO ANUAL", popular: false,
       features: [
-        "Créditos infinitos no Lovable",
-        "Bônus: download dos projetos",
-        "Bônus: remoção de marca d'água",
-        "Bônus: melhorador de prompts",
-        "Bônus: suporte 24h",
-        "Bônus: comunidade e cursos",
-        "Bônus: mentoria para projetos",
-        "Bônus: suporte para hospedagem e banco",
+        "Tudo dos outros planos",
+        "Acesso anual",
+        "Suporte VIP",
+        "Updates por 1 ano",
+        "Economia máxima",
       ],
     },
   ];
@@ -1376,39 +1369,44 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
   return (
     <section
   id="planos"
-  className="scroll-mt-24 mx-auto max-w-7xl px-6 py-14"
+  className="scroll-mt-24 mx-auto max-w-7xl px-4 py-12 md:px-6"
 >
-      <h2 className="text-4xl md:text-5xl font-bold">Escolha seu acesso aos créditos infinitos:</h2>
-      <p className="mt-4 text-muted-foreground">
+      <h2 className="text-center text-3xl font-bold md:text-left md:text-4xl">Escolha seu acesso aos créditos infinitos:</h2>
+      <p className="mt-4 text-center text-sm text-muted-foreground md:text-left md:text-base">
         Todos os planos liberam a mesma promessa principal: continuar criando no Lovable sem ficar sem créditos.
       </p>
 
-      <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="mt-10 grid grid-cols-2 gap-4 md:mt-12 md:gap-6 lg:grid-cols-3">
         {plans.map((p) => (
-          <div key={p.name} className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-500 ${p.popular ? 'card-glow border-brand-pink/50 bg-brand-pink/5 ring-1 ring-brand-pink/20 shadow-glow' : 'bg-card/40 border-border/40 hover:border-border/80'}`}>
+          <div key={p.name} className={`relative flex flex-col rounded-3xl border p-4 transition-all duration-500 md:p-6 ${p.name === "Plano Anual" ? 'border-orange-500/70 bg-card/70 ring-1 ring-orange-500/30 shadow-[0_0_60px_-24px_rgba(249,115,22,0.95)] lg:-mt-4 lg:min-h-[580px]' : p.popular ? 'card-glow border-brand-pink/50 bg-brand-pink/5 ring-1 ring-brand-pink/20 shadow-glow' : 'bg-card/40 border-border/40 hover:border-border/80'}`}>
             {p.popular && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full btn-gradient text-[10px] font-bold tracking-widest whitespace-nowrap uppercase">
-                Mais Popular
+                Mais escolhido
               </div>
             )}
-            <h3 className="text-xl font-bold">{p.name}</h3>
-            <div className="mt-4 flex items-baseline gap-1">
-              <div className="text-4xl font-extrabold">{p.price}</div>
+            {p.name === "Plano Anual" && (
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-lg shadow-brand-pink/20 whitespace-nowrap">
+                Acesso total
+              </div>
+            )}
+            <h3 className={`text-sm font-bold leading-tight md:text-lg ${p.name === "Plano Anual" ? "uppercase tracking-[0.14em] text-orange-400 md:tracking-[0.18em]" : ""}`}>{p.name}</h3>
+            <div className="mt-3 flex items-baseline gap-1 md:mt-4">
+              <div className={`${p.name === "Plano Anual" ? "text-4xl md:text-4xl" : "text-3xl md:text-4xl"} font-extrabold`}>{p.price}</div>
               <div className="text-sm text-muted-foreground">{p.period}</div>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">{p.note}</p>
-            <ul className="mt-6 space-y-3 flex-1">
+            <p className={`mt-2 text-xs md:text-sm ${p.name === "Plano Anual" ? "font-bold text-orange-400" : "text-muted-foreground"}`}>{p.note}</p>
+            <ul className="mt-5 flex-1 space-y-2 md:mt-6 md:space-y-3">
               {p.features.map((f) => (
-                <li key={f} className="flex gap-2 text-sm">
-                  <Check className="h-4 w-4 text-brand-pink shrink-0 mt-0.5" />
+                <li key={f} className="flex gap-2 text-xs leading-snug md:text-sm">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-pink md:h-4 md:w-4" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
             <button
               onClick={() => onOpenModal(p.name)}
-              className={`mt-8 w-full py-4 rounded-xl text-sm font-bold tracking-wider transition-all duration-300 cursor-pointer ${
-                p.popular 
+              className={`mt-6 w-full rounded-xl py-3 text-[10px] font-bold leading-tight tracking-wider transition-all duration-300 cursor-pointer md:mt-8 md:py-4 md:text-sm ${
+                p.popular || p.name === "Plano Anual"
                   ? "btn-gradient scale-105 shadow-xl shadow-brand-pink/20" 
                   : "bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 text-white shadow-lg"
               }`}
@@ -1419,12 +1417,12 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
         ))}
       </div>
 
-      <div className="mx-auto mt-16 flex max-w-4xl flex-col gap-6 rounded-[32px] border border-white/10 bg-white/[0.03] p-8 md:flex-row md:items-center md:p-10">
+      <div className="mx-auto mt-14 flex max-w-4xl flex-col gap-5 rounded-[28px] border border-white/10 bg-white/[0.03] p-6 md:flex-row md:items-center md:p-8">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border border-brand-pink/25 bg-brand-pink/10">
           <Check className="h-12 w-12 text-brand-pink" />
         </div>
         <div>
-          <h3 className="text-3xl font-black">7 dias de garantia incondicional</h3>
+          <h3 className="text-2xl font-black md:text-3xl">7 dias de garantia incondicional</h3>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Use a FreeLovable sem risco. Se não gostar, peça reembolso dentro do
             prazo de garantia.
@@ -1447,8 +1445,8 @@ function FAQ() {
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="mx-auto max-w-4xl px-6 py-14">
-      <h2 className="text-center text-4xl md:text-5xl font-bold">Perguntas frequentes</h2>
+    <section id="faq" className="mx-auto max-w-4xl px-6 py-12">
+      <h2 className="text-center text-3xl font-bold md:text-4xl">Perguntas frequentes</h2>
       <div className="mt-10 space-y-3">
         {items.map(([q, a], i) => (
           <div
@@ -1478,8 +1476,8 @@ function FinalCTA() {
         backgroundImage: "radial-gradient(circle at 1px 1px, oklch(0.5 0.1 295) 1px, transparent 0)",
         backgroundSize: "32px 32px",
       }} />
-      <div className="relative mx-auto max-w-5xl px-6 py-16 text-center">
-        <h2 className="text-5xl md:text-6xl font-extrabold leading-tight">
+      <div className="relative mx-auto max-w-5xl px-6 py-14 text-center">
+        <h2 className="text-4xl font-extrabold leading-tight md:text-5xl">
           Pronto para usar
           <br />
           <span className="text-gradient">créditos infinitos no Lovable?</span>
@@ -1513,6 +1511,20 @@ function Footer() {
   );
 }
 
+function MobileStickyCTA() {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-background/85 px-4 py-2.5 backdrop-blur-xl md:hidden">
+      <a
+        href="#planos"
+        className="btn-gradient flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-xs font-black uppercase tracking-wide shadow-2xl shadow-brand-pink/20"
+      >
+        Liberar acesso agora
+        <ArrowRight className="h-4 w-4 animate-bounce-x" />
+      </a>
+    </div>
+  );
+}
+
 function Landing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
@@ -1525,8 +1537,7 @@ function Landing() {
 
 
   return (
-    <main className="min-h-screen">
-      <Nav onOpenModal={openModal} />
+    <main className="min-h-screen pb-24 md:pb-0">
       <Hero onOpenModal={openModal} />
       <WhatIsFreeLovable />
       <AccessDelivery />
@@ -1536,6 +1547,7 @@ function Landing() {
       <FAQ />
       <FinalCTA />
       <Footer />
+      <MobileStickyCTA />
       
       {isModalOpen && <RegisterModal onClose={() => setIsModalOpen(false)} planName={selectedPlan} />}
     </main>
