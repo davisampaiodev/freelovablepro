@@ -4,6 +4,10 @@ import {
   Sparkles, Download, Eye, Wand2, Check, X, ShieldCheck, Star, Monitor,
   Plus, Minus, ArrowRight, Zap, Play, Pause, Volume2, Maximize, User, Mail, Phone, Lock, Heart,
 } from "lucide-react";
+import {
+  buildTrackedCheckoutUrl,
+  captureAttribution,
+} from "@/lib/utm-tracking";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,7 +23,7 @@ function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <img 
-        src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg" 
+        src="/freelovable-logo.jpg"
         alt="FreeLovable Logo"
         className="h-10 w-10 rounded-lg object-cover"
       />
@@ -70,7 +74,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
       <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-0 pt-7">
         <div className="flex max-w-4xl flex-col items-center">
           <img
-            src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg"
+            src="/freelovable-logo.jpg"
             alt="FreeLovable"
             className="mb-4 h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
@@ -582,7 +586,7 @@ function Pitch() {
         os créditos acabam rápido e são caros demais.
       </p>
       <p className="mt-10 text-3xl md:text-4xl font-bold leading-tight">
-      Porém, com o <img src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-cover" alt="" />{" "}
+      Porém, com o <img src="/freelovable-logo.jpg" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-cover" alt="" />{" "}
         <span className="text-gradient">Free</span> Lovable, você não precisa mais se preocupar com isso!
       </p>
     </section>
@@ -862,7 +866,7 @@ function Features() {
         O principal é simples:
         <br />
         <span className="inline-flex items-center gap-3 mt-3">
-          <img src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg" className="h-10 w-10 rounded-xl object-cover" alt="" />
+          <img src="/freelovable-logo.jpg" className="h-10 w-10 rounded-xl object-cover" alt="" />
           <span className="text-gradient">créditos infinitos</span> no Lovable
         </span>
       </h2>
@@ -1500,6 +1504,10 @@ function Landing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
 
+  useEffect(() => {
+    captureAttribution();
+  }, []);
+
   const openModal = (planName?: string) => {
     setSelectedPlan(planName);
     setIsModalOpen(true);
@@ -1583,7 +1591,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
       anual: "https://pay.cakto.com.br/eorwpqd_927027",
     };
-    window.location.href = checkoutUrls[plano];
+    window.location.href = buildTrackedCheckoutUrl(checkoutUrls[plano]);
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);
@@ -1602,7 +1610,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
         <div className="flex flex-col items-center text-center mb-8">
           <img 
-            src="https://api.freelovable.com.br/storage/v1/object/public/anexos/f858f905-cc9b-462b-acea-d3c81e795a87.jpg" 
+            src="/freelovable-logo.jpg"
             className="h-12 w-12 rounded-xl object-cover mb-4" 
             alt="Logo" 
           />

@@ -134,18 +134,18 @@ export const Route =
         },
         {
           property: "og:image",
-          content:
-            "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ce876190-a882-4344-9fd6-cf5eeeec2fea/id-preview-5ba22da7--0f8c220e-31a8-42b1-91c9-65bdf7f35329.lovable.app-1781194334402.png",
+          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
         },
         {
           name: "twitter:image",
-          content:
-            "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ce876190-a882-4344-9fd6-cf5eeeec2fea/id-preview-5ba22da7--0f8c220e-31a8-42b1-91c9-65bdf7f35329.lovable.app-1781194334402.png",
+          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
         },
       ],
 
       links: [
         { rel: "stylesheet", href: appCss },
+        { rel: "icon", type: "image/jpeg", href: "/freelovable-logo.jpg" },
+        { rel: "apple-touch-icon", href: "/freelovable-logo.jpg" },
         {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
