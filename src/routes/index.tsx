@@ -72,7 +72,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   return (
     <section className="relative overflow-hidden text-center">
       <div className="absolute inset-x-0 top-10 -z-10 mx-auto h-80 max-w-3xl bg-gradient-to-r from-brand-purple/20 via-brand-pink/20 to-brand-purple/20 blur-[120px]" />
-      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-0 pt-7">
+      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-10 pt-7 md:pb-14">
         <div className="flex max-w-4xl flex-col items-center">
           <img
             src="/freelovable-logo.jpg"
@@ -275,7 +275,7 @@ function WhatIsFreeLovable() {
   ];
 
   return (
-    <section className="mx-auto flex min-h-svh max-w-7xl items-start px-4 pb-4 pt-0 md:min-h-[calc(100svh-4rem)] md:items-center md:px-6 md:py-8">
+    <section className="mx-auto flex min-h-svh max-w-7xl items-start px-4 pb-10 pt-2 md:min-h-[calc(100svh-4rem)] md:items-center md:px-6 md:py-12">
       <div id="o-que-e" className="relative w-full scroll-mt-0 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-5 md:scroll-mt-16 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/10 via-transparent to-brand-pink/10" />
 
@@ -349,7 +349,24 @@ function WhatIsFreeLovable() {
           </a>
         </div>
       </div>
+
     </section>
+  );
+}
+
+function SectionDivider({ href, className = "" }: { href: string; className?: string }) {
+  return (
+    <div className={`relative z-10 mx-auto flex max-w-7xl justify-center px-6 py-8 md:py-10 ${className}`}>
+      <a
+        href={href}
+        className="inline-flex flex-col items-center justify-center text-brand-pink"
+      >
+        <div className="flex flex-col items-center justify-center leading-none">
+          <ArrowRight className="h-5 w-5 rotate-90" />
+          <ArrowRight className="-mt-1 h-5 w-5 rotate-90 opacity-70" />
+        </div>
+      </a>
+    </div>
   );
 }
 
@@ -375,7 +392,7 @@ function AccessDelivery() {
   ];
 
   return (
-    <section id="como-recebo" className="mx-auto max-w-7xl scroll-mt-20 px-6 py-9">
+    <section id="como-recebo" className="mx-auto max-w-7xl scroll-mt-20 px-6 py-8 md:py-10">
       <div className="grid gap-7 lg:grid-cols-[1fr_0.9fr] lg:items-start">
         <div>
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-pink">
@@ -468,68 +485,6 @@ function AccessDelivery() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-
-function IncludedWithFreeLovable() {
-  const items = [
-    {
-      title: "Créditos ilimitados",
-      text: "Continue criando no Lovable sem precisar parar porque os créditos acabaram.",
-      icon: Zap,
-    },
-    {
-      title: "Download dos projetos",
-      text: "Baixe o código dos seus projetos quando quiser.",
-      icon: Download,
-    },
-    {
-      title: "Sem marca d'água",
-      text: "Remova as identificações do Lovable dos seus projetos.",
-      icon: ShieldCheck,
-    },
-    {
-      title: "Melhorador de prompts",
-      text: "Transforme prompts simples em instruções mais completas para obter resultados melhores.",
-      icon: Wand2,
-    },
-  ];
-
-  return (
-    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-8">
-      <div className="mb-8 text-center">
-        <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
-          Bônus
-        </div>
-        <h2 className="mt-4 text-3xl font-black leading-tight md:text-4xl">
-          O que vem junto com o{" "}
-          <span className="text-gradient">FreeLovable?</span>
-        </h2>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        {items.map(({ title, text, icon: Icon }) => (
-          <div
-            key={title}
-            className="card-glow group relative overflow-hidden rounded-[22px] border-white/10 p-4"
-          >
-            <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-gradient-to-br from-brand-pink/18 to-brand-purple/18 blur-2xl transition group-hover:scale-125" />
-            <div className="relative flex gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 text-brand-pink">
-                <Icon className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-black leading-tight">{title}</h3>
-                <p className="mt-1.5 text-xs font-medium leading-relaxed text-muted-foreground">
-                  {text}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -678,7 +633,7 @@ function SocialProof() {
   ];
 
   return (
-    <section className="relative mx-auto max-w-7xl overflow-hidden px-4 py-12 md:px-6 md:py-14">
+    <section id="depoimentos" className="relative mx-auto max-w-7xl overflow-hidden px-4 py-16 md:px-6 md:py-20">
       <svg className="absolute h-0 w-0" aria-hidden="true">
         <defs>
           <linearGradient id="lovable-heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1376,7 +1331,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
   return (
     <section
   id="planos"
-  className="scroll-mt-24 mx-auto max-w-7xl px-4 py-12 md:px-6"
+  className="scroll-mt-24 mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-16"
 >
       <h2 className="text-center text-3xl font-bold md:text-left md:text-4xl">Escolha seu acesso aos créditos infinitos:</h2>
       <p className="mt-4 text-center text-sm text-muted-foreground md:text-left md:text-base">
@@ -1452,7 +1407,7 @@ function FAQ() {
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="mx-auto max-w-4xl px-6 py-12">
+    <section id="faq" className="mx-auto max-w-4xl px-6 py-14 md:py-16">
       <h2 className="text-center text-3xl font-bold md:text-4xl">Perguntas frequentes</h2>
       <div className="mt-10 space-y-3">
         {items.map(([q, a], i) => (
@@ -1483,7 +1438,7 @@ function FinalCTA() {
         backgroundImage: "radial-gradient(circle at 1px 1px, oklch(0.5 0.1 295) 1px, transparent 0)",
         backgroundSize: "32px 32px",
       }} />
-      <div className="relative mx-auto max-w-5xl px-6 py-14 text-center">
+      <div className="relative mx-auto max-w-5xl px-6 py-16 text-center md:py-20">
         <h2 className="text-4xl font-extrabold leading-tight md:text-5xl">
           Pronto para usar
           <br />
@@ -1550,10 +1505,13 @@ function Landing() {
   return (
     <main className="min-h-screen pb-24 md:pb-0">
       <Hero onOpenModal={openModal} />
+      <SectionDivider href="#o-que-e" />
       <WhatIsFreeLovable />
+      <SectionDivider href="#como-recebo" />
       <AccessDelivery />
-      <IncludedWithFreeLovable />
+      <SectionDivider href="#depoimentos" />
       <SocialProof />
+      <SectionDivider href="#planos" />
       <Pricing onOpenModal={openModal} />
       <FAQ />
       <FinalCTA />
