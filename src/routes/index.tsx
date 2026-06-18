@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect, type CSSProperties } from "react";
 import {
   Sparkles, Download, Eye, Wand2, Check, X, ShieldCheck, Star, Monitor,
@@ -7,6 +7,7 @@ import {
 import {
   buildTrackedCheckoutUrl,
   captureAttribution,
+  getStoredAttribution,
 } from "@/lib/utm-tracking";
 
 export const Route = createFileRoute("/")({
@@ -360,6 +361,13 @@ function AccessDelivery() {
     { title: "Tutorial rápido", icon: Eye },
   ];
 
+  const bonusItems = [
+    "Download dos projetos",
+    "Sem marca d'água",
+    "Melhorador de prompts",
+    "Atualizações incluídas",
+  ];
+
   const practicalSteps = [
     "Escolha seu plano",
     "Receba o token por e-mail",
@@ -440,6 +448,24 @@ function AccessDelivery() {
                 ))}
               </div>
             </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-pink">
+                <Sparkles className="h-3.5 w-3.5" />
+                Bônus liberados com o acesso
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {bonusItems.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2.5 text-xs font-semibold text-foreground/90"
+                  >
+                    <Check className="h-3.5 w-3.5 shrink-0 text-success" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -473,7 +499,7 @@ function IncludedWithFreeLovable() {
   ];
 
   return (
-    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-10">
+    <section id="funcionalidades" className="mx-auto max-w-7xl px-6 py-8">
       <div className="mb-8 text-center">
         <div className="text-xs font-black uppercase tracking-[0.3em] text-brand-pink">
           Bônus
@@ -484,20 +510,20 @@ function IncludedWithFreeLovable() {
         </h2>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {items.map(({ title, text, icon: Icon }) => (
           <div
             key={title}
-            className="card-glow group relative overflow-hidden rounded-[24px] border-white/10 p-5 md:p-6"
+            className="card-glow group relative overflow-hidden rounded-[22px] border-white/10 p-4"
           >
-            <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br from-brand-pink/18 to-brand-purple/18 blur-2xl transition group-hover:scale-125" />
-            <div className="relative flex gap-5">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 text-brand-pink">
-                <Icon className="h-7 w-7" />
+            <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-gradient-to-br from-brand-pink/18 to-brand-purple/18 blur-2xl transition group-hover:scale-125" />
+            <div className="relative flex gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 text-brand-pink">
+                <Icon className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xl font-black">{title}</h3>
-                <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+                <h3 className="text-base font-black leading-tight">{title}</h3>
+                <p className="mt-1.5 text-xs font-medium leading-relaxed text-muted-foreground">
                   {text}
                 </p>
               </div>
@@ -1305,15 +1331,23 @@ function Proof() {
 function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   const plans = [
     {
+      name: "Plano Diário", price: "R$ 9,90", period: "/dia", note: "Perfeito para testar hoje mesmo.",
+      cta: "QUERO O PLANO DIÁRIO", popular: false,
+      features: [
+        "Créditos ilimitados",
+        "Suporte prioritário",
+        "Atualizações",
+        "16 mil fluxos N8N",
+      ],
+    },
+    {
       name: "Plano Mensal", price: "R$ 47", period: "/mês", note: "Ideal para projetos rápidos.",
       cta: "QUERO O PLANO MENSAL", popular: true,
       features: [
         "Créditos ilimitados",
         "Suporte prioritário",
-        "Grupo VIP",
         "Atualizações",
         "16 mil fluxos N8N",
-        "Bônus surpresa",
       ],
     },
     {
@@ -1322,10 +1356,8 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       features: [
         "Créditos ilimitados",
         "Suporte prioritário",
-        "Grupo VIP",
         "Atualizações",
         "16 mil fluxos N8N",
-        "Bônus surpresa",
       ],
     },
     {
@@ -1351,7 +1383,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
         Todos os planos liberam a mesma promessa principal: continuar criando no Lovable sem ficar sem créditos.
       </p>
 
-      <div className="mt-10 grid grid-cols-2 gap-4 md:mt-12 md:gap-6 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-2 gap-4 md:mt-12 md:gap-6 lg:grid-cols-4">
         {plans.map((p) => (
           <div key={p.name} className={`relative flex flex-col rounded-3xl border p-4 transition-all duration-500 md:p-6 ${p.name === "Plano Anual" ? 'border-orange-500/70 bg-card/70 ring-1 ring-orange-500/30 shadow-[0_0_60px_-24px_rgba(249,115,22,0.95)] lg:-mt-4 lg:min-h-[580px]' : p.popular ? 'card-glow border-brand-pink/50 bg-brand-pink/5 ring-1 ring-brand-pink/20 shadow-glow' : 'bg-card/40 border-border/40 hover:border-border/80'}`}>
             {p.popular && (
@@ -1551,18 +1583,66 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     return "mensal";
   }
 
+  const planTrackingMeta: Record<
+    "diario" | "mensal" | "trimestral" | "anual",
+    { name: string; value: number; period: string }
+  > = {
+    diario: { name: "Plano Diário", value: 9.9, period: "1 dia" },
+    mensal: { name: "Plano Mensal", value: 47, period: "1 mês" },
+    trimestral: { name: "Plano Trimestral", value: 97, period: "3 meses" },
+    anual: { name: "Plano Anual", value: 197, period: "1 ano" },
+  };
+
    const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError(null);
   setLoading(true);
 
-  // InitiateCheckout
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'InitiateCheckout');
-  }
-
   try {
     const plano = planoKey();
+    const planMeta = planTrackingMeta[plano];
+    const checkoutUrls: Record<typeof plano, string> = {
+      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
+      mensal: "https://pay.cakto.com.br/gswneg7_927010",
+      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
+      anual: "https://pay.cakto.com.br/eorwpqd_927027",
+    };
+    const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
+    const attribution = getStoredAttribution();
+
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: planMeta.name,
+        content_category: "FreeLovable",
+        content_ids: [plano],
+        content_type: "product",
+        value: planMeta.value,
+        currency: "BRL",
+        num_items: 1,
+        plan_name: planMeta.name,
+        plan_key: plano,
+        plan_period: planMeta.period,
+        checkout_destination: checkoutUrls[plano],
+        page_origin: attribution.page_origin,
+        landing_page: attribution.landing_page,
+        landing_referrer: attribution.landing_referrer,
+        utm_source: attribution.utm_source,
+        utm_medium: attribution.utm_medium,
+        utm_campaign: attribution.utm_campaign,
+        utm_content: attribution.utm_content,
+        utm_term: attribution.utm_term,
+        utm_id: attribution.utm_id,
+        fbclid: attribution.fbclid,
+        campaign_id: attribution.campaign_id,
+        adset_id: attribution.adset_id,
+        ad_id: attribution.ad_id,
+        fbp: attribution.fbp,
+        fbc: attribution.fbc,
+        src: attribution.src,
+        xcod: attribution.xcod,
+        sck: attribution.sck,
+      });
+    }
 
     // Grava o lead no Supabase externo antes de redirecionar pro checkout.
     // Se falhar, NÃO bloqueia o pagamento — só loga.
@@ -1585,13 +1665,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       console.error("Erro ao gravar assinatura:", err);
     }
 
-    const checkoutUrls: Record<typeof plano, string> = {
-      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
-      mensal: "https://pay.cakto.com.br/gswneg7_927010",
-      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
-      anual: "https://pay.cakto.com.br/eorwpqd_927027",
-    };
-    window.location.href = buildTrackedCheckoutUrl(checkoutUrls[plano]);
+    window.location.href = checkoutUrl;
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);
@@ -1679,3 +1753,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     </div>
   );
 }
+
+
+
+

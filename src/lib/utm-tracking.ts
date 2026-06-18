@@ -9,10 +9,15 @@ const URL_ATTRIBUTION_KEYS = [
   "utm_term",
   "utm_id",
   "fbclid",
+  "campaign_id",
+  "adset_id",
+  "ad_id",
   "src",
   "xcod",
   "sck",
 ] as const;
+
+type AttributionKey = (typeof URL_ATTRIBUTION_KEYS)[number];
 
 function readCookie(name: string) {
   if (typeof document === "undefined") return "";
@@ -101,19 +106,33 @@ export function captureAttribution() {
   }
 }
 
-export function buildTrackedCheckoutUrl(checkoutUrl: string) {
-  if (typeof window === "undefined") return checkoutUrl;
+export function getStoredAttribution() {
+  if (typeof window === "undefined") {
+    return {} as Partial<Record<AttributionKey, string>> & {
+      fbp?: string;
+      fbc?: string;
+      landing_page?: string;
+      landing_referrer?: string;
+      page_origin?: string;
+    };
+  }
 
   captureAttribution();
 
-  const url = new URL(checkoutUrl);
+  const attribution: Partial<Record<AttributionKey, string>> & {
+    fbp?: string;
+    fbc?: string;
+    landing_page?: string;
+    landing_referrer?: string;
+    page_origin?: string;
+  } = {};
 
   for (const key of URL_ATTRIBUTION_KEYS) {
     const value =
       new URLSearchParams(window.location.search).get(key)?.trim() ||
       readStoredValue(key);
 
-    if (value) url.searchParams.set(key, value);
+    if (value) attribution[key] = value;
   }
 
   const fbp = readCookie("_fbp") || readStoredValue("fbp");
@@ -121,15 +140,25 @@ export function buildTrackedCheckoutUrl(checkoutUrl: string) {
   const landingPage = readStoredValue("landing_page");
   const landingReferrer = readStoredValue("landing_referrer");
 
-  if (fbp) url.searchParams.set("fbp", fbp);
-  if (fbc) url.searchParams.set("fbc", fbc);
-  if (landingPage) url.searchParams.set("landing_page", landingPage);
-  if (landingReferrer) url.searchParams.set("landing_referrer", landingReferrer);
+  if (fbp) attribution.fbp = fbp;
+  if (fbc) attribution.fbc = fbc;
+  if (landingPage) attribution.landing_page = landingPage;
+  if (landingReferrer) attribution.landing_referrer = landingReferrer;
 
-  url.searchParams.set(
-    "page_origin",
-    `${window.location.origin}${window.location.pathname}`,
-  );
+  attribution.page_origin = `${window.location.origin}${window.location.pathname}`;
+
+  return attribution;
+}
+
+export function buildTrackedCheckoutUrl(checkoutUrl: string) {
+  if (typeof window === "undefined") return checkoutUrl;
+
+  const url = new URL(checkoutUrl);
+  const attribution = getStoredAttribution();
+
+  for (const [key, value] of Object.entries(attribution)) {
+    if (value) url.searchParams.set(key, value);
+  }
 
   return url.toString();
 }
