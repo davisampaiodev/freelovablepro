@@ -140,7 +140,7 @@ function AdminTokensPage() {
 
   const ativas = assinaturas.filter(
     (a) =>
-      a.status === "aprovado" &&
+      (a.status === "aprovado" || a.status === "concluida") &&
       (!a.expira_em || new Date(a.expira_em) > new Date()),
   );
 

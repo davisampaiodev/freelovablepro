@@ -48,8 +48,8 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
 
           // Recupera assinatura
           const { data: assinatura, error: aerr } = await supabaseAdmin
-            .from("assinaturas")
-            .select("id, status, plano, email, nome, token_id")
+            .from("leads_checkout_br")
+            .select("id, status, plano, email, nome, token_id, preference_id")
             .eq("id", assinaturaId)
             .single();
           if (aerr || !assinatura) {
@@ -58,26 +58,33 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
           }
 
           // Mapeia status MP -> status interno
-          let novoStatus: "aprovado" | "rejeitado" | "pendente" = "pendente";
-          if (payment.status === "approved") novoStatus = "aprovado";
+          let novoStatus: "concluida" | "recusada" | "pendente" = "pendente";
+          if (payment.status === "approved") novoStatus = "concluida";
           else if (
             payment.status === "rejected" ||
             payment.status === "cancelled" ||
             payment.status === "refunded" ||
             payment.status === "charged_back"
-          ) novoStatus = "rejeitado";
+          ) novoStatus = "recusada";
 
-          // Se já estava aprovado e já tem token, não reprocessa
-          if (assinatura.status === "aprovado" && assinatura.token_id) {
+          // Se já estava concluída/aprovada e já tem token, não reprocessa
+          if (
+            (assinatura.status === "aprovado" || assinatura.status === "concluida") &&
+            assinatura.token_id
+          ) {
             return new Response("already_processed", { status: 200 });
           }
 
-          if (novoStatus !== "aprovado") {
+          if (novoStatus !== "concluida") {
             await supabaseAdmin
-              .from("assinaturas")
+              .from("leads_checkout_br")
               .update({
                 status: novoStatus,
+                payment_provider: "mercadopago",
+                payment_id: String(payment.id),
                 pagamento_mp_id: String(payment.id),
+                checkout_id: assinatura.preference_id ?? null,
+                updated_at: new Date().toISOString(),
               })
               .eq("id", assinaturaId);
             return new Response("ok", { status: 200 });
@@ -118,13 +125,18 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
           }
 
           if (!tokenRow) {
-            // sem token disponível — marca assinatura como aprovada mas sem token, admin precisa adicionar
+            // sem token disponível — marca lead como concluído, mas sem token, para ação manual do admin
             await supabaseAdmin
-              .from("assinaturas")
+              .from("leads_checkout_br")
               .update({
-                status: "aprovado",
+                status: "concluida",
+                payment_provider: "mercadopago",
+                payment_id: String(payment.id),
                 pagamento_mp_id: String(payment.id),
+                checkout_id: assinatura.preference_id ?? null,
+                comprado_em: new Date().toISOString(),
                 expira_em: expiraEm,
+                updated_at: new Date().toISOString(),
               })
               .eq("id", assinaturaId);
             console.error("SEM TOKENS DISPONÍVEIS para assinatura", assinaturaId);
@@ -151,13 +163,18 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
 
           // Vincula token na assinatura
           await supabaseAdmin
-            .from("assinaturas")
+            .from("leads_checkout_br")
             .update({
-              status: "aprovado",
+              status: "concluida",
+              payment_provider: "mercadopago",
+              payment_id: String(payment.id),
               pagamento_mp_id: String(payment.id),
+              checkout_id: assinatura.preference_id ?? null,
               token_id: claimed.id,
               token_valor: claimed.token,
+              comprado_em: new Date().toISOString(),
               expira_em: expiraEm,
+              updated_at: new Date().toISOString(),
             })
             .eq("id", assinaturaId);
 

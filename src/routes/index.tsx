@@ -1609,13 +1609,25 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         "@/integrations/supabase-external/client"
       );
       const { error: insErr } = await supabaseExternal
-        .from("assinaturas")
+        .from("leads_checkout_br")
         .insert({
           nome: formData.name,
           email: formData.email,
           telefone: formData.whatsapp || null,
           plano,
           status: "pendente",
+          origem: "lp_brasil",
+          idioma: "pt",
+          utm_source: attribution.utm_source ?? null,
+          utm_medium: attribution.utm_medium ?? null,
+          utm_campaign: attribution.utm_campaign ?? null,
+          utm_content: attribution.utm_content ?? null,
+          utm_term: attribution.utm_term ?? null,
+          utm_id: attribution.utm_id ?? null,
+          fbclid: attribution.fbclid ?? null,
+          campaign_id: attribution.campaign_id ?? null,
+          adset_id: attribution.adset_id ?? null,
+          ad_id: attribution.ad_id ?? null,
           valor_centavos: PLANO_CENTAVOS[plano],
         });
       if (insErr) console.error("Falha ao gravar assinatura:", insErr);

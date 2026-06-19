@@ -31,15 +31,30 @@ export const Route = createFileRoute("/api/public/criar-preferencia")({
           );
 
           const valor = PLANOS[plano].centavos;
+          const referer = request.headers.get("referer");
+          const refererUrl = referer ? new URL(referer) : null;
+          const refererParams = refererUrl?.searchParams;
 
           const { data: assinatura, error: insErr } = await supabaseAdmin
-            .from("assinaturas")
+            .from("leads_checkout_br")
             .insert({
               nome,
               email,
               telefone: telefone || null,
               plano,
               status: "pendente",
+              origem: "lp_brasil",
+              idioma: "pt",
+              utm_source: refererParams?.get("utm_source") || null,
+              utm_medium: refererParams?.get("utm_medium") || null,
+              utm_campaign: refererParams?.get("utm_campaign") || null,
+              utm_content: refererParams?.get("utm_content") || null,
+              utm_term: refererParams?.get("utm_term") || null,
+              utm_id: refererParams?.get("utm_id") || null,
+              fbclid: refererParams?.get("fbclid") || null,
+              campaign_id: refererParams?.get("campaign_id") || null,
+              adset_id: refererParams?.get("adset_id") || null,
+              ad_id: refererParams?.get("ad_id") || null,
               valor_centavos: valor,
             })
             .select("id")
@@ -69,7 +84,7 @@ export const Route = createFileRoute("/api/public/criar-preferencia")({
           });
 
           await supabaseAdmin
-            .from("assinaturas")
+            .from("leads_checkout_br")
             .update({ preference_id: pref.id })
             .eq("id", assinatura.id);
 

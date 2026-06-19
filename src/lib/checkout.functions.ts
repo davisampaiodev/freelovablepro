@@ -18,11 +18,11 @@ export const validarToken = createServerFn({ method: "POST" })
       return { ativo: false, motivo: "nao_atribuido" as const };
     }
     const { data: ass } = await supabaseAdmin
-      .from("assinaturas")
+      .from("leads_checkout_br")
       .select("status, expira_em, plano")
       .eq("id", row.assinatura_id)
       .maybeSingle();
-    if (!ass || ass.status !== "aprovado") {
+    if (!ass || (ass.status !== "aprovado" && ass.status !== "concluida")) {
       return { ativo: false, motivo: "assinatura_invalida" as const };
     }
     if (ass.expira_em && new Date(ass.expira_em) < new Date()) {
@@ -31,7 +31,7 @@ export const validarToken = createServerFn({ method: "POST" })
     return { ativo: true, plano: ass.plano, expira_em: ass.expira_em };
   });
 
-/** Admin: listar tokens + assinaturas */
+/** Admin: listar tokens + leads do checkout BR */
 export const adminListar = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -48,7 +48,7 @@ export const adminListar = createServerFn({ method: "GET" })
         .order("criado_em", { ascending: false })
         .limit(1000),
       supabaseAdmin
-        .from("assinaturas")
+        .from("leads_checkout_br")
         .select("id, nome, email, plano, status, token_valor, expira_em, criado_em")
         .order("criado_em", { ascending: false })
         .limit(200),
@@ -101,12 +101,12 @@ export const adminReenviarEmail = createServerFn({ method: "POST" })
     if (!isAdmin) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: a, error } = await supabaseAdmin
-      .from("assinaturas")
+      .from("leads_checkout_br")
       .select("nome, email, plano, token_valor, expira_em, status")
       .eq("id", data.assinaturaId)
       .single();
     if (error || !a) throw new Error("Assinatura não encontrada");
-    if (a.status !== "aprovado" || !a.token_valor || !a.expira_em) {
+    if ((a.status !== "aprovado" && a.status !== "concluida") || !a.token_valor || !a.expira_em) {
       throw new Error("Assinatura ainda não aprovada ou sem token");
     }
     const { sendTokenEmail } = await import("@/lib/email-sender.server");

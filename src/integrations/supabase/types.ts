@@ -14,52 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
-      assinaturas: {
+      leads_checkout_br: {
         Row: {
+          ad_id: string | null
+          adset_id: string | null
+          campaign_id: string | null
+          checkout_id: string | null
+          comprado_em: string | null
           criado_em: string
           email: string
           expira_em: string | null
+          fbclid: string | null
           id: string
+          idioma: string | null
           nome: string
           pagamento_mp_id: string | null
+          payment_id: string | null
+          payment_provider: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
           preference_id: string | null
+          origem: string | null
           status: Database["public"]["Enums"]["assinatura_status"]
           telefone: string | null
           token_id: string | null
           token_valor: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_id: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           updated_at: string
           valor_centavos: number
         }
         Insert: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
+          checkout_id?: string | null
+          comprado_em?: string | null
           criado_em?: string
           email: string
           expira_em?: string | null
+          fbclid?: string | null
           id?: string
+          idioma?: string | null
           nome: string
           pagamento_mp_id?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
           preference_id?: string | null
+          origem?: string | null
           status?: Database["public"]["Enums"]["assinatura_status"]
           telefone?: string | null
           token_id?: string | null
           token_valor?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           updated_at?: string
           valor_centavos: number
         }
         Update: {
+          ad_id?: string | null
+          adset_id?: string | null
+          campaign_id?: string | null
+          checkout_id?: string | null
+          comprado_em?: string | null
           criado_em?: string
           email?: string
           expira_em?: string | null
+          fbclid?: string | null
           id?: string
+          idioma?: string | null
           nome?: string
           pagamento_mp_id?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
           plano?: Database["public"]["Enums"]["plano_tipo"]
           preference_id?: string | null
+          origem?: string | null
           status?: Database["public"]["Enums"]["assinatura_status"]
           telefone?: string | null
           token_id?: string | null
           token_valor?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           updated_at?: string
           valor_centavos?: number
         }
@@ -106,7 +154,7 @@ export type Database = {
             foreignKeyName: "tokens_assinatura_fk"
             columns: ["assinatura_id"]
             isOneToOne: false
-            referencedRelation: "assinaturas"
+            referencedRelation: "leads_checkout_br"
             referencedColumns: ["id"]
           },
         ]
@@ -147,7 +195,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      assinatura_status: "pendente" | "aprovado" | "rejeitado" | "expirado"
+      assinatura_status:
+        | "pendente"
+        | "aprovado"
+        | "rejeitado"
+        | "expirado"
+        | "concluida"
+        | "recusada"
       plano_tipo: "diario" | "mensal" | "trimestral" | "anual"
       token_status: "disponivel" | "usado"
     }
@@ -278,7 +332,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      assinatura_status: ["pendente", "aprovado", "rejeitado", "expirado"],
+      assinatura_status: [
+        "pendente",
+        "aprovado",
+        "rejeitado",
+        "expirado",
+        "concluida",
+        "recusada",
+      ],
       plano_tipo: ["diario", "mensal", "trimestral", "anual"],
       token_status: ["disponivel", "usado"],
     },
