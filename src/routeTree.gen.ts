@@ -13,8 +13,8 @@ import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiPublicWebhookMpRouteImport } from './routes/api/public/webhook-mp'
-import { Route as ApiPublicCriarPreferenciaRouteImport } from './routes/api/public/criar-preferencia'
+import { Route as ApiPublicLeadsCheckoutRouteImport } from './routes/api/public/leads-checkout'
+import { Route as ApiPublicCriarCheckoutStripeRouteImport } from './routes/api/public/criar-checkout-stripe'
 import { Route as AuthenticatedAdminTokensRouteImport } from './routes/_authenticated/admin.tokens'
 
 const ObrigadoRoute = ObrigadoRouteImport.update({
@@ -36,15 +36,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWebhookMpRoute = ApiPublicWebhookMpRouteImport.update({
-  id: '/api/public/webhook-mp',
-  path: '/api/public/webhook-mp',
+const ApiPublicLeadsCheckoutRoute = ApiPublicLeadsCheckoutRouteImport.update({
+  id: '/api/public/leads-checkout',
+  path: '/api/public/leads-checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicCriarPreferenciaRoute =
-  ApiPublicCriarPreferenciaRouteImport.update({
-    id: '/api/public/criar-preferencia',
-    path: '/api/public/criar-preferencia',
+const ApiPublicCriarCheckoutStripeRoute =
+  ApiPublicCriarCheckoutStripeRouteImport.update({
+    id: '/api/public/criar-checkout-stripe',
+    path: '/api/public/criar-checkout-stripe',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedAdminTokensRoute =
@@ -59,16 +59,16 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
+  '/api/public/criar-checkout-stripe': typeof ApiPublicCriarCheckoutStripeRoute
+  '/api/public/leads-checkout': typeof ApiPublicLeadsCheckoutRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
+  '/api/public/criar-checkout-stripe': typeof ApiPublicCriarCheckoutStripeRoute
+  '/api/public/leads-checkout': typeof ApiPublicLeadsCheckoutRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,8 +77,8 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/_authenticated/admin/tokens': typeof AuthenticatedAdminTokensRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
+  '/api/public/criar-checkout-stripe': typeof ApiPublicCriarCheckoutStripeRoute
+  '/api/public/leads-checkout': typeof ApiPublicLeadsCheckoutRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,16 +87,16 @@ export interface FileRouteTypes {
     | '/auth'
     | '/obrigado'
     | '/admin/tokens'
-    | '/api/public/criar-preferencia'
-    | '/api/public/webhook-mp'
+    | '/api/public/criar-checkout-stripe'
+    | '/api/public/leads-checkout'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/obrigado'
     | '/admin/tokens'
-    | '/api/public/criar-preferencia'
-    | '/api/public/webhook-mp'
+    | '/api/public/criar-checkout-stripe'
+    | '/api/public/leads-checkout'
   id:
     | '__root__'
     | '/'
@@ -104,8 +104,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/obrigado'
     | '/_authenticated/admin/tokens'
-    | '/api/public/criar-preferencia'
-    | '/api/public/webhook-mp'
+    | '/api/public/criar-checkout-stripe'
+    | '/api/public/leads-checkout'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,8 +113,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ObrigadoRoute: typeof ObrigadoRoute
-  ApiPublicCriarPreferenciaRoute: typeof ApiPublicCriarPreferenciaRoute
-  ApiPublicWebhookMpRoute: typeof ApiPublicWebhookMpRoute
+  ApiPublicCriarCheckoutStripeRoute: typeof ApiPublicCriarCheckoutStripeRoute
+  ApiPublicLeadsCheckoutRoute: typeof ApiPublicLeadsCheckoutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -147,18 +147,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhook-mp': {
-      id: '/api/public/webhook-mp'
-      path: '/api/public/webhook-mp'
-      fullPath: '/api/public/webhook-mp'
-      preLoaderRoute: typeof ApiPublicWebhookMpRouteImport
+    '/api/public/leads-checkout': {
+      id: '/api/public/leads-checkout'
+      path: '/api/public/leads-checkout'
+      fullPath: '/api/public/leads-checkout'
+      preLoaderRoute: typeof ApiPublicLeadsCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/criar-preferencia': {
-      id: '/api/public/criar-preferencia'
-      path: '/api/public/criar-preferencia'
-      fullPath: '/api/public/criar-preferencia'
-      preLoaderRoute: typeof ApiPublicCriarPreferenciaRouteImport
+    '/api/public/criar-checkout-stripe': {
+      id: '/api/public/criar-checkout-stripe'
+      path: '/api/public/criar-checkout-stripe'
+      fullPath: '/api/public/criar-checkout-stripe'
+      preLoaderRoute: typeof ApiPublicCriarCheckoutStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/tokens': {
@@ -187,8 +187,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ObrigadoRoute: ObrigadoRoute,
-  ApiPublicCriarPreferenciaRoute: ApiPublicCriarPreferenciaRoute,
-  ApiPublicWebhookMpRoute: ApiPublicWebhookMpRoute,
+  ApiPublicCriarCheckoutStripeRoute: ApiPublicCriarCheckoutStripeRoute,
+  ApiPublicLeadsCheckoutRoute: ApiPublicLeadsCheckoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

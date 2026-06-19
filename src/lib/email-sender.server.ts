@@ -5,12 +5,12 @@
  *  - LOVABLE_API_KEY (auto-provisionado)
  *  - RESEND_API_KEY  (fornecido pelo connector Resend)
  *
- * Para usar um remetente do seu domínio (ex.: token@freelovablepro.com.br),
+ * Para usar um remetente do seu domínio (ex.: token@freelovableeproes.com),
  * verifique o domínio no painel do Resend e defina a env opcional EMAIL_FROM.
  * Sem isso, usamos onboarding@resend.dev (só envia para o email cadastrado
  * na conta Resend — útil em testes).
  */
-import { PLANOS, type PlanoKey } from "./mercadopago.server";
+type PlanoKey = "diario" | "mensal" | "trimestral" | "anual";
 
 const TITULOS: Record<PlanoKey, string> = {
   diario: "diário",
@@ -30,14 +30,14 @@ export async function sendTokenEmail(params: {
 }) {
   const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const FROM = process.env.EMAIL_FROM || "FreeLovable <onboarding@resend.dev>";
+  const FROM = process.env.EMAIL_FROM || "Freelovablees <onboarding@resend.dev>";
 
   if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
     console.warn("[email] Resend não configurado, logando token:", params.email, params.token);
     return;
   }
 
-  const subject = `Seu token FreeLovable (${TITULOS[params.plano]}) está liberado 🎉`;
+  const subject = `Seu token Freelovablees (${TITULOS[params.plano]}) está liberado 🎉`;
   const html = renderTokenEmailHtml(params);
   const text = renderTokenEmailText(params);
 
@@ -95,17 +95,17 @@ function renderTokenEmailHtml(p: {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Seu token FreeLovable</title>
+    <title>Seu token Freelovablees</title>
   </head>
   <body style="margin:0;padding:0;background:#07060d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e7e5f0">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0">Seu token de acesso FreeLovable chegou — plano ${plano}.</div>
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0">Seu token de acesso Freelovablees chegou — plano ${plano}.</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#07060d;padding:32px 16px">
       <tr>
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#0e0c1a;border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden">
             <tr>
               <td style="background:${gradient};padding:28px 32px">
-                <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;letter-spacing:-0.01em">FreeLovable</h1>
+                <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;letter-spacing:-0.01em">Freelovablees</h1>
                 <p style="margin:6px 0 0;color:rgba(255,255,255,0.92);font-size:14px">Seu acesso foi liberado</p>
               </td>
             </tr>
@@ -113,7 +113,7 @@ function renderTokenEmailHtml(p: {
               <td style="padding:32px">
                 <h2 style="margin:0 0 8px;color:#ffffff;font-size:20px;font-weight:700">Olá, ${nome}!</h2>
                 <p style="margin:0 0 24px;color:#b8b4c9;font-size:15px;line-height:1.55">
-                  Pagamento confirmado 🎉 Use o token abaixo para ativar a extensão FreeLovable.
+                  Pagamento confirmado 🎉 Use o token abaixo para ativar a extensão Freelovablees.
                 </p>
 
                 <div style="background:#07060d;border:1px solid rgba(236,72,153,0.35);border-radius:14px;padding:20px;text-align:center;margin:0 0 24px">
@@ -137,7 +137,7 @@ function renderTokenEmailHtml(p: {
 
                 <h3 style="margin:24px 0 12px;color:#ffffff;font-size:15px;font-weight:700">Como ativar</h3>
                 <ol style="margin:0 0 8px;padding-left:20px;color:#b8b4c9;font-size:14px;line-height:1.7">
-                  <li>Abra a extensão <strong style="color:#fff">FreeLovable</strong> no seu navegador.</li>
+                  <li>Abra a extensão <strong style="color:#fff">Freelovablees</strong> no seu navegador.</li>
                   <li>Clique em <strong style="color:#fff">Ativar com token</strong>.</li>
                   <li>Cole o token acima e confirme.</li>
                   <li>Pronto — créditos liberados até a data de expiração.</li>
@@ -150,7 +150,7 @@ function renderTokenEmailHtml(p: {
             </tr>
             <tr>
               <td style="padding:16px 32px;background:#07060d;border-top:1px solid rgba(255,255,255,0.06);text-align:center;color:#7d7a8c;font-size:11px">
-                © ${new Date().getFullYear()} FreeLovable
+                © ${new Date().getFullYear()} Freelovablees
               </td>
             </tr>
           </table>
@@ -171,14 +171,14 @@ function renderTokenEmailText(p: {
   return [
     `Olá, ${p.nome}!`,
     ``,
-    `Pagamento confirmado. Seu token FreeLovable:`,
+    `Pagamento confirmado. Seu token Freelovablees:`,
     p.token,
     ``,
     `Plano: ${TITULOS[p.plano]}`,
     `Expira em: ${expira}`,
     ``,
     `Como ativar:`,
-    `1. Abra a extensão FreeLovable.`,
+    `1. Abra a extensão Freelovablees.`,
     `2. Clique em "Ativar com token".`,
     `3. Cole o token e confirme.`,
     ``,
@@ -194,6 +194,3 @@ function escapeHtml(s: string) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
-
-// keep import used (avoid tree-shake warning) — PLANOS pode ser útil em extensões futuras
-void PLANOS;

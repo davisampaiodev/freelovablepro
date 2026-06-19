@@ -5,7 +5,6 @@ import {
   Plus, Minus, ArrowRight, Zap, Play, Pause, Volume2, Maximize, User, Mail, Phone, Lock, Heart,
 } from "lucide-react";
 import {
-  buildTrackedCheckoutUrl,
   captureAttribution,
   getStoredAttribution,
 } from "@/lib/utm-tracking";
@@ -13,8 +12,8 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FreeLovable — Seu Lovable sem consumir créditos" },
-      { name: "description", content: "Pare de ficar sem créditos no Lovable. Use o FreeLovable para continuar criando com créditos infinitos; downloads, marca d'água e prompt enhancer entram como bônus." },
+      { title: "Freelovablees — Seu Lovable sem consumir créditos" },
+      { name: "description", content: "Pare de ficar sem créditos no Lovable. Use o Freelovablees para continuar criando com créditos infinitos; downloads, marca d'água e prompt enhancer entram como bônus." },
     ],
   }),
   component: Landing,
@@ -25,12 +24,11 @@ function Logo({ className = "" }: { className?: string }) {
     <div className={`flex items-center gap-2 ${className}`}>
       <img 
         src="/freelovable-logo.jpg"
-        alt="FreeLovable Logo"
+        alt="Freelovablees Logo"
         className="h-10 w-10 rounded-lg object-cover"
       />
       <span className="text-lg font-bold tracking-tight">
-        <span className="text-gradient">Free</span>
-        <span>Lovable</span>
+        <span className="text-gradient">Freelovablees</span>
       </span>
     </div>
   );
@@ -76,7 +74,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
         <div className="flex max-w-4xl flex-col items-center">
           <img
             src="/freelovable-logo.jpg"
-            alt="FreeLovable"
+            alt="Freelovablees"
             className="mb-4 h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
@@ -171,12 +169,12 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
                        </div>
                     </div>
                     <div className="flex-1">
-                       <div className="text-sm font-black text-white tracking-tight">FreeLovable Pro</div>
-                       <div className="text-[11px] text-white/70">@freelovable • Seguindo</div>
+                       <div className="text-sm font-black text-white tracking-tight">Freelovablees</div>
+                       <div className="text-[11px] text-white/70">@freelovablees • Seguindo</div>
                     </div>
                  </div>
                  <p className="text-[13px] text-white/95 leading-relaxed font-semibold drop-shadow-lg">
-                    Crie projetos ilimitados no Lovable sem consumir seus créditos! 🚀🔥 #DevLife #AI #FreeLovable
+                    Crie projetos ilimitados no Lovable sem consumir seus créditos! 🚀🔥 #DevLife #AI #Freelovablees
                  </p>
               </div>
             </div>
@@ -248,9 +246,9 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
 }
 
 
-function WhatIsFreeLovable() {
+function WhatIsFreelovablees() {
   const flow = [
-    { title: "Instala a extensão", text: "Adicione o FreeLovable ao Chrome.", icon: Download },
+    { title: "Instala a extensão", text: "Adicione o Freelovablees ao Chrome.", icon: Download },
     { title: "Ativa com seu token", text: "Insira o token exclusivo recebido após a compra.", icon: Lock },
     { title: "Escreve seus prompts", text: "Envie seus prompts normalmente pelo painel.", icon: Wand2 },
     { title: "Continua criando com créditos infinitos", text: "Use o Lovable sem se preocupar com créditos acabando.", icon: Check },
@@ -286,11 +284,11 @@ function WhatIsFreeLovable() {
             </div>
 
             <h2 className="text-3xl font-black leading-tight md:text-4xl">
-              O que é o <span className="text-gradient">FreeLovable?</span>
+              O que é o <span className="text-gradient">Freelovablees?</span>
             </h2>
 
             <p className="mt-4 text-base font-semibold leading-relaxed text-foreground/90 md:text-lg">
-              Free Lovable é uma extensão para Chrome que libera créditos
+              Freelovablees é uma extensão para Chrome que libera créditos
               ilimitados no Lovable durante o período do seu plano, para você
               continuar criando com créditos infinitos sem interromper seus
               projetos.
@@ -448,7 +446,7 @@ function AccessDelivery() {
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
                     E-mail recebido
                   </p>
-                  <h3 className="mt-1 font-black">Seu acesso FreeLovable chegou</h3>
+                  <h3 className="mt-1 font-black">Seu acesso Freelovablees chegou</h3>
                 </div>
               </div>
 
@@ -528,7 +526,7 @@ function WhatYouGet() {
         </div>
 
         <h2 className="mt-14 text-center text-3xl md:text-4xl font-black">
-          O que você desbloqueia com a FreeLovable
+          O que você desbloqueia com a Freelovablees
         </h2>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -568,7 +566,7 @@ function Pitch() {
       </p>
       <p className="mt-10 text-3xl md:text-4xl font-bold leading-tight">
       Porém, com o <img src="/freelovable-logo.jpg" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-cover" alt="" />{" "}
-        <span className="text-gradient">Free</span> Lovable, você não precisa mais se preocupar com isso!
+        Com o <span className="text-gradient">Freelovablees</span>, você não precisa mais se preocupar com isso!
       </p>
     </section>
   );
@@ -764,7 +762,7 @@ function Comparison({ onOpenModal }: { onOpenModal: (planName?: string) => void 
               <X className="h-6 w-6 text-danger" />
             </div>
             <h3 className="text-2xl font-black uppercase text-danger">
-              Sem FreeLovable
+              Sem Freelovablees
             </h3>
           </div>
           <ul className="space-y-4">
@@ -783,7 +781,7 @@ function Comparison({ onOpenModal }: { onOpenModal: (planName?: string) => void 
               <Check className="h-6 w-6 text-success" />
             </div>
             <h3 className="text-2xl font-black uppercase text-success">
-              Com FreeLovable
+              Com Freelovablees
             </h3>
           </div>
           <ul className="space-y-4">
@@ -907,7 +905,7 @@ function Features() {
                       <div className="text-4xl font-black text-gradient">∞ <span className="text-lg text-muted-foreground/40 font-normal">/ 5,00</span></div>
                     </div>
                     <div className="px-3 py-1 rounded-full bg-success/10 text-success border border-success/20 text-[10px] font-bold animate-pulse">
-                      FREELOVABLE ATIVO
+                      FREELOVABLEES ATIVO
                     </div>
                   </div>
                   
@@ -1150,7 +1148,7 @@ function Proof() {
       status: "1 crédito restante",
       tone: "danger",
       value: "1 / 5",
-      detail: "Sem o FreeLovable, cada prompt consome seus créditos.",
+      detail: "Sem o Freelovablees, cada prompt consome seus créditos.",
       rows: [
         ["Prompt enviado", "-1 crédito"],
         ["Ajuste solicitado", "-1 crédito"],
@@ -1159,13 +1157,13 @@ function Proof() {
     },
     {
       title: "Extensão ativando",
-      status: "FreeLovable detectado",
+      status: "Freelovablees detectado",
       tone: "brand",
       value: "ON",
       detail: "A extensão ativa direto na sua conta e protege o consumo.",
       rows: [
         ["Conta Lovable", "conectada"],
-        ["FreeLovable", "ativo"],
+        ["Freelovablees", "ativo"],
         ["Consumo de créditos", "bloqueado"],
       ],
     },
@@ -1191,7 +1189,7 @@ function Proof() {
         </div>
         <h2 className="mt-4 text-4xl md:text-5xl font-black leading-tight">
           Veja o que muda quando o{" "}
-          <span className="text-gradient">FreeLovable</span> entra em ação.
+          <span className="text-gradient">Freelovablees</span> entra em ação.
         </h2>
       </div>
 
@@ -1386,7 +1384,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
         <div>
           <h3 className="text-2xl font-black md:text-3xl">7 dias de garantia incondicional</h3>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Use a FreeLovable sem risco. Se não gostar, peça reembolso dentro do
+            Use a Freelovablees sem risco. Se não gostar, peça reembolso dentro do
             prazo de garantia.
           </p>
         </div>
@@ -1467,7 +1465,7 @@ function Footer() {
     <footer className="border-t border-border/60">
       <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
         <Logo />
-        <p>© {new Date().getFullYear()} FreeLovable. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Freelovablees. Todos os direitos reservados.</p>
       </div>
     </footer>
   );
@@ -1506,7 +1504,7 @@ function Landing() {
     <main className="min-h-screen pb-24 md:pb-0">
       <Hero onOpenModal={openModal} />
       <SectionDivider href="#o-que-e" />
-      <WhatIsFreeLovable />
+      <WhatIsFreelovablees />
       <SectionDivider href="#como-recebo" />
       <AccessDelivery />
       <SectionDivider href="#depoimentos" />
@@ -1559,19 +1557,12 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
   try {
     const plano = planoKey();
     const planMeta = planTrackingMeta[plano];
-    const checkoutUrls: Record<typeof plano, string> = {
-      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
-      mensal: "https://pay.cakto.com.br/gswneg7_927010",
-      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
-      anual: "https://pay.cakto.com.br/eorwpqd_927027",
-    };
-    const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
     const attribution = getStoredAttribution();
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         content_name: planMeta.name,
-        content_category: "FreeLovable",
+        content_category: "Freelovablees",
         content_ids: [plano],
         content_type: "product",
         value: planMeta.value,
@@ -1580,7 +1571,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         plan_name: planMeta.name,
         plan_key: plano,
         plan_period: planMeta.period,
-        checkout_destination: checkoutUrls[plano],
+        checkout_destination: "/api/public/criar-checkout-stripe",
         page_origin: attribution.page_origin,
         landing_page: attribution.landing_page,
         landing_referrer: attribution.landing_referrer,
@@ -1602,28 +1593,52 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       });
     }
 
-    // Grava o lead no Supabase externo antes de redirecionar pro checkout.
-    // Se falhar, NÃO bloqueia o pagamento — só loga.
-    try {
-      const { supabaseExternal, PLANO_CENTAVOS } = await import(
-        "@/integrations/supabase-external/client"
-      );
-      const { error: insErr } = await supabaseExternal
-        .from("assinaturas")
-        .insert({
-          nome: formData.name,
-          email: formData.email,
-          telefone: formData.whatsapp || null,
-          plano,
-          status: "pendente",
-          valor_centavos: PLANO_CENTAVOS[plano],
-        });
-      if (insErr) console.error("Falha ao gravar assinatura:", insErr);
-    } catch (err) {
-      console.error("Erro ao gravar assinatura:", err);
+    const leadResponse = await fetch("/api/public/leads-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: formData.name,
+        email: formData.email,
+        telefone: formData.whatsapp,
+        plano,
+        utm_source: attribution.utm_source,
+        utm_medium: attribution.utm_medium,
+        utm_campaign: attribution.utm_campaign,
+        utm_content: attribution.utm_content,
+        utm_term: attribution.utm_term,
+        fbclid: attribution.fbclid,
+      }),
+    });
+    const leadResult = (await leadResponse.json()) as {
+      leadId?: string;
+      error?: string;
+    };
+
+    if (!leadResponse.ok || !leadResult.leadId) {
+      throw new Error(leadResult.error || "Falha ao registrar seus dados");
     }
 
-    window.location.href = checkoutUrl;
+    const checkoutResponse = await fetch("/api/public/criar-checkout-stripe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leadId: leadResult.leadId,
+        plano,
+        email: formData.email,
+      }),
+    });
+    const checkoutResult = (await checkoutResponse.json()) as {
+      checkoutUrl?: string;
+      error?: string;
+    };
+
+    if (!checkoutResponse.ok || !checkoutResult.checkoutUrl) {
+      throw new Error(
+        checkoutResult.error || "Falha ao preparar o checkout",
+      );
+    }
+
+    window.location.href = checkoutResult.checkoutUrl;
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);

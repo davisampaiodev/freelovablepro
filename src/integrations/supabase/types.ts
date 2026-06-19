@@ -21,9 +21,7 @@ export type Database = {
           expira_em: string | null
           id: string
           nome: string
-          pagamento_mp_id: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
-          preference_id: string | null
           status: Database["public"]["Enums"]["assinatura_status"]
           telefone: string | null
           token_id: string | null
@@ -37,9 +35,7 @@ export type Database = {
           expira_em?: string | null
           id?: string
           nome: string
-          pagamento_mp_id?: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
-          preference_id?: string | null
           status?: Database["public"]["Enums"]["assinatura_status"]
           telefone?: string | null
           token_id?: string | null
@@ -53,9 +49,7 @@ export type Database = {
           expira_em?: string | null
           id?: string
           nome?: string
-          pagamento_mp_id?: string | null
           plano?: Database["public"]["Enums"]["plano_tipo"]
-          preference_id?: string | null
           status?: Database["public"]["Enums"]["assinatura_status"]
           telefone?: string | null
           token_id?: string | null
@@ -72,6 +66,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      leads_checkout: {
+        Row: {
+          atualizado_em: string
+          checkout_id: string | null
+          comprado_em: string | null
+          criado_em: string
+          email: string
+          fbclid: string | null
+          id: string
+          idioma: string
+          nome: string
+          origem: string
+          payment_id: string | null
+          payment_provider: string | null
+          plano: string
+          status_venda: string
+          telefone: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          checkout_id?: string | null
+          comprado_em?: string | null
+          criado_em?: string
+          email: string
+          fbclid?: string | null
+          id?: string
+          idioma?: string
+          nome: string
+          origem?: string
+          payment_id?: string | null
+          payment_provider?: string | null
+          plano: string
+          status_venda?: string
+          telefone?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          checkout_id?: string | null
+          comprado_em?: string | null
+          criado_em?: string
+          email?: string
+          fbclid?: string | null
+          id?: string
+          idioma?: string
+          nome?: string
+          origem?: string
+          payment_id?: string | null
+          payment_provider?: string | null
+          plano?: string
+          status_venda?: string
+          telefone?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
       }
       tokens: {
         Row: {
