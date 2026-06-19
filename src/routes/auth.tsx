@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Entrar — Freelovablees" }] }),
+  head: () => ({ meta: [{ title: "Entrar — FreeLovable" }] }),
   component: AuthPage,
 });
 

@@ -99,21 +99,21 @@ export const Route =
           content: "width=device-width, initial-scale=1",
         },
         {
-          title: "Freelovablees — Crie sem consumir créditos",
+          title: "FreeLovable — Crie sem consumir créditos",
         },
         {
           name: "description",
           content:
-            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o Freelovablees.",
+            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o FreeLovable.",
         },
         {
           property: "og:title",
-          content: "Freelovablees — Crie sem consumir créditos",
+          content: "FreeLovable — Crie sem consumir créditos",
         },
         {
           property: "og:description",
           content:
-            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o Freelovablees.",
+            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o FreeLovable.",
         },
         {
           property: "og:type",
@@ -125,20 +125,20 @@ export const Route =
         },
         {
           name: "twitter:title",
-          content: "Freelovablees — Crie sem consumir créditos",
+          content: "FreeLovable — Crie sem consumir créditos",
         },
         {
           name: "twitter:description",
           content:
-            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o Freelovablees.",
+            "Use o Lovable sem consumir créditos. Crie projetos ilimitados direto da sua conta com o FreeLovable.",
         },
         {
           property: "og:image",
-          content: "https://freelovableeproes.com/freelovable-logo.jpg",
+          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
         },
         {
           name: "twitter:image",
-          content: "https://freelovableeproes.com/freelovable-logo.jpg",
+          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
         },
       ],
 

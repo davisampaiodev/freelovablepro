@@ -4,7 +4,7 @@ import { useEffect } from "react";
 export const Route = createFileRoute("/obrigado")({
   head: () => ({
     meta: [
-      { title: "Pagamento confirmado — Freelovablees" },
+      { title: "Pagamento confirmado — FreeLovable" },
       {
         name: "description",
         content:
@@ -66,9 +66,9 @@ function ObrigadoPage() {
           </p>
 
           <ol className="text-sm space-y-1.5 list-decimal list-inside text-foreground/90">
-            <li>Abra o email com o assunto "Seu token Freelovablees"</li>
+            <li>Abra o email com o assunto "Seu token FreeLovable"</li>
             <li>Copie o token</li>
-            <li>Cole na extensão Freelovablees e ative</li>
+            <li>Cole na extensão FreeLovable e ative</li>
           </ol>
         </div>
 
