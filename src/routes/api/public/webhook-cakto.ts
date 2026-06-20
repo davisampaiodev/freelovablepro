@@ -1,13 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { TablesInsert } from "@/integrations/supabase/types";
 
 type LeadRow = {
+  ad_id: string | null;
+  adset_id: string | null;
+  campaign_id: string | null;
   id: string;
   criado_em: string;
   status: string;
   email: string;
   telefone: string | null;
+  nome: string;
+  plano: "diario" | "mensal" | "trimestral" | "anual";
+  valor_centavos: number;
+  token_id: string | null;
+  token_valor: string | null;
+  expira_em: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  utm_id: string | null;
+  fbclid: string | null;
   checkout_id: string | null;
   payment_id: string | null;
+};
+
+type AssinaturaRow = {
+  id: string;
+  lead_id: string | null;
+  checkout_id: string | null;
+  payment_id: string | null;
+  status: string | null;
+  status_pagamento: string | null;
 };
 
 type LookupResult =
@@ -15,31 +41,10 @@ type LookupResult =
   | { kind: "not_found"; reason: string }
   | { kind: "ambiguous"; reason: string };
 
-const APPROVED_STATUSES = new Set([
-  "approved",
-  "paid",
-  "completed",
-  "pago",
-]);
-
-const REFUSED_STATUSES = new Set([
-  "refused",
-  "failed",
-  "canceled",
-  "cancelled",
-  "chargeback",
-  "refunded",
-  "rejected",
-  "recusado",
-]);
-
-const PENDING_STATUSES = new Set([
-  "pending",
-  "pendente",
-  "waiting_payment",
-  "pix_generated",
-  "awaiting_payment",
-]);
+type AssinaturaLookupResult =
+  | { kind: "found"; assinatura: AssinaturaRow; via: string }
+  | { kind: "not_found"; reason: string }
+  | { kind: "ambiguous"; reason: string };
 
 const RECENT_LOOKUP_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -111,39 +116,75 @@ function normalizePhone(phone: string | null) {
   return digits || null;
 }
 
-function mapStatus(rawStatus: string | null) {
-  const normalized = normalizeStatus(rawStatus);
-  if (!normalized) return "pendente" as const;
+function normalizePlan(value: string | null) {
+  const normalized = normalizeStatus(value);
+  if (normalized.includes("anual")) return "anual" as const;
+  if (normalized.includes("trimes")) return "trimestral" as const;
+  if (normalized.includes("diar")) return "diario" as const;
+  if (normalized.includes("mens")) return "mensal" as const;
+  return null;
+}
 
-  if (
-    APPROVED_STATUSES.has(normalized) ||
-    normalized.includes("approved") ||
-    normalized.includes("completed") ||
-    normalized === "paid"
-  ) {
-    return "concluida" as const;
+function parseValorCentavos(value: string | null) {
+  if (!value) return null;
+
+  const normalized = value.trim();
+  if (!normalized) return null;
+
+  if (/^\d+$/.test(normalized)) {
+    const asInteger = Number(normalized);
+    return Number.isFinite(asInteger) ? asInteger : null;
   }
 
+  const numeric = normalized.replace(/\./g, "").replace(",", ".");
+  const parsed = Number(numeric);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.round(parsed * 100);
+}
+
+function resolveWebhookEvent(rawEvent: string | null, rawStatus: string | null) {
+  const normalizedEvent = normalizeStatus(rawEvent);
+  const normalizedStatus = normalizeStatus(rawStatus);
+  const haystack = [normalizedEvent, normalizedStatus].filter(Boolean).join(" ");
+
+  if (haystack.includes("chargeback")) return "chargeback" as const;
+  if (haystack.includes("refund") || haystack.includes("reembols")) {
+    return "refund" as const;
+  }
   if (
-    REFUSED_STATUSES.has(normalized) ||
-    normalized.includes("refund") ||
-    normalized.includes("cancel") ||
-    normalized.includes("fail") ||
-    normalized.includes("chargeback")
+    haystack.includes("purchase_approved") ||
+    haystack.includes("approved") ||
+    haystack.includes("completed") ||
+    normalizedStatus === "paid" ||
+    normalizedStatus === "pago"
   ) {
-    return "recusada" as const;
+    return "purchase_approved" as const;
+  }
+  if (
+    haystack.includes("purchase_refused") ||
+    haystack.includes("refused") ||
+    haystack.includes("failed") ||
+    haystack.includes("rejected") ||
+    haystack.includes("cancel")
+  ) {
+    return "purchase_refused" as const;
+  }
+  if (haystack.includes("checkout_abandonment") || haystack.includes("abandon")) {
+    return "checkout_abandonment" as const;
+  }
+  if (
+    haystack.includes("pix_gerado") ||
+    haystack.includes("pix_generated") ||
+    haystack.includes("waiting_payment") ||
+    haystack.includes("awaiting_payment") ||
+    haystack.includes("pending") ||
+    haystack.includes("pendente") ||
+    haystack.includes("pix")
+  ) {
+    return "pix_gerado" as const;
   }
 
-  if (
-    PENDING_STATUSES.has(normalized) ||
-    normalized.includes("pending") ||
-    normalized.includes("waiting") ||
-    normalized.includes("pix")
-  ) {
-    return "pendente" as const;
-  }
-
-  return "pendente" as const;
+  return "pix_gerado" as const;
 }
 
 async function queryUniqueLead(
@@ -160,7 +201,9 @@ async function queryUniqueLead(
 ): Promise<LookupResult> {
   let query = supabaseAdmin
     .from("leads_checkout_br")
-    .select("id, criado_em, status, email, telefone, checkout_id, payment_id")
+    .select(
+      "id, criado_em, status, email, telefone, nome, plano, valor_centavos, token_id, token_valor, expira_em, utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id, checkout_id, payment_id",
+    )
     .order("criado_em", { ascending: false })
     .limit(2);
 
@@ -194,6 +237,47 @@ async function queryUniqueLead(
   }
 
   return { kind: "found", lead: data[0] as LeadRow, via: `${field}:${value}` };
+}
+
+async function queryUniqueAssinatura(
+  supabaseAdmin: any,
+  {
+    field,
+    value,
+  }: {
+    field: "lead_id" | "checkout_id" | "payment_id";
+    value: string;
+  },
+): Promise<AssinaturaLookupResult> {
+  const { data, error } = await supabaseAdmin
+    .from("assinaturas_br")
+    .select("id, lead_id, checkout_id, payment_id, status, status_pagamento")
+    .eq(field, value)
+    .order("criado_em", { ascending: false })
+    .limit(2);
+
+  if (error) {
+    console.error("[webhook-cakto] assinatura lookup error", {
+      field,
+      value,
+      error,
+    });
+    return { kind: "not_found", reason: `${field}:query_error` };
+  }
+
+  if (!data || data.length === 0) {
+    return { kind: "not_found", reason: `${field}:empty` };
+  }
+
+  if (data.length > 1) {
+    return { kind: "ambiguous", reason: `${field}:multiple_matches` };
+  }
+
+  return {
+    kind: "found",
+    assinatura: data[0] as AssinaturaRow,
+    via: `${field}:${value}`,
+  };
 }
 
 async function findLead(
@@ -266,6 +350,159 @@ async function findLead(
   return { kind: "not_found", reason: "no_confident_match" } as const;
 }
 
+async function findAssinatura(
+  supabaseAdmin: any,
+  extracted: {
+    leadId: string | null;
+    externalReference: string | null;
+    reference: string | null;
+    checkoutId: string | null;
+    orderId: string | null;
+    transactionId: string | null;
+    paymentId: string | null;
+  },
+) {
+  const leadCandidates = uniqueValues([
+    extracted.leadId,
+    extracted.externalReference,
+    extracted.reference,
+  ]);
+
+  for (const leadId of leadCandidates) {
+    const match = await queryUniqueAssinatura(supabaseAdmin, {
+      field: "lead_id",
+      value: leadId,
+    });
+    if (match.kind !== "not_found") return match;
+  }
+
+  const paymentCandidates = uniqueValues([
+    extracted.paymentId,
+    extracted.transactionId,
+  ]);
+
+  for (const paymentId of paymentCandidates) {
+    const match = await queryUniqueAssinatura(supabaseAdmin, {
+      field: "payment_id",
+      value: paymentId,
+    });
+    if (match.kind !== "not_found") return match;
+  }
+
+  const checkoutCandidates = uniqueValues([
+    extracted.checkoutId,
+    extracted.orderId,
+  ]);
+
+  for (const checkoutId of checkoutCandidates) {
+    const match = await queryUniqueAssinatura(supabaseAdmin, {
+      field: "checkout_id",
+      value: checkoutId,
+    });
+    if (match.kind !== "not_found") return match;
+  }
+
+  return { kind: "not_found", reason: "no_existing_assinatura" } as const;
+}
+
+function buildLeadUpdatePayload(params: {
+  status: "pendente" | "recusada";
+  checkoutId: string | null;
+  paymentId: string | null;
+}) {
+  const payload: {
+    status: "pendente" | "recusada";
+    payment_provider: "cakto";
+    updated_at: string;
+    payment_id?: string;
+    checkout_id?: string;
+  } = {
+    status: params.status,
+    payment_provider: "cakto",
+    updated_at: new Date().toISOString(),
+  };
+
+  if (params.paymentId) payload.payment_id = params.paymentId;
+  if (params.checkoutId) payload.checkout_id = params.checkoutId;
+
+  return payload;
+}
+
+function buildAssinaturaInsertFromLead(params: {
+  lead: LeadRow;
+  checkoutId: string | null;
+  paymentId: string | null;
+  caktoEventId: string | null;
+}) {
+  const now = new Date().toISOString();
+  const insertPayload: TablesInsert<"assinaturas_br"> = {
+    lead_id: params.lead.id,
+    nome: params.lead.nome,
+    email: params.lead.email,
+    telefone: params.lead.telefone,
+    plano: params.lead.plano,
+    valor_centavos: params.lead.valor_centavos,
+    status: "ativa",
+    status_pagamento: "concluida",
+    payment_provider: "cakto",
+    checkout_id: params.checkoutId ?? params.lead.checkout_id,
+    payment_id: params.paymentId ?? params.lead.payment_id,
+    cakto_event_id: params.caktoEventId,
+    token_id: params.lead.token_id,
+    token_valor: params.lead.token_valor,
+    expira_em: params.lead.expira_em,
+    comprado_em: now,
+    updated_at: now,
+    utm_source: params.lead.utm_source,
+    utm_medium: params.lead.utm_medium,
+    utm_campaign: params.lead.utm_campaign,
+    utm_content: params.lead.utm_content,
+    utm_term: params.lead.utm_term,
+    utm_id: params.lead.utm_id,
+    fbclid: params.lead.fbclid,
+    campaign_id: params.lead.campaign_id,
+    adset_id: params.lead.adset_id,
+    ad_id: params.lead.ad_id,
+    canal_fechamento: "checkout",
+    tipo_venda: "venda_direta",
+  };
+
+  return insertPayload;
+}
+
+function buildAssinaturaInsertWithoutLead(params: {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  plan: "diario" | "mensal" | "trimestral" | "anual" | null;
+  valorCentavos: number | null;
+  checkoutId: string | null;
+  paymentId: string | null;
+  caktoEventId: string | null;
+}) {
+  const now = new Date().toISOString();
+  const insertPayload: TablesInsert<"assinaturas_br"> = {
+    nome: params.name || "Cliente Cakto",
+    email: params.email || "sem-email@cakto.local",
+    telefone: params.phone,
+    plano: params.plan,
+    valor_centavos: params.valorCentavos,
+    status: "ativa",
+    status_pagamento: "concluida",
+    payment_provider: "cakto",
+    checkout_id: params.checkoutId,
+    payment_id: params.paymentId,
+    cakto_event_id: params.caktoEventId,
+    comprado_em: now,
+    updated_at: now,
+    canal_fechamento: "checkout",
+    tipo_venda: "venda_direta_sem_lead",
+    observacao_atribuicao: "assinatura criada sem lead original encontrado",
+  };
+
+  return insertPayload;
+}
+
 export const Route = createFileRoute("/api/public/webhook-cakto")({
   server: {
     handlers: {
@@ -291,6 +528,13 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             JSON.stringify(payload, null, 2),
           );
 
+          const rawEvent = firstValue(payload, [
+            "event",
+            "event_name",
+            "type",
+            "action",
+            "notification_type",
+          ]);
           const rawStatus = firstValue(payload, [
             "status",
             "payment_status",
@@ -336,6 +580,12 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             "externalreference",
           ]);
           const reference = firstValue(payload, ["reference"]);
+          const caktoEventId = firstValue(payload, [
+            "event_id",
+            "webhook_id",
+            "notification_id",
+            "id",
+          ]);
           const product = firstValue(payload, [
             "plano",
             "produto",
@@ -345,12 +595,25 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             "plan",
           ]);
 
-          const mappedStatus = mapStatus(rawStatus);
+          const eventType = resolveWebhookEvent(rawEvent, rawStatus);
           const resolvedPaymentId = paymentId || transactionId || orderId;
           const resolvedCheckoutId = checkoutId || orderId;
+          const resolvedPlan = normalizePlan(product);
+          const valorCentavos =
+            parseValorCentavos(
+              firstValue(payload, [
+                "valor_centavos",
+                "amount_in_cents",
+                "total_in_cents",
+                "amount",
+                "price",
+                "total",
+              ]),
+            ) || null;
           console.log("[webhook-cakto] extracted", {
+            rawEvent,
+            eventType,
             rawStatus,
-            mappedStatus,
             email,
             phone,
             name,
@@ -361,12 +624,53 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             leadId,
             externalReference,
             reference,
+            caktoEventId,
             product,
+            resolvedPlan,
+            valorCentavos,
           });
 
           const { supabaseAdmin } = await import(
             "@/integrations/supabase/client.server"
           );
+
+          const assinaturaLookup = await findAssinatura(supabaseAdmin, {
+            leadId,
+            externalReference,
+            reference,
+            checkoutId,
+            orderId,
+            transactionId,
+            paymentId,
+          });
+
+          if (eventType === "refund" || eventType === "chargeback") {
+            if (assinaturaLookup.kind !== "found") {
+              console.warn("[webhook-cakto] assinatura refund/chargeback not updated", assinaturaLookup);
+              return new Response("ok", { status: 200 });
+            }
+
+            const refundStatus =
+              eventType === "chargeback" ? "chargeback" : "reembolsada";
+
+            const { error: assinaturaUpdateError } = await supabaseAdmin
+              .from("assinaturas_br")
+              .update({
+                status: refundStatus,
+                status_pagamento: refundStatus,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", assinaturaLookup.assinatura.id);
+
+            if (assinaturaUpdateError) {
+              console.error("[webhook-cakto] assinatura refund/chargeback update error", {
+                assinaturaId: assinaturaLookup.assinatura.id,
+                assinaturaUpdateError,
+              });
+            }
+
+            return new Response("ok", { status: 200 });
+          }
 
           const lookup = await findLead(supabaseAdmin, payload, {
             leadId,
@@ -380,51 +684,159 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             phone,
           });
 
-          if (lookup.kind !== "found") {
-            console.warn("[webhook-cakto] lead not updated", lookup);
+          if (lookup.kind === "ambiguous") {
+            console.warn("[webhook-cakto] ambiguous lead match", lookup);
             return new Response("ok", { status: 200 });
           }
 
-          const updatePayload: {
-            status: "concluida" | "recusada" | "pendente";
-            payment_provider: "cakto";
-            updated_at: string;
-            payment_id?: string;
-            checkout_id?: string;
-            comprado_em?: string;
-          } = {
-            status: mappedStatus,
-            payment_provider: "cakto",
-            updated_at: new Date().toISOString(),
-          };
+          if (
+            eventType === "pix_gerado" ||
+            eventType === "checkout_abandonment" ||
+            eventType === "purchase_refused"
+          ) {
+            if (lookup.kind !== "found") {
+              console.warn("[webhook-cakto] no lead found for non-approved event", {
+                eventType,
+                lookup,
+              });
+              return new Response("ok", { status: 200 });
+            }
 
-          if (resolvedPaymentId) updatePayload.payment_id = resolvedPaymentId;
-          if (resolvedCheckoutId) updatePayload.checkout_id = resolvedCheckoutId;
-          if (mappedStatus === "concluida") {
-            updatePayload.comprado_em = new Date().toISOString();
-          }
+            const leadStatus =
+              eventType === "purchase_refused" ? "recusada" : "pendente";
 
-          const { error: updateError } = await supabaseAdmin
-            .from("leads_checkout_br")
-            .update(updatePayload)
-            .eq("id", lookup.lead.id);
+            const { error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update(
+                buildLeadUpdatePayload({
+                  status: leadStatus,
+                  checkoutId: resolvedCheckoutId,
+                  paymentId: resolvedPaymentId,
+                }),
+              )
+              .eq("id", lookup.lead.id);
 
-          if (updateError) {
-            console.error("[webhook-cakto] update error", {
-              leadId: lookup.lead.id,
-              via: lookup.via,
-              updateError,
-            });
+            if (updateError) {
+              console.error("[webhook-cakto] lead update error", {
+                leadId: lookup.lead.id,
+                eventType,
+                updateError,
+              });
+            }
+
             return new Response("ok", { status: 200 });
           }
 
-          console.log("[webhook-cakto] lead updated", {
-            leadId: lookup.lead.id,
-            via: lookup.via,
-            status: mappedStatus,
-            paymentId: resolvedPaymentId,
+          if (assinaturaLookup.kind === "ambiguous") {
+            console.warn("[webhook-cakto] ambiguous assinatura match", assinaturaLookup);
+            return new Response("ok", { status: 200 });
+          }
+
+          if (lookup.kind === "found") {
+            if (assinaturaLookup.kind === "found") {
+              const { error: assinaturaUpdateError } = await supabaseAdmin
+                .from("assinaturas_br")
+                .update({
+                  status: "ativa",
+                  status_pagamento: "concluida",
+                  payment_provider: "cakto",
+                  payment_id: resolvedPaymentId ?? undefined,
+                  checkout_id: resolvedCheckoutId ?? undefined,
+                  cakto_event_id: caktoEventId ?? undefined,
+                  comprado_em: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("id", assinaturaLookup.assinatura.id);
+
+              if (assinaturaUpdateError) {
+                console.error("[webhook-cakto] existing assinatura update error", {
+                  assinaturaId: assinaturaLookup.assinatura.id,
+                  assinaturaUpdateError,
+                });
+                return new Response("ok", { status: 200 });
+              }
+            } else {
+              const { error: insertError } = await supabaseAdmin
+                .from("assinaturas_br")
+                .insert(
+                  buildAssinaturaInsertFromLead({
+                    lead: lookup.lead,
+                    checkoutId: resolvedCheckoutId,
+                    paymentId: resolvedPaymentId,
+                    caktoEventId,
+                  }),
+                );
+
+              if (insertError) {
+                console.error("[webhook-cakto] assinatura insert error", {
+                  leadId: lookup.lead.id,
+                  via: lookup.via,
+                  insertError,
+                });
+                return new Response("ok", { status: 200 });
+              }
+            }
+
+            const { error: deleteError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .delete()
+              .eq("id", lookup.lead.id);
+
+            if (deleteError) {
+              console.error("[webhook-cakto] lead delete error after assinatura insert", {
+                leadId: lookup.lead.id,
+                deleteError,
+              });
+            }
+
+            return new Response("ok", { status: 200 });
+          }
+
+          if (assinaturaLookup.kind === "found") {
+            const { error: assinaturaUpdateError } = await supabaseAdmin
+              .from("assinaturas_br")
+              .update({
+                status: "ativa",
+                status_pagamento: "concluida",
+                payment_provider: "cakto",
+                payment_id: resolvedPaymentId ?? undefined,
+                checkout_id: resolvedCheckoutId ?? undefined,
+                cakto_event_id: caktoEventId ?? undefined,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", assinaturaLookup.assinatura.id);
+
+            if (assinaturaUpdateError) {
+              console.error("[webhook-cakto] approved assinatura update without lead error", {
+                assinaturaId: assinaturaLookup.assinatura.id,
+                assinaturaUpdateError,
+              });
+            }
+
+            return new Response("ok", { status: 200 });
+          }
+
+          const payloadInsert = buildAssinaturaInsertWithoutLead({
+            name,
+            email,
+            phone,
+            plan: resolvedPlan,
+            valorCentavos,
             checkoutId: resolvedCheckoutId,
+            paymentId: resolvedPaymentId,
+            caktoEventId,
           });
+
+          const { error: insertWithoutLeadError } = await supabaseAdmin
+            .from("assinaturas_br")
+            .insert(payloadInsert);
+
+          if (insertWithoutLeadError) {
+            console.error("[webhook-cakto] assinatura insert without lead error", {
+              insertWithoutLeadError,
+              payloadInsert,
+            });
+          }
 
           return new Response("ok", { status: 200 });
         } catch (error) {

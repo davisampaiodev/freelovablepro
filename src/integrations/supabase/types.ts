@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      assinaturas_br: {
+        Row: {
+          ad_id: string | null
+          adset_id: string | null
+          cakto_event_id: string | null
+          campaign_id: string | null
+          canal_fechamento: string | null
+          checkout_id: string | null
+          comprado_em: string | null
+          criado_em: string
+          email: string
+          expira_em: string | null
+          fbclid: string | null
+          id: string
+          lead_id: string | null
+          nome: string
+          observacao_atribuicao: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: string | null
+          status_pagamento: string | null
+          telefone: string | null
+          tipo_venda: string | null
+          token_id: string | null
+          token_valor: string | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_id: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          valor_centavos: number | null
+        }
+        Insert: {
+          ad_id?: string | null
+          adset_id?: string | null
+          cakto_event_id?: string | null
+          campaign_id?: string | null
+          canal_fechamento?: string | null
+          checkout_id?: string | null
+          comprado_em?: string | null
+          criado_em?: string
+          email: string
+          expira_em?: string | null
+          fbclid?: string | null
+          id?: string
+          lead_id?: string | null
+          nome: string
+          observacao_atribuicao?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          plano?: Database["public"]["Enums"]["plano_tipo"] | null
+          status?: string | null
+          status_pagamento?: string | null
+          telefone?: string | null
+          tipo_venda?: string | null
+          token_id?: string | null
+          token_valor?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          valor_centavos?: number | null
+        }
+        Update: {
+          ad_id?: string | null
+          adset_id?: string | null
+          cakto_event_id?: string | null
+          campaign_id?: string | null
+          canal_fechamento?: string | null
+          checkout_id?: string | null
+          comprado_em?: string | null
+          criado_em?: string
+          email?: string
+          expira_em?: string | null
+          fbclid?: string | null
+          id?: string
+          lead_id?: string | null
+          nome?: string
+          observacao_atribuicao?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          plano?: Database["public"]["Enums"]["plano_tipo"] | null
+          status?: string | null
+          status_pagamento?: string | null
+          telefone?: string | null
+          tipo_venda?: string | null
+          token_id?: string | null
+          token_valor?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_id?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          valor_centavos?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assinaturas_br_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads_checkout_br: {
         Row: {
           ad_id: string | null
