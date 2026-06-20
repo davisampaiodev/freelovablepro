@@ -1566,6 +1566,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       anual: "https://pay.cakto.com.br/eorwpqd_927027",
     };
     const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
+    let finalCheckoutUrl = checkoutUrl;
     const attribution = getStoredAttribution();
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -1608,9 +1609,15 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       const { supabaseExternal, PLANO_CENTAVOS } = await import(
         "@/integrations/supabase-external/client"
       );
+      const leadId =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : null;
+
       const { error: insErr } = await supabaseExternal
         .from("leads_checkout_br")
         .insert({
+          id: leadId ?? undefined,
           nome: formData.name,
           email: formData.email,
           telefone: formData.whatsapp || null,
@@ -1630,12 +1637,20 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
           ad_id: attribution.ad_id ?? null,
           valor_centavos: PLANO_CENTAVOS[plano],
         });
-      if (insErr) console.error("Falha ao gravar assinatura:", insErr);
+      if (insErr) {
+        console.error("Falha ao gravar assinatura:", insErr);
+      } else if (leadId) {
+        const trackedCheckoutUrl = new URL(checkoutUrl);
+        trackedCheckoutUrl.searchParams.set("lead_id", leadId);
+        trackedCheckoutUrl.searchParams.set("external_reference", leadId);
+        trackedCheckoutUrl.searchParams.set("reference", leadId);
+        finalCheckoutUrl = trackedCheckoutUrl.toString();
+      }
     } catch (err) {
       console.error("Erro ao gravar assinatura:", err);
     }
 
-    window.location.href = checkoutUrl;
+    window.location.href = finalCheckoutUrl;
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);

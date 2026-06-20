@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicWebhookMpRouteImport } from './routes/api/public/webhook-mp'
+import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
 import { Route as ApiPublicCriarPreferenciaRouteImport } from './routes/api/public/criar-preferencia'
 import { Route as AuthenticatedAdminTokensRouteImport } from './routes/_authenticated/admin.tokens'
 
@@ -41,6 +42,11 @@ const ApiPublicWebhookMpRoute = ApiPublicWebhookMpRouteImport.update({
   path: '/api/public/webhook-mp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhookCaktoRoute = ApiPublicWebhookCaktoRouteImport.update({
+  id: '/api/public/webhook-cakto',
+  path: '/api/public/webhook-cakto',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCriarPreferenciaRoute =
   ApiPublicCriarPreferenciaRouteImport.update({
     id: '/api/public/criar-preferencia',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
+  '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
+  '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRoutesById {
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/obrigado': typeof ObrigadoRoute
   '/_authenticated/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
+  '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRouteTypes {
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/admin/tokens'
     | '/api/public/criar-preferencia'
+    | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/admin/tokens'
     | '/api/public/criar-preferencia'
+    | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
   id:
     | '__root__'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/_authenticated/admin/tokens'
     | '/api/public/criar-preferencia'
+    | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
   fileRoutesById: FileRoutesById
 }
@@ -114,6 +126,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ObrigadoRoute: typeof ObrigadoRoute
   ApiPublicCriarPreferenciaRoute: typeof ApiPublicCriarPreferenciaRoute
+  ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
   ApiPublicWebhookMpRoute: typeof ApiPublicWebhookMpRoute
 }
 
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhookMpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhook-cakto': {
+      id: '/api/public/webhook-cakto'
+      path: '/api/public/webhook-cakto'
+      fullPath: '/api/public/webhook-cakto'
+      preLoaderRoute: typeof ApiPublicWebhookCaktoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/criar-preferencia': {
       id: '/api/public/criar-preferencia'
       path: '/api/public/criar-preferencia'
@@ -188,6 +208,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ObrigadoRoute: ObrigadoRoute,
   ApiPublicCriarPreferenciaRoute: ApiPublicCriarPreferenciaRoute,
+  ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
   ApiPublicWebhookMpRoute: ApiPublicWebhookMpRoute,
 }
 export const routeTree = rootRouteImport
