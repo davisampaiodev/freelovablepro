@@ -272,7 +272,8 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
       POST: async ({ request }) => {
         const url = new URL(request.url);
         const providedToken = url.searchParams.get("token");
-        const expectedToken = process.env.CAKTO_WEBHOOK_SECRET;
+        const { getServerEnv } = await import("@/lib/config.server");
+        const expectedToken = await getServerEnv("CAKTO_WEBHOOK_SECRET");
 
         if (!expectedToken) {
           console.error("[webhook-cakto] Missing CAKTO_WEBHOOK_SECRET");

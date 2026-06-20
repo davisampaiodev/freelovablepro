@@ -24,3 +24,22 @@ export function getServerConfig() {
     //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   };
 }
+
+export async function getServerEnv(name: string) {
+  const processValue = process.env[name];
+  if (processValue) return processValue;
+
+  try {
+    const specifier = "cloudflare:workers";
+    const cloudflareWorkers = (await import(
+      /* @vite-ignore */ specifier
+    )) as { env?: Record<string, string | undefined> };
+
+    const workerValue = cloudflareWorkers.env?.[name];
+    if (workerValue) return workerValue;
+  } catch {
+    // Optional Cloudflare-only fallback. Ignore when unavailable locally.
+  }
+
+  return "";
+}
