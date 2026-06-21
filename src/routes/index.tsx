@@ -1527,6 +1527,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
   const [formData, setFormData] = useState({ name: '', email: '', whatsapp: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1553,6 +1554,9 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
    const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  if (submittingRef.current) return;
+
+  submittingRef.current = true;
   setError(null);
   setLoading(true);
 
@@ -1568,6 +1572,49 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
     let finalCheckoutUrl = checkoutUrl;
     const attribution = getStoredAttribution();
+
+    // Grava o lead no Supabase externo antes de redirecionar pro checkout.
+    const { supabaseExternal, PLANO_CENTAVOS } = await import(
+      "@/integrations/supabase-external/client"
+    );
+    const leadId = crypto.randomUUID();
+
+    const { error: insErr } = await supabaseExternal
+      .from("leads_checkout_br")
+      .insert({
+        id: leadId,
+        nome: formData.name,
+        email: formData.email,
+        telefone: formData.whatsapp || null,
+        plano,
+        status: "pendente",
+        origem: "lp_brasil",
+        idioma: "pt",
+        utm_source: attribution.utm_source ?? null,
+        utm_medium: attribution.utm_medium ?? null,
+        utm_campaign: attribution.utm_campaign ?? null,
+        utm_content: attribution.utm_content ?? null,
+        utm_term: attribution.utm_term ?? null,
+        utm_id: attribution.utm_id ?? null,
+        fbclid: attribution.fbclid ?? null,
+        campaign_id: attribution.campaign_id ?? null,
+        adset_id: attribution.adset_id ?? null,
+        ad_id: attribution.ad_id ?? null,
+        valor_centavos: PLANO_CENTAVOS[plano],
+      });
+
+    if (insErr) {
+      console.error("Falha ao gravar assinatura:", insErr);
+      throw new Error(
+        "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
+      );
+    }
+
+    const trackedCheckoutUrl = new URL(checkoutUrl);
+    trackedCheckoutUrl.searchParams.set("lead_id", leadId);
+    trackedCheckoutUrl.searchParams.set("external_reference", leadId);
+    trackedCheckoutUrl.searchParams.set("reference", leadId);
+    finalCheckoutUrl = trackedCheckoutUrl.toString();
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
@@ -1595,65 +1642,22 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         campaign_id: attribution.campaign_id,
         adset_id: attribution.adset_id,
         ad_id: attribution.ad_id,
+        site_source: attribution.site_source,
+        placement: attribution.placement,
         fbp: attribution.fbp,
         fbc: attribution.fbc,
         src: attribution.src,
         xcod: attribution.xcod,
         sck: attribution.sck,
+        lead_id: leadId,
       });
-    }
-
-    // Grava o lead no Supabase externo antes de redirecionar pro checkout.
-    // Se falhar, NÃO bloqueia o pagamento — só loga.
-    try {
-      const { supabaseExternal, PLANO_CENTAVOS } = await import(
-        "@/integrations/supabase-external/client"
-      );
-      const leadId =
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : null;
-
-      const { error: insErr } = await supabaseExternal
-        .from("leads_checkout_br")
-        .insert({
-          id: leadId ?? undefined,
-          nome: formData.name,
-          email: formData.email,
-          telefone: formData.whatsapp || null,
-          plano,
-          status: "pendente",
-          origem: "lp_brasil",
-          idioma: "pt",
-          utm_source: attribution.utm_source ?? null,
-          utm_medium: attribution.utm_medium ?? null,
-          utm_campaign: attribution.utm_campaign ?? null,
-          utm_content: attribution.utm_content ?? null,
-          utm_term: attribution.utm_term ?? null,
-          utm_id: attribution.utm_id ?? null,
-          fbclid: attribution.fbclid ?? null,
-          campaign_id: attribution.campaign_id ?? null,
-          adset_id: attribution.adset_id ?? null,
-          ad_id: attribution.ad_id ?? null,
-          valor_centavos: PLANO_CENTAVOS[plano],
-        });
-      if (insErr) {
-        console.error("Falha ao gravar assinatura:", insErr);
-      } else if (leadId) {
-        const trackedCheckoutUrl = new URL(checkoutUrl);
-        trackedCheckoutUrl.searchParams.set("lead_id", leadId);
-        trackedCheckoutUrl.searchParams.set("external_reference", leadId);
-        trackedCheckoutUrl.searchParams.set("reference", leadId);
-        finalCheckoutUrl = trackedCheckoutUrl.toString();
-      }
-    } catch (err) {
-      console.error("Erro ao gravar assinatura:", err);
     }
 
     window.location.href = finalCheckoutUrl;
   } catch (e) {
     setError(e instanceof Error ? e.message : "Erro inesperado");
     setLoading(false);
+    submittingRef.current = false;
   }
 };
 

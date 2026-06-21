@@ -12,6 +12,8 @@ const URL_ATTRIBUTION_KEYS = [
   "campaign_id",
   "adset_id",
   "ad_id",
+  "site_source",
+  "placement",
   "src",
   "xcod",
   "sck",
@@ -49,6 +51,21 @@ function storeValue(key: string, value: string) {
   }
 }
 
+function removeStoredValue(key: string) {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Tracking must never block the landing page or checkout.
+  }
+}
+
+function clearAttributionPackage() {
+  for (const key of URL_ATTRIBUTION_KEYS) {
+    removeStoredValue(key);
+  }
+  removeStoredValue("fbc");
+}
+
 function clearExpiredAttribution() {
   const updatedAt = Number(readStoredValue(STORAGE_TIMESTAMP_KEY));
   if (!updatedAt || Date.now() - updatedAt <= ATTRIBUTION_TTL_MS) return;
@@ -73,31 +90,46 @@ export function captureAttribution() {
   clearExpiredAttribution();
 
   const searchParams = new URLSearchParams(window.location.search);
-  let capturedNewAttribution = false;
+  const capturedNewAttribution = URL_ATTRIBUTION_KEYS.some(
+    (key) => Boolean(searchParams.get(key)?.trim()),
+  );
+
+  // A URL with campaign data represents a new last-touch package. Clear the
+  // previous package first so organic/bio UTMs cannot inherit Meta click IDs.
+  if (capturedNewAttribution) {
+    clearAttributionPackage();
+  }
 
   for (const key of URL_ATTRIBUTION_KEYS) {
     const value = searchParams.get(key)?.trim();
     if (!value) continue;
 
     storeValue(key, value);
-    capturedNewAttribution = true;
   }
 
   const fbclid = searchParams.get("fbclid")?.trim() || readStoredValue("fbclid");
   const fbp = readCookie("_fbp") || readStoredValue("fbp");
-  const fbc =
-    readCookie("_fbc") ||
-    readStoredValue("fbc") ||
-    (fbclid ? `fb.1.${Date.now()}.${fbclid}` : "");
+  const cookieFbc = readCookie("_fbc");
+  const fbc = fbclid
+    ? (cookieFbc.endsWith(fbclid) ? cookieFbc : "") ||
+      readStoredValue("fbc") ||
+      `fb.1.${Date.now()}.${fbclid}`
+    : "";
 
   storeValue("fbp", fbp);
   storeValue("fbc", fbc);
 
-  if (!readStoredValue("landing_page")) {
+  if (capturedNewAttribution || !readStoredValue("landing_page")) {
     storeValue("landing_page", window.location.href);
   }
 
-  if (!readStoredValue("landing_referrer") && document.referrer) {
+  if (capturedNewAttribution) {
+    if (document.referrer) {
+      storeValue("landing_referrer", document.referrer);
+    } else {
+      removeStoredValue("landing_referrer");
+    }
+  } else if (!readStoredValue("landing_referrer") && document.referrer) {
     storeValue("landing_referrer", document.referrer);
   }
 
