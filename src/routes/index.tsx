@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, type CSSProperties } from "react";
 import {
   Sparkles, Download, Eye, Wand2, Check, X, ShieldCheck, Star, Monitor,
-  Plus, Minus, ArrowRight, Zap, Play, Pause, Volume2, Maximize, User, Mail, Phone, Lock, Heart,
+  Plus, Minus, ArrowRight, Play, Pause, Maximize, User, Mail, Phone, Lock, Zap,
 } from "lucide-react";
 import {
   buildTrackedCheckoutUrl,
@@ -83,9 +83,9 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             <span className="h-1.5 w-1.5 rounded-full bg-brand-pink" />
             Nova extensão · acesso ilimitado
           </div>
-          <h1 className="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
-            Nunca mais fique sem{" "}
-            <span className="text-gradient">créditos no Lovable.</span>
+          <h1 className="hero-headline max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
+            <span className="block whitespace-nowrap">Nunca mais fique sem</span>
+            <span className="hero-highlight block whitespace-nowrap">créditos no Lovable.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-muted-foreground md:text-lg">
             Instale em menos de 1 minuto e continue criando apps, automações e
@@ -109,50 +109,43 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 </a>
            
           </div>
-          <div className="mt-5 flex flex-wrap justify-center gap-4 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
-            <span>Pagamento seguro</span>
-            <span className="text-white/20">·</span>
-            <span>Acesso rápido</span>
-            <span className="text-white/20">·</span>
-            <span>Garantia de 7 dias</span>
-          </div>
-         <div className="mt-7 flex items-center justify-center gap-3">
-  <div className="flex -space-x-4">
+         <div className="mt-7 flex items-center justify-center gap-2.5 opacity-85 md:gap-3 md:opacity-100">
+  <div className="flex -space-x-3 md:-space-x-4">
     <img
       src="/avatars/avatar1.png"
-      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 1"
     />
 
     <img
       src="/avatars/avatar2.png"
-      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 2"
     />
 
     <img
       src="/avatars/avatar3.png"
-      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 3"
     />
 
     <img
       src="/avatars/avatar4.png"
-      className="h-12 w-12 rounded-full border-2 border-background object-cover"
+      className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 4"
     />
   </div>
 
-  <span className="text-sm font-black uppercase tracking-wide text-white">
+  <span className="text-xs font-extrabold uppercase tracking-[0.08em] text-white/82 md:text-sm md:font-black md:tracking-wide md:text-white">
     +4.000 USUÁRIOS ATIVOS
   </span>
 </div>
 </div>
 
-        <div className="relative group mt-10 flex w-full justify-center">
+        <div className="relative group mt-14 flex w-full justify-center md:mt-10">
           <div className="absolute -inset-20 bg-gradient-to-br from-brand-purple/40 to-brand-pink/40 blur-[100px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
           
-          <div className="relative aspect-[9/16] w-full max-w-[280px] overflow-hidden rounded-[40px] border border-white/10 bg-black/60 p-3 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl md:max-w-[310px] md:rounded-[44px]">
+          <div className="relative aspect-[9/16] w-full max-w-[232px] overflow-hidden rounded-[36px] border border-white/10 bg-black/60 p-3 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl md:max-w-[310px] md:rounded-[44px]">
             {/* Phone Notch/Island */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-30 flex items-center justify-center gap-2 border-x border-b border-white/5">
                <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -161,24 +154,6 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
             
             <div className="relative h-full w-full rounded-[36px] overflow-hidden bg-black group/video">
               <VimeoPlayer videoId="1199890672" />
-              
-              {/* Overlay Content */}
-              <div className="absolute bottom-10 left-0 right-0 px-8 z-20 space-y-5 pointer-events-none">
-                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full btn-gradient p-[2px]">
-                       <div className="h-full w-full rounded-full bg-black flex items-center justify-center">
-                          <Logo className="scale-[0.45] -ml-5" />
-                       </div>
-                    </div>
-                    <div className="flex-1">
-                       <div className="text-sm font-black text-white tracking-tight">FreeLovable Pro</div>
-                       <div className="text-[11px] text-white/70">@freelovable • Seguindo</div>
-                    </div>
-                 </div>
-                 <p className="text-[13px] text-white/95 leading-relaxed font-semibold drop-shadow-lg">
-                    Crie projetos ilimitados no Lovable sem consumir seus créditos! 🚀🔥 #DevLife #AI #FreeLovable
-                 </p>
-              </div>
             </div>
           </div>
         </div>
@@ -222,27 +197,24 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
         {!isPlaying && (
           <button 
             onClick={togglePlay}
-            className="h-24 w-24 rounded-full btn-gradient flex items-center justify-center shadow-2xl scale-100 hover:scale-110 transition-transform duration-300 pointer-events-auto cursor-pointer"
+            className="h-16 w-16 rounded-full btn-gradient flex items-center justify-center shadow-2xl scale-100 hover:scale-105 transition-transform duration-300 pointer-events-auto cursor-pointer md:h-24 md:w-24 md:hover:scale-110"
           >
-            <Play className="h-10 w-10 text-white fill-current ml-1" />
+            <Play className="h-7 w-7 text-white fill-current ml-0.5 md:h-10 md:w-10 md:ml-1" />
           </button>
         )}
       </div>
 
-      <div className="absolute top-12 right-6 z-40 flex flex-col gap-4">
-        <button 
-          onClick={toggleMute}
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all pointer-events-auto cursor-pointer"
-        >
-          {isMuted ? <Zap className="h-5 w-5 text-brand-pink" /> : <Volume2 className="h-5 w-5" />}
-        </button>
-        <button 
-          onClick={togglePlay}
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all pointer-events-auto cursor-pointer"
-        >
-          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current ml-0.5" />}
-        </button>
-      </div>
+      {isPlaying && (
+        <div className="absolute right-3 top-3 z-40 md:right-4 md:top-4">
+          <button
+            onClick={togglePlay}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/42 text-white backdrop-blur-md transition-all hover:bg-black/58 cursor-pointer md:h-10 md:w-10"
+            aria-label="Pausar video"
+          >
+            <Pause className="h-4 w-4 md:h-4.5 md:w-4.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -613,7 +585,7 @@ function SocialProof() {
     },
   ];
 
-  const floatingHearts = [
+  const floatingTokens = [
     { left: "3%", top: "8%", size: "h-12 w-12", rotate: "-18deg", delay: "0s", duration: "7.4s", opacity: "0.5", driftX: "18px", driftY: "-26px", blur: "blur-[0.2px]" },
     { left: "12%", top: "34%", size: "h-7 w-7", rotate: "14deg", delay: "-2.1s", duration: "6.2s", opacity: "0.42", driftX: "-14px", driftY: "-18px", blur: "" },
     { left: "21%", top: "13%", size: "h-16 w-16", rotate: "10deg", delay: "-1.2s", duration: "8s", opacity: "0.36", driftX: "22px", driftY: "-30px", blur: "blur-[0.4px]" },
@@ -634,34 +606,24 @@ function SocialProof() {
 
   return (
     <section id="depoimentos" className="relative mx-auto max-w-7xl overflow-hidden px-4 py-16 md:px-6 md:py-20">
-      <svg className="absolute h-0 w-0" aria-hidden="true">
-        <defs>
-          <linearGradient id="lovable-heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ff6a1a" />
-            <stop offset="48%" stopColor="#ff3f8f" />
-            <stop offset="100%" stopColor="#8b5cf6" />
-          </linearGradient>
-        </defs>
-      </svg>
-
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-10 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-pink/18 via-brand-purple/16 to-orange-500/14 blur-[95px]" />
         <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-orange-500/12 via-brand-pink/12 to-brand-purple/12 blur-[90px]" />
-        {floatingHearts.map((heart, index) => (
-          <Heart
+        {floatingTokens.map((token, index) => (
+          <img
             key={index}
-            className={`animate-heart-float absolute ${heart.size} ${heart.blur} drop-shadow-[0_0_18px_rgba(236,72,153,0.35)]`}
+            src="/freelovable-logo-interface.png"
+            alt=""
+            className={`animate-heart-float absolute rounded-full border border-white/10 object-cover shadow-[0_0_26px_rgba(236,72,153,0.22)] ${token.size} ${token.blur}`}
             style={{
-              left: heart.left,
-              top: heart.top,
-              "--heart-delay": heart.delay,
-              "--heart-duration": heart.duration,
-              "--heart-opacity": heart.opacity,
-              "--heart-rotate": heart.rotate,
-              "--heart-drift-x": heart.driftX,
-              "--heart-drift-y": heart.driftY,
-              fill: "url(#lovable-heart-gradient)",
-              stroke: "rgba(255,255,255,0.16)",
+              left: token.left,
+              top: token.top,
+              "--heart-delay": token.delay,
+              "--heart-duration": token.duration,
+              "--heart-opacity": token.opacity,
+              "--heart-rotate": token.rotate,
+              "--heart-drift-x": token.driftX,
+              "--heart-drift-y": token.driftY,
             } as CSSProperties & Record<string, string>}
           />
         ))}
@@ -686,7 +648,11 @@ function SocialProof() {
             key={item.name}
             className="card-glow group relative flex flex-col gap-3 overflow-hidden rounded-2xl border-white/10 p-4 md:gap-4 md:rounded-3xl md:p-6"
           >
-            <Heart className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rotate-12 fill-brand-pink/10 text-brand-pink/15 transition group-hover:scale-110 group-hover:fill-brand-pink/20" />
+            <img
+              src="/freelovable-logo-interface.png"
+              alt=""
+              className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full border border-white/8 object-cover opacity-15 transition group-hover:scale-110 group-hover:opacity-25"
+            />
 
             <div className="flex items-center justify-between gap-3">
               <div className="flex gap-1">
@@ -697,7 +663,11 @@ function SocialProof() {
                   />
                 ))}
               </div>
-              <Heart className="h-3.5 w-3.5 fill-brand-pink text-brand-pink md:h-4 md:w-4" />
+              <img
+                src="/freelovable-logo-interface.png"
+                alt=""
+                className="h-3.5 w-3.5 rounded-full object-cover md:h-4 md:w-4"
+              />
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground md:text-sm">
               "{item.content}"
