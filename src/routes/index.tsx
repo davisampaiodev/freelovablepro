@@ -24,7 +24,7 @@ function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <img 
-        src="/freelovable-logo.jpg"
+        src="/freelovable-logo-interface.png"
         alt="FreeLovable Logo"
         className="h-10 w-10 rounded-lg object-cover"
       />
@@ -75,7 +75,7 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
       <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-10 pt-7 md:pb-14">
         <div className="flex max-w-4xl flex-col items-center">
           <img
-            src="/freelovable-logo.jpg"
+            src="/freelovable-logo-interface.png"
             alt="FreeLovable"
             className="mb-4 h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
@@ -567,7 +567,7 @@ function Pitch() {
         os créditos acabam rápido e são caros demais.
       </p>
       <p className="mt-10 text-3xl md:text-4xl font-bold leading-tight">
-      Porém, com o <img src="/freelovable-logo.jpg" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-cover" alt="" />{" "}
+      Porém, com o <img src="/freelovable-logo-interface.png" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-contain" alt="" />{" "}
         <span className="text-gradient">Free</span> Lovable, você não precisa mais se preocupar com isso!
       </p>
     </section>
@@ -726,14 +726,6 @@ function SocialProof() {
           </div>
         ))}
       </div>
-      
-      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#0A0A0B] p-2 shadow-2xl group">
-        <img 
-          src="https://api.freelovable.com.br/storage/v1/object/public/anexos/eb9ff431-2965-4d94-8a74-1d9aba6df44d.jpg" 
-          alt="" 
-          className="w-full h-auto rounded-[24px] object-cover transition-transform duration-700 group-hover:scale-[1.01]"
-        />
-      </div>
     </section>
   );
 }
@@ -847,7 +839,7 @@ function Features() {
         O principal é simples:
         <br />
         <span className="inline-flex items-center gap-3 mt-3">
-          <img src="/freelovable-logo.jpg" className="h-10 w-10 rounded-xl object-cover" alt="" />
+          <img src="/freelovable-logo-interface.png" className="h-10 w-10 rounded-xl object-contain" alt="" />
           <span className="text-gradient">créditos infinitos</span> no Lovable
         </span>
       </h2>
@@ -1673,7 +1665,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
         <div className="flex flex-col items-center text-center mb-8">
           <img 
-            src="/freelovable-logo.jpg"
+            src="/freelovable-logo-interface.png"
             className="h-12 w-12 rounded-xl object-cover mb-4" 
             alt="Logo" 
           />

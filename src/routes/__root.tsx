@@ -134,18 +134,23 @@ export const Route =
         },
         {
           property: "og:image",
-          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
+          content: "https://freelovablepro.com.br/open-graph.png",
         },
         {
           name: "twitter:image",
-          content: "https://freelovablepro.com.br/freelovable-logo.jpg",
+          content: "https://freelovablepro.com.br/open-graph.png",
         },
       ],
 
       links: [
         { rel: "stylesheet", href: appCss },
-        { rel: "icon", type: "image/jpeg", href: "/freelovable-logo.jpg" },
-        { rel: "apple-touch-icon", href: "/freelovable-logo.jpg" },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon.png" },
+        {
+          rel: "apple-touch-icon",
+          sizes: "180x180",
+          href: "/apple-touch-icon.png",
+        },
         {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
