@@ -150,7 +150,9 @@ function resolveWebhookEvent(rawEvent: string | null, rawStatus: string | null) 
     haystack.includes("refused") ||
     haystack.includes("failed") ||
     haystack.includes("rejected") ||
-    haystack.includes("cancel")
+    haystack.includes("cancel") ||
+    haystack.includes("expired") ||
+    haystack.includes("expir")
   ) {
     return "purchase_refused" as const;
   }
@@ -295,27 +297,50 @@ async function findLead(
 }
 
 function buildLeadUpdatePayload(params: {
-  status: "pendente" | "recusada" | "concluida";
+  status: "pendente" | "recusada" | "aprovado";
+  etapaFunil:
+    | "formulario_preenchido"
+    | "pix_gerado"
+    | "pagamento_aprovado"
+    | "pagamento_recusado";
   checkoutId: string | null;
   paymentId: string | null;
+  checkoutUrl?: string | null;
   compradoEm?: string;
+  pixGeradoEm?: string;
+  valor?: number | null;
+  formaPagamento?: string | null;
 }) {
   const payload: {
-    status: "pendente" | "recusada" | "concluida";
+    status: "pendente" | "recusada" | "aprovado";
+    etapa_funil:
+      | "formulario_preenchido"
+      | "pix_gerado"
+      | "pagamento_aprovado"
+      | "pagamento_recusado";
     payment_provider: "cakto";
     updated_at: string;
     payment_id?: string;
     checkout_id?: string;
+    checkout_url?: string;
     comprado_em?: string;
+    pix_gerado_em?: string;
+    valor?: number;
+    forma_pagamento?: string;
   } = {
     status: params.status,
+    etapa_funil: params.etapaFunil,
     payment_provider: "cakto",
     updated_at: new Date().toISOString(),
   };
 
   if (params.paymentId) payload.payment_id = params.paymentId;
   if (params.checkoutId) payload.checkout_id = params.checkoutId;
+  if (params.checkoutUrl) payload.checkout_url = params.checkoutUrl;
   if (params.compradoEm) payload.comprado_em = params.compradoEm;
+  if (params.pixGeradoEm) payload.pix_gerado_em = params.pixGeradoEm;
+  if (params.valor != null) payload.valor = params.valor / 100;
+  if (params.formaPagamento) payload.forma_pagamento = params.formaPagamento;
 
   return payload;
 }
@@ -403,6 +428,14 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             "checkout_id",
             "checkoutid",
           ]);
+          const checkoutUrl = firstValue(payload, [
+            "checkout_url",
+            "checkout_link",
+            "checkout_url_pix",
+            "payment_url",
+            "payment_link",
+            "pix_url",
+          ]);
           const leadId = firstValue(payload, ["lead_id"]);
           const externalReference = firstValue(payload, [
             "external_reference",
@@ -422,6 +455,13 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             "product_name",
             "offer_name",
             "plan",
+          ]);
+          const formaPagamento = firstValue(payload, [
+            "forma_pagamento",
+            "payment_method",
+            "payment_method_type",
+            "payment_type",
+            "method",
           ]);
 
           const eventType = resolveWebhookEvent(rawEvent, rawStatus);
@@ -450,11 +490,13 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             transactionId,
             paymentId,
             checkoutId,
+            checkoutUrl,
             leadId,
             externalReference,
             reference,
             caktoEventId,
             product,
+            formaPagamento,
             resolvedPlan,
             valorCentavos,
           });
@@ -501,27 +543,45 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
 
           const leadStatus =
             eventType === "purchase_approved"
-              ? "concluida"
+              ? "aprovado"
               : eventType === "purchase_refused" ||
                   eventType === "refund" ||
                   eventType === "chargeback"
                 ? "recusada"
                 : "pendente";
+          const etapaFunil =
+            eventType === "purchase_approved"
+              ? "pagamento_aprovado"
+              : eventType === "purchase_refused" ||
+                  eventType === "refund" ||
+                  eventType === "chargeback"
+                ? "pagamento_recusado"
+                : "pix_gerado";
+          const now = new Date().toISOString();
+          const resolvedFormaPagamento =
+            formaPagamento || (eventType === "pix_gerado" ? "pix" : null);
 
           const { data: updatedLead, error: updateError } = await supabaseAdmin
             .from("leads_checkout_br")
             .update(
               buildLeadUpdatePayload({
                 status: leadStatus,
+                etapaFunil,
                 checkoutId: resolvedCheckoutId,
                 paymentId: resolvedPaymentId,
-                compradoEm:
-                  leadStatus === "concluida" ? new Date().toISOString() : undefined,
+                checkoutUrl,
+                compradoEm: leadStatus === "aprovado" ? now : undefined,
+                pixGeradoEm:
+                  etapaFunil === "pix_gerado" || etapaFunil === "pagamento_aprovado"
+                    ? now
+                    : undefined,
+                valor: valorCentavos,
+                formaPagamento: resolvedFormaPagamento,
               }),
             )
             .eq("id", lookup.lead.id)
             .select(
-              "id, status, payment_provider, checkout_id, payment_id, comprado_em, updated_at",
+              "id, status, etapa_funil, payment_provider, checkout_id, payment_id, pix_gerado_em, comprado_em, updated_at",
             )
             .maybeSingle();
 

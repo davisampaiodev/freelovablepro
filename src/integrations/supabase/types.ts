@@ -136,14 +136,18 @@ export type Database = {
           comprado_em: string | null
           criado_em: string
           email: string
+          etapa_funil: string
           expira_em: string | null
           fbclid: string | null
+          checkout_url: string | null
+          forma_pagamento: string | null
           id: string
           idioma: string | null
           nome: string
           pagamento_mp_id: string | null
           payment_id: string | null
           payment_provider: string | null
+          pix_gerado_em: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
           preference_id: string | null
           origem: string | null
@@ -158,6 +162,7 @@ export type Database = {
           utm_source: string | null
           utm_term: string | null
           updated_at: string
+          valor: number | null
           valor_centavos: number
         }
         Insert: {
@@ -168,14 +173,18 @@ export type Database = {
           comprado_em?: string | null
           criado_em?: string
           email: string
+          etapa_funil?: string
           expira_em?: string | null
           fbclid?: string | null
+          checkout_url?: string | null
+          forma_pagamento?: string | null
           id?: string
           idioma?: string | null
           nome: string
           pagamento_mp_id?: string | null
           payment_id?: string | null
           payment_provider?: string | null
+          pix_gerado_em?: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
           preference_id?: string | null
           origem?: string | null
@@ -190,6 +199,7 @@ export type Database = {
           utm_source?: string | null
           utm_term?: string | null
           updated_at?: string
+          valor?: number | null
           valor_centavos: number
         }
         Update: {
@@ -200,14 +210,18 @@ export type Database = {
           comprado_em?: string | null
           criado_em?: string
           email?: string
+          etapa_funil?: string
           expira_em?: string | null
           fbclid?: string | null
+          checkout_url?: string | null
+          forma_pagamento?: string | null
           id?: string
           idioma?: string | null
           nome?: string
           pagamento_mp_id?: string | null
           payment_id?: string | null
           payment_provider?: string | null
+          pix_gerado_em?: string | null
           plano?: Database["public"]["Enums"]["plano_tipo"]
           preference_id?: string | null
           origem?: string | null
@@ -222,6 +236,7 @@ export type Database = {
           utm_source?: string | null
           utm_term?: string | null
           updated_at?: string
+          valor?: number | null
           valor_centavos?: number
         }
         Relationships: [
@@ -295,7 +310,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leads_formulario_sem_checkout: {
+        Row: {
+          id: string | null
+          nome: string | null
+          email: string | null
+          telefone: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: Database["public"]["Enums"]["assinatura_status"] | null
+          etapa_funil: string | null
+          criado_em: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      leads_pix_abandonado: {
+        Row: {
+          id: string | null
+          nome: string | null
+          email: string | null
+          telefone: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: Database["public"]["Enums"]["assinatura_status"] | null
+          etapa_funil: string | null
+          checkout_id: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          pix_gerado_em: string | null
+          criado_em: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

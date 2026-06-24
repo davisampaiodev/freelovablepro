@@ -82,6 +82,9 @@ export interface MpPayment {
   status: string;
   status_detail: string;
   external_reference: string | null;
+  payment_method_id?: string;
+  payment_type_id?: string;
+  transaction_amount?: number;
   payer?: { email?: string };
   metadata?: Record<string, unknown>;
 }

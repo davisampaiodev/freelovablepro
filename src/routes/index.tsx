@@ -1529,6 +1529,11 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       "@/integrations/supabase-external/client"
     );
     const leadId = crypto.randomUUID();
+    const trackedCheckoutUrl = new URL(checkoutUrl);
+    trackedCheckoutUrl.searchParams.set("lead_id", leadId);
+    trackedCheckoutUrl.searchParams.set("external_reference", leadId);
+    trackedCheckoutUrl.searchParams.set("reference", leadId);
+    finalCheckoutUrl = trackedCheckoutUrl.toString();
 
     const { error: insErr } = await supabaseExternal
       .from("leads_checkout_br")
@@ -1539,8 +1544,10 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         telefone: formData.whatsapp || null,
         plano,
         status: "pendente",
+        etapa_funil: "formulario_preenchido",
         origem: "lp_brasil",
         idioma: "pt",
+        checkout_url: finalCheckoutUrl,
         utm_source: attribution.utm_source ?? null,
         utm_medium: attribution.utm_medium ?? null,
         utm_campaign: attribution.utm_campaign ?? null,
@@ -1560,12 +1567,6 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
       );
     }
-
-    const trackedCheckoutUrl = new URL(checkoutUrl);
-    trackedCheckoutUrl.searchParams.set("lead_id", leadId);
-    trackedCheckoutUrl.searchParams.set("external_reference", leadId);
-    trackedCheckoutUrl.searchParams.set("reference", leadId);
-    finalCheckoutUrl = trackedCheckoutUrl.toString();
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'Lead', {

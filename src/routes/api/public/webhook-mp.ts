@@ -58,8 +58,8 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
           }
 
           // Mapeia status MP -> status interno
-          let novoStatus: "concluida" | "recusada" | "pendente" = "pendente";
-          if (payment.status === "approved") novoStatus = "concluida";
+          let novoStatus: "aprovado" | "recusada" | "pendente" = "pendente";
+          if (payment.status === "approved") novoStatus = "aprovado";
           else if (
             payment.status === "rejected" ||
             payment.status === "cancelled" ||
@@ -75,15 +75,28 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
             return new Response("already_processed", { status: 200 });
           }
 
-          if (novoStatus !== "concluida") {
+          const formaPagamento =
+            payment.payment_method_id || payment.payment_type_id || null;
+          const valorPagamento =
+            typeof payment.transaction_amount === "number"
+              ? payment.transaction_amount
+              : undefined;
+
+          if (novoStatus !== "aprovado") {
             await supabaseAdmin
               .from("leads_checkout_br")
               .update({
                 status: novoStatus,
+                etapa_funil:
+                  novoStatus === "recusada" ? "pagamento_recusado" : "pix_gerado",
                 payment_provider: "mercadopago",
                 payment_id: String(payment.id),
                 pagamento_mp_id: String(payment.id),
                 checkout_id: assinatura.preference_id ?? null,
+                pix_gerado_em:
+                  novoStatus === "pendente" ? new Date().toISOString() : undefined,
+                valor: valorPagamento,
+                forma_pagamento: formaPagamento,
                 updated_at: new Date().toISOString(),
               })
               .eq("id", assinaturaId);
@@ -129,11 +142,14 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
             await supabaseAdmin
               .from("leads_checkout_br")
               .update({
-                status: "concluida",
+                status: "aprovado",
+                etapa_funil: "pagamento_aprovado",
                 payment_provider: "mercadopago",
                 payment_id: String(payment.id),
                 pagamento_mp_id: String(payment.id),
                 checkout_id: assinatura.preference_id ?? null,
+                valor: valorPagamento,
+                forma_pagamento: formaPagamento,
                 comprado_em: new Date().toISOString(),
                 expira_em: expiraEm,
                 updated_at: new Date().toISOString(),
@@ -165,11 +181,14 @@ export const Route = createFileRoute("/api/public/webhook-mp")({
           await supabaseAdmin
             .from("leads_checkout_br")
             .update({
-              status: "concluida",
+              status: "aprovado",
+              etapa_funil: "pagamento_aprovado",
               payment_provider: "mercadopago",
               payment_id: String(payment.id),
               pagamento_mp_id: String(payment.id),
               checkout_id: assinatura.preference_id ?? null,
+              valor: valorPagamento,
+              forma_pagamento: formaPagamento,
               token_id: claimed.id,
               token_valor: claimed.token,
               comprado_em: new Date().toISOString(),

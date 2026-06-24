@@ -43,8 +43,10 @@ export const Route = createFileRoute("/api/public/criar-preferencia")({
               telefone: telefone || null,
               plano,
               status: "pendente",
+              etapa_funil: "formulario_preenchido",
               origem: "lp_brasil",
               idioma: "pt",
+              forma_pagamento: "mercadopago",
               utm_source: refererParams?.get("utm_source") || null,
               utm_medium: refererParams?.get("utm_medium") || null,
               utm_campaign: refererParams?.get("utm_campaign") || null,
@@ -85,7 +87,16 @@ export const Route = createFileRoute("/api/public/criar-preferencia")({
 
           await supabaseAdmin
             .from("leads_checkout_br")
-            .update({ preference_id: pref.id })
+            .update({
+              etapa_funil: "pix_gerado",
+              pix_gerado_em: new Date().toISOString(),
+              preference_id: pref.id,
+              checkout_id: pref.id,
+              checkout_url: pref.init_point,
+              payment_provider: "mercadopago",
+              valor: valor / 100,
+              updated_at: new Date().toISOString(),
+            })
             .eq("id", assinatura.id);
 
           return Response.json({
