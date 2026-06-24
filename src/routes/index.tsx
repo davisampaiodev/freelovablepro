@@ -1504,16 +1504,6 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     return "mensal";
   }
 
-  const planTrackingMeta: Record<
-    "diario" | "mensal" | "trimestral" | "anual",
-    { name: string; value: number; period: string }
-  > = {
-    diario: { name: "Plano Diário", value: 9.9, period: "1 dia" },
-    mensal: { name: "Plano Mensal", value: 47, period: "1 mês" },
-    trimestral: { name: "Plano Trimestral", value: 97, period: "3 meses" },
-    anual: { name: "Plano Anual", value: 197, period: "1 ano" },
-  };
-
    const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   if (submittingRef.current) return;
@@ -1524,7 +1514,6 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
   try {
     const plano = planoKey();
-    const planMeta = planTrackingMeta[plano];
     const checkoutUrls: Record<typeof plano, string> = {
       diario: "https://pay.cakto.com.br/tmtnfcw_926988",
       mensal: "https://pay.cakto.com.br/gswneg7_927010",
@@ -1579,39 +1568,10 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     finalCheckoutUrl = trackedCheckoutUrl.toString();
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'InitiateCheckout', {
-        content_name: planMeta.name,
-        content_category: "FreeLovable",
-        content_ids: [plano],
-        content_type: "product",
-        value: planMeta.value,
-        currency: "BRL",
-        num_items: 1,
-        plan_name: planMeta.name,
-        plan_key: plano,
-        plan_period: planMeta.period,
-        checkout_destination: checkoutUrls[plano],
-        page_origin: attribution.page_origin,
-        landing_page: attribution.landing_page,
-        landing_referrer: attribution.landing_referrer,
-        utm_source: attribution.utm_source,
-        utm_medium: attribution.utm_medium,
-        utm_campaign: attribution.utm_campaign,
-        utm_content: attribution.utm_content,
-        utm_term: attribution.utm_term,
-        utm_id: attribution.utm_id,
-        fbclid: attribution.fbclid,
-        campaign_id: attribution.campaign_id,
-        adset_id: attribution.adset_id,
-        ad_id: attribution.ad_id,
-        site_source: attribution.site_source,
-        placement: attribution.placement,
-        fbp: attribution.fbp,
-        fbc: attribution.fbc,
-        src: attribution.src,
-        xcod: attribution.xcod,
-        sck: attribution.sck,
-        lead_id: leadId,
+      (window as any).fbq('track', 'Lead', {
+        content_name: 'FreeLovable Form',
+        content_category: 'lead_form',
+        plano,
       });
     }
 
