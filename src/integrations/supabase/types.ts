@@ -432,6 +432,7 @@ export type Database = {
         | "expirado"
         | "concluida"
         | "recusada"
+        | "reprovado"
       plano_tipo: "diario" | "mensal" | "trimestral" | "anual"
       token_status: "disponivel" | "usado"
     }
@@ -569,6 +570,7 @@ export const Constants = {
         "expirado",
         "concluida",
         "recusada",
+        "reprovado",
       ],
       plano_tipo: ["diario", "mensal", "trimestral", "anual"],
       token_status: ["disponivel", "usado"],

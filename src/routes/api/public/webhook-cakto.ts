@@ -297,7 +297,7 @@ async function findLead(
 }
 
 function buildLeadUpdatePayload(params: {
-  status: "pendente" | "recusada" | "aprovado";
+  status: "pendente" | "reprovado" | "aprovado";
   etapaFunil:
     | "formulario_preenchido"
     | "checkout_iniciado"
@@ -313,7 +313,7 @@ function buildLeadUpdatePayload(params: {
   formaPagamento?: string | null;
 }) {
   const payload: {
-    status: "pendente" | "recusada" | "aprovado";
+    status: "pendente" | "reprovado" | "aprovado";
     etapa_funil:
       | "formulario_preenchido"
       | "checkout_iniciado"
@@ -549,7 +549,7 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
               : eventType === "purchase_refused" ||
                   eventType === "refund" ||
                   eventType === "chargeback"
-                ? "recusada"
+                ? "reprovado"
                 : "pendente";
           const etapaFunil =
             eventType === "purchase_approved"

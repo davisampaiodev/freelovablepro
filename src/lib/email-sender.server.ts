@@ -10,7 +10,7 @@
  * Sem isso, usamos onboarding@resend.dev (só envia para o email cadastrado
  * na conta Resend — útil em testes).
  */
-import { PLANOS, type PlanoKey } from "./mercadopago.server";
+type PlanoKey = "diario" | "mensal" | "trimestral" | "anual";
 
 const TITULOS: Record<PlanoKey, string> = {
   diario: "diário",
@@ -196,4 +196,3 @@ function escapeHtml(s: string) {
 }
 
 // keep import used (avoid tree-shake warning) — PLANOS pode ser útil em extensões futuras
-void PLANOS;

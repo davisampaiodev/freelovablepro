@@ -13,9 +13,7 @@ import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiPublicWebhookMpRouteImport } from './routes/api/public/webhook-mp'
 import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
-import { Route as ApiPublicCriarPreferenciaRouteImport } from './routes/api/public/criar-preferencia'
 import { Route as ApiInternalWhatsappPixPreviewRouteImport } from './routes/api/internal/whatsapp-pix-preview'
 import { Route as ApiInternalWhatsappMarkSentRouteImport } from './routes/api/internal/whatsapp-mark-sent'
 import { Route as ApiInternalWhatsappFormularioPreviewRouteImport } from './routes/api/internal/whatsapp-formulario-preview'
@@ -41,22 +39,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWebhookMpRoute = ApiPublicWebhookMpRouteImport.update({
-  id: '/api/public/webhook-mp',
-  path: '/api/public/webhook-mp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicWebhookCaktoRoute = ApiPublicWebhookCaktoRouteImport.update({
   id: '/api/public/webhook-cakto',
   path: '/api/public/webhook-cakto',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicCriarPreferenciaRoute =
-  ApiPublicCriarPreferenciaRouteImport.update({
-    id: '/api/public/criar-preferencia',
-    path: '/api/public/criar-preferencia',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiInternalWhatsappPixPreviewRoute =
   ApiInternalWhatsappPixPreviewRouteImport.update({
     id: '/api/internal/whatsapp-pix-preview',
@@ -97,9 +84,7 @@ export interface FileRoutesByFullPath {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,9 +95,7 @@ export interface FileRoutesByTo {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,9 +108,7 @@ export interface FileRoutesById {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
-  '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
-  '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,9 +121,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
-    | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
-    | '/api/public/webhook-mp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,9 +132,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
-    | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
-    | '/api/public/webhook-mp'
   id:
     | '__root__'
     | '/'
@@ -167,9 +144,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
-    | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
-    | '/api/public/webhook-mp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -181,9 +156,7 @@ export interface RootRouteChildren {
   ApiInternalWhatsappFormularioPreviewRoute: typeof ApiInternalWhatsappFormularioPreviewRoute
   ApiInternalWhatsappMarkSentRoute: typeof ApiInternalWhatsappMarkSentRoute
   ApiInternalWhatsappPixPreviewRoute: typeof ApiInternalWhatsappPixPreviewRoute
-  ApiPublicCriarPreferenciaRoute: typeof ApiPublicCriarPreferenciaRoute
   ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
-  ApiPublicWebhookMpRoute: typeof ApiPublicWebhookMpRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,25 +189,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhook-mp': {
-      id: '/api/public/webhook-mp'
-      path: '/api/public/webhook-mp'
-      fullPath: '/api/public/webhook-mp'
-      preLoaderRoute: typeof ApiPublicWebhookMpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/webhook-cakto': {
       id: '/api/public/webhook-cakto'
       path: '/api/public/webhook-cakto'
       fullPath: '/api/public/webhook-cakto'
       preLoaderRoute: typeof ApiPublicWebhookCaktoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/criar-preferencia': {
-      id: '/api/public/criar-preferencia'
-      path: '/api/public/criar-preferencia'
-      fullPath: '/api/public/criar-preferencia'
-      preLoaderRoute: typeof ApiPublicCriarPreferenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/internal/whatsapp-pix-preview': {
@@ -297,9 +256,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiInternalWhatsappFormularioPreviewRoute,
   ApiInternalWhatsappMarkSentRoute: ApiInternalWhatsappMarkSentRoute,
   ApiInternalWhatsappPixPreviewRoute: ApiInternalWhatsappPixPreviewRoute,
-  ApiPublicCriarPreferenciaRoute: ApiPublicCriarPreferenciaRoute,
   ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
-  ApiPublicWebhookMpRoute: ApiPublicWebhookMpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
