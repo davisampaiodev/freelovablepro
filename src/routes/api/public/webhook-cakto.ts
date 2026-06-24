@@ -300,6 +300,7 @@ function buildLeadUpdatePayload(params: {
   status: "pendente" | "recusada" | "aprovado";
   etapaFunil:
     | "formulario_preenchido"
+    | "checkout_iniciado"
     | "pix_gerado"
     | "pagamento_aprovado"
     | "pagamento_recusado";
@@ -315,6 +316,7 @@ function buildLeadUpdatePayload(params: {
     status: "pendente" | "recusada" | "aprovado";
     etapa_funil:
       | "formulario_preenchido"
+      | "checkout_iniciado"
       | "pix_gerado"
       | "pagamento_aprovado"
       | "pagamento_recusado";
@@ -556,7 +558,9 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
                   eventType === "refund" ||
                   eventType === "chargeback"
                 ? "pagamento_recusado"
-                : "pix_gerado";
+                : eventType === "checkout_abandonment"
+                  ? "checkout_iniciado"
+                  : "pix_gerado";
           const now = new Date().toISOString();
           const resolvedFormaPagamento =
             formaPagamento || (eventType === "pix_gerado" ? "pix" : null);

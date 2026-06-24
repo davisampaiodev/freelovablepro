@@ -16,6 +16,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicWebhookMpRouteImport } from './routes/api/public/webhook-mp'
 import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
 import { Route as ApiPublicCriarPreferenciaRouteImport } from './routes/api/public/criar-preferencia'
+import { Route as ApiInternalWhatsappPixPreviewRouteImport } from './routes/api/internal/whatsapp-pix-preview'
+import { Route as ApiInternalWhatsappMarkSentRouteImport } from './routes/api/internal/whatsapp-mark-sent'
+import { Route as ApiInternalWhatsappFormularioPreviewRouteImport } from './routes/api/internal/whatsapp-formulario-preview'
+import { Route as ApiInternalWhatsappCheckoutPreviewRouteImport } from './routes/api/internal/whatsapp-checkout-preview'
 import { Route as AuthenticatedAdminTokensRouteImport } from './routes/_authenticated/admin.tokens'
 
 const ObrigadoRoute = ObrigadoRouteImport.update({
@@ -53,6 +57,30 @@ const ApiPublicCriarPreferenciaRoute =
     path: '/api/public/criar-preferencia',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiInternalWhatsappPixPreviewRoute =
+  ApiInternalWhatsappPixPreviewRouteImport.update({
+    id: '/api/internal/whatsapp-pix-preview',
+    path: '/api/internal/whatsapp-pix-preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiInternalWhatsappMarkSentRoute =
+  ApiInternalWhatsappMarkSentRouteImport.update({
+    id: '/api/internal/whatsapp-mark-sent',
+    path: '/api/internal/whatsapp-mark-sent',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiInternalWhatsappFormularioPreviewRoute =
+  ApiInternalWhatsappFormularioPreviewRouteImport.update({
+    id: '/api/internal/whatsapp-formulario-preview',
+    path: '/api/internal/whatsapp-formulario-preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiInternalWhatsappCheckoutPreviewRoute =
+  ApiInternalWhatsappCheckoutPreviewRouteImport.update({
+    id: '/api/internal/whatsapp-checkout-preview',
+    path: '/api/internal/whatsapp-checkout-preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminTokensRoute =
   AuthenticatedAdminTokensRouteImport.update({
     id: '/admin/tokens',
@@ -65,6 +93,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
+  '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
+  '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
+  '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
+  '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
@@ -74,6 +106,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
+  '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
+  '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
+  '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
+  '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
@@ -85,6 +121,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/obrigado': typeof ObrigadoRoute
   '/_authenticated/admin/tokens': typeof AuthenticatedAdminTokensRoute
+  '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
+  '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
+  '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
+  '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-preferencia': typeof ApiPublicCriarPreferenciaRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
   '/api/public/webhook-mp': typeof ApiPublicWebhookMpRoute
@@ -96,6 +136,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/obrigado'
     | '/admin/tokens'
+    | '/api/internal/whatsapp-checkout-preview'
+    | '/api/internal/whatsapp-formulario-preview'
+    | '/api/internal/whatsapp-mark-sent'
+    | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
@@ -105,6 +149,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/obrigado'
     | '/admin/tokens'
+    | '/api/internal/whatsapp-checkout-preview'
+    | '/api/internal/whatsapp-formulario-preview'
+    | '/api/internal/whatsapp-mark-sent'
+    | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
@@ -115,6 +163,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/obrigado'
     | '/_authenticated/admin/tokens'
+    | '/api/internal/whatsapp-checkout-preview'
+    | '/api/internal/whatsapp-formulario-preview'
+    | '/api/internal/whatsapp-mark-sent'
+    | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-preferencia'
     | '/api/public/webhook-cakto'
     | '/api/public/webhook-mp'
@@ -125,6 +177,10 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ObrigadoRoute: typeof ObrigadoRoute
+  ApiInternalWhatsappCheckoutPreviewRoute: typeof ApiInternalWhatsappCheckoutPreviewRoute
+  ApiInternalWhatsappFormularioPreviewRoute: typeof ApiInternalWhatsappFormularioPreviewRoute
+  ApiInternalWhatsappMarkSentRoute: typeof ApiInternalWhatsappMarkSentRoute
+  ApiInternalWhatsappPixPreviewRoute: typeof ApiInternalWhatsappPixPreviewRoute
   ApiPublicCriarPreferenciaRoute: typeof ApiPublicCriarPreferenciaRoute
   ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
   ApiPublicWebhookMpRoute: typeof ApiPublicWebhookMpRoute
@@ -181,6 +237,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCriarPreferenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/whatsapp-pix-preview': {
+      id: '/api/internal/whatsapp-pix-preview'
+      path: '/api/internal/whatsapp-pix-preview'
+      fullPath: '/api/internal/whatsapp-pix-preview'
+      preLoaderRoute: typeof ApiInternalWhatsappPixPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/whatsapp-mark-sent': {
+      id: '/api/internal/whatsapp-mark-sent'
+      path: '/api/internal/whatsapp-mark-sent'
+      fullPath: '/api/internal/whatsapp-mark-sent'
+      preLoaderRoute: typeof ApiInternalWhatsappMarkSentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/whatsapp-formulario-preview': {
+      id: '/api/internal/whatsapp-formulario-preview'
+      path: '/api/internal/whatsapp-formulario-preview'
+      fullPath: '/api/internal/whatsapp-formulario-preview'
+      preLoaderRoute: typeof ApiInternalWhatsappFormularioPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/whatsapp-checkout-preview': {
+      id: '/api/internal/whatsapp-checkout-preview'
+      path: '/api/internal/whatsapp-checkout-preview'
+      fullPath: '/api/internal/whatsapp-checkout-preview'
+      preLoaderRoute: typeof ApiInternalWhatsappCheckoutPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/tokens': {
       id: '/_authenticated/admin/tokens'
       path: '/admin/tokens'
@@ -207,6 +291,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ObrigadoRoute: ObrigadoRoute,
+  ApiInternalWhatsappCheckoutPreviewRoute:
+    ApiInternalWhatsappCheckoutPreviewRoute,
+  ApiInternalWhatsappFormularioPreviewRoute:
+    ApiInternalWhatsappFormularioPreviewRoute,
+  ApiInternalWhatsappMarkSentRoute: ApiInternalWhatsappMarkSentRoute,
+  ApiInternalWhatsappPixPreviewRoute: ApiInternalWhatsappPixPreviewRoute,
   ApiPublicCriarPreferenciaRoute: ApiPublicCriarPreferenciaRoute,
   ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
   ApiPublicWebhookMpRoute: ApiPublicWebhookMpRoute,

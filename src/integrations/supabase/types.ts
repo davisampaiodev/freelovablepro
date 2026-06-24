@@ -161,6 +161,10 @@ export type Database = {
           utm_medium: string | null
           utm_source: string | null
           utm_term: string | null
+          whatsapp_enviado_em: string | null
+          whatsapp_status: string
+          whatsapp_tentativas: number
+          checkout_abandono_msg: string | null
           updated_at: string
           valor: number | null
           valor_centavos: number
@@ -198,6 +202,10 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          whatsapp_enviado_em?: string | null
+          whatsapp_status?: string
+          whatsapp_tentativas?: number
+          checkout_abandono_msg?: string | null
           updated_at?: string
           valor?: number | null
           valor_centavos: number
@@ -235,6 +243,10 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          whatsapp_enviado_em?: string | null
+          whatsapp_status?: string
+          whatsapp_tentativas?: number
+          checkout_abandono_msg?: string | null
           updated_at?: string
           valor?: number | null
           valor_centavos?: number
@@ -339,6 +351,65 @@ export type Database = {
           pix_gerado_em: string | null
           criado_em: string | null
           updated_at: string | null
+        }
+        Relationships: []
+      }
+      leads_formulario_sem_checkout_whatsapp: {
+        Row: {
+          id: string | null
+          nome: string | null
+          email: string | null
+          telefone: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: Database["public"]["Enums"]["assinatura_status"] | null
+          etapa_funil: string | null
+          criado_em: string | null
+          updated_at: string | null
+          whatsapp_status: string | null
+          whatsapp_tentativas: number | null
+        }
+        Relationships: []
+      }
+      leads_checkout_iniciado_whatsapp: {
+        Row: {
+          id: string | null
+          nome: string | null
+          email: string | null
+          telefone: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: Database["public"]["Enums"]["assinatura_status"] | null
+          etapa_funil: string | null
+          checkout_id: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          checkout_url: string | null
+          criado_em: string | null
+          updated_at: string | null
+          whatsapp_status: string | null
+          whatsapp_tentativas: number | null
+        }
+        Relationships: []
+      }
+      leads_pix_abandonado_whatsapp: {
+        Row: {
+          id: string | null
+          nome: string | null
+          email: string | null
+          telefone: string | null
+          plano: Database["public"]["Enums"]["plano_tipo"] | null
+          status: Database["public"]["Enums"]["assinatura_status"] | null
+          etapa_funil: string | null
+          checkout_id: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          pix_gerado_em: string | null
+          checkout_url: string | null
+          valor: number | null
+          forma_pagamento: string | null
+          criado_em: string | null
+          updated_at: string | null
+          whatsapp_status: string | null
+          whatsapp_tentativas: number | null
         }
         Relationships: []
       }
