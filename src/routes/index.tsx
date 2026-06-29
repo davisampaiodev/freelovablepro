@@ -24,8 +24,11 @@ function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <img 
-        src="/freelovable-logo-interface.png"
+        src="/freelovable-logo-interface-160.webp"
         alt="FreeLovable Logo"
+        width={160}
+        height={160}
+        decoding="async"
         className="h-10 w-10 rounded-lg object-cover"
       />
       <span className="text-lg font-bold tracking-tight">
@@ -38,7 +41,7 @@ function Logo({ className = "" }: { className?: string }) {
 
 function Nav({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/60">
+    <header className="sticky top-0 z-40 bg-background/95 border-b border-border/60 md:bg-background/70 md:backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <Logo />
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
@@ -71,21 +74,24 @@ function Nav({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   return (
     <section className="relative overflow-hidden text-center">
-      <div className="absolute inset-x-0 top-10 -z-10 mx-auto h-80 max-w-3xl bg-gradient-to-r from-brand-purple/20 via-brand-pink/20 to-brand-purple/20 blur-[120px]" />
+      <div className="absolute inset-x-0 top-10 -z-10 mx-auto h-80 max-w-3xl bg-gradient-to-r from-blue-950/30 via-blue-700/18 to-slate-950/30 blur-3xl md:blur-[120px]" />
       <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-10 pt-7 md:pb-14">
         <div className="flex max-w-4xl flex-col items-center">
           <img
-            src="/freelovable-logo-interface.png"
+            src="/freelovable-logo-interface-160.webp"
             alt="FreeLovable"
+            width={160}
+            height={160}
+            decoding="async"
             className="mb-4 h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-2xl"
           />
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-pink" />
             Nova extensão · acesso ilimitado
           </div>
-          <h1 className="hero-headline max-w-4xl text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
-            <span className="block whitespace-nowrap">Nunca mais fique sem</span>
-            <span className="hero-highlight block whitespace-nowrap">créditos no Lovable.</span>
+          <h1 className="hero-headline max-w-4xl text-[2.15rem] font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
+            <span className="block sm:whitespace-nowrap">Nunca mais fique sem</span>
+            <span className="hero-highlight block sm:whitespace-nowrap">créditos no Lovable.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-muted-foreground md:text-lg">
             Instale em menos de 1 minuto e continue criando apps, automações e
@@ -112,25 +118,37 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
          <div className="mt-7 flex items-center justify-center gap-2.5 opacity-85 md:gap-3 md:opacity-100">
   <div className="flex -space-x-3 md:-space-x-4">
     <img
-      src="/avatars/avatar1.png"
+      src="/avatars/avatar1-96.webp"
+      width={96}
+      height={96}
+      decoding="async"
       className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 1"
     />
 
     <img
-      src="/avatars/avatar2.png"
+      src="/avatars/avatar2-96.webp"
+      width={96}
+      height={96}
+      decoding="async"
       className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 2"
     />
 
     <img
-      src="/avatars/avatar3.png"
+      src="/avatars/avatar3-96.webp"
+      width={96}
+      height={96}
+      decoding="async"
       className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 3"
     />
 
     <img
-      src="/avatars/avatar4.png"
+      src="/avatars/avatar4-96.webp"
+      width={96}
+      height={96}
+      decoding="async"
       className="h-10 w-10 rounded-full border-2 border-background object-cover md:h-12 md:w-12"
       alt="Usuário 4"
     />
@@ -143,9 +161,9 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 </div>
 
         <div className="relative group mt-14 flex w-full justify-center md:mt-10">
-          <div className="absolute -inset-20 bg-gradient-to-br from-brand-purple/40 to-brand-pink/40 blur-[100px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
+          <div className="absolute -inset-20 hidden rounded-full bg-gradient-to-br from-blue-950/45 via-blue-800/28 to-slate-950/45 opacity-40 blur-[100px] transition-opacity duration-700 group-hover:opacity-65 md:block" />
           
-          <div className="relative aspect-[9/16] w-full max-w-[232px] overflow-hidden rounded-[36px] border border-white/10 bg-black/60 p-3 shadow-[0_0_100px_-20px_rgba(var(--brand-purple),0.6)] ring-1 ring-white/20 backdrop-blur-3xl md:max-w-[310px] md:rounded-[44px]">
+          <div className="relative aspect-[9/16] w-full max-w-[232px] overflow-hidden rounded-[36px] border border-white/10 bg-black/60 p-3 shadow-[0_0_48px_-24px_rgba(88,28,135,0.55)] ring-1 ring-white/20 md:max-w-[310px] md:rounded-[44px] md:shadow-[0_0_100px_-20px_rgba(88,28,135,0.6)] md:backdrop-blur-3xl">
             {/* Phone Notch/Island */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-30 flex items-center justify-center gap-2 border-x border-b border-white/5">
                <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -186,7 +204,9 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
       
       <iframe
         ref={iframeRef}
-        src={`https://player.vimeo.com/video/${videoId}?autoplay=0&loop=1&muted=0&quality=1080p&controls=0&api=1`}
+        src={`https://player.vimeo.com/video/${videoId}?autoplay=0&loop=1&muted=0&quality=auto&controls=0&api=1`}
+        title="Demonstração do FreeLovable"
+        loading="lazy"
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350%] h-[110%] z-0 pointer-events-none scale-110"
         allow="autoplay; fullscreen"
         style={{ border: 'none', background: 'transparent' }}
@@ -197,7 +217,7 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
         {!isPlaying && (
           <button 
             onClick={togglePlay}
-            className="h-16 w-16 rounded-full btn-gradient flex items-center justify-center shadow-2xl scale-100 hover:scale-105 transition-transform duration-300 pointer-events-auto cursor-pointer md:h-24 md:w-24 md:hover:scale-110"
+            className="h-16 w-16 rounded-full btn-gradient flex items-center justify-center shadow-lg scale-100 hover:scale-105 transition-transform duration-300 pointer-events-auto cursor-pointer md:h-24 md:w-24 md:shadow-2xl md:hover:scale-110"
           >
             <Play className="h-7 w-7 text-white fill-current ml-0.5 md:h-10 md:w-10 md:ml-1" />
           </button>
@@ -208,7 +228,7 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
         <div className="absolute right-3 top-3 z-40 md:right-4 md:top-4">
           <button
             onClick={togglePlay}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/42 text-white backdrop-blur-md transition-all hover:bg-black/58 cursor-pointer md:h-10 md:w-10"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/70 text-white transition-colors hover:bg-black/80 cursor-pointer md:h-10 md:w-10 md:bg-black/42 md:backdrop-blur-md md:hover:bg-black/58"
             aria-label="Pausar video"
           >
             <Pause className="h-4 w-4 md:h-4.5 md:w-4.5" />
@@ -271,7 +291,7 @@ function WhatIsFreeLovable() {
           </div>
 
           <div className="relative">
-            <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 blur-2xl" />
+            <div className="absolute inset-0 hidden rounded-[28px] bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 blur-2xl md:block" />
             <div className="relative rounded-[28px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
               <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex gap-1.5">
@@ -403,11 +423,11 @@ function AccessDelivery() {
         </div>
 
         <div className="relative">
-          <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-brand-purple/25 to-brand-pink/20 blur-2xl" />
+          <div className="absolute inset-0 hidden rounded-[28px] bg-gradient-to-br from-brand-purple/25 to-brand-pink/20 blur-2xl md:block" />
           <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#0A0A0B] p-4 md:p-5">
             <div className="animate-email-arrive relative mb-5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-pink/70 to-transparent" />
-              <div className="pointer-events-none absolute right-5 top-5 h-16 w-16 rounded-full bg-brand-pink/20 blur-2xl" />
+              <div className="pointer-events-none absolute right-5 top-5 hidden h-16 w-16 rounded-full bg-brand-pink/20 blur-2xl md:block" />
 
               <div className="mb-4 flex items-center gap-3 border-b border-white/10 pb-4">
                 <div className="animate-email-pulse relative flex h-12 w-12 items-center justify-center rounded-xl bg-brand-pink/10 text-brand-pink">
@@ -539,7 +559,7 @@ function Pitch() {
         os créditos acabam rápido e são caros demais.
       </p>
       <p className="mt-10 text-3xl md:text-4xl font-bold leading-tight">
-      Porém, com o <img src="/freelovable-logo-interface.png" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-contain" alt="" />{" "}
+      Porém, com o <img src="/freelovable-logo-interface-160.webp" width={160} height={160} loading="lazy" decoding="async" className="inline h-8 w-8 rounded-md -mt-1 mx-1 object-contain" alt="" />{" "}
         <span className="text-gradient">Free</span> Lovable, você não precisa mais se preocupar com isso!
       </p>
     </section>
@@ -585,48 +605,11 @@ function SocialProof() {
     },
   ];
 
-  const floatingTokens = [
-    { left: "3%", top: "8%", size: "h-12 w-12", rotate: "-18deg", delay: "0s", duration: "7.4s", opacity: "0.5", driftX: "18px", driftY: "-26px", blur: "blur-[0.2px]" },
-    { left: "12%", top: "34%", size: "h-7 w-7", rotate: "14deg", delay: "-2.1s", duration: "6.2s", opacity: "0.42", driftX: "-14px", driftY: "-18px", blur: "" },
-    { left: "21%", top: "13%", size: "h-16 w-16", rotate: "10deg", delay: "-1.2s", duration: "8s", opacity: "0.36", driftX: "22px", driftY: "-30px", blur: "blur-[0.4px]" },
-    { left: "31%", top: "48%", size: "h-9 w-9", rotate: "-8deg", delay: "-3.4s", duration: "6.8s", opacity: "0.46", driftX: "-18px", driftY: "-24px", blur: "" },
-    { left: "42%", top: "6%", size: "h-8 w-8", rotate: "22deg", delay: "-4.5s", duration: "7.2s", opacity: "0.38", driftX: "16px", driftY: "-20px", blur: "" },
-    { left: "51%", top: "29%", size: "h-14 w-14", rotate: "-14deg", delay: "-1.8s", duration: "8.5s", opacity: "0.44", driftX: "-20px", driftY: "-28px", blur: "blur-[0.3px]" },
-    { left: "61%", top: "9%", size: "h-10 w-10", rotate: "18deg", delay: "-3s", duration: "6.4s", opacity: "0.5", driftX: "15px", driftY: "-22px", blur: "" },
-    { left: "70%", top: "42%", size: "h-8 w-8", rotate: "-22deg", delay: "-5.2s", duration: "7.7s", opacity: "0.4", driftX: "-16px", driftY: "-18px", blur: "" },
-    { left: "80%", top: "15%", size: "h-20 w-20", rotate: "12deg", delay: "-2.7s", duration: "9s", opacity: "0.34", driftX: "24px", driftY: "-34px", blur: "blur-[0.6px]" },
-    { left: "90%", top: "33%", size: "h-11 w-11", rotate: "-10deg", delay: "-4s", duration: "6.9s", opacity: "0.46", driftX: "-18px", driftY: "-26px", blur: "" },
-    { left: "8%", top: "72%", size: "h-16 w-16", rotate: "18deg", delay: "-5.7s", duration: "8.4s", opacity: "0.32", driftX: "20px", driftY: "-30px", blur: "blur-[0.5px]" },
-    { left: "24%", top: "82%", size: "h-8 w-8", rotate: "-12deg", delay: "-2.4s", duration: "6.5s", opacity: "0.44", driftX: "-12px", driftY: "-20px", blur: "" },
-    { left: "38%", top: "74%", size: "h-11 w-11", rotate: "8deg", delay: "-3.8s", duration: "7.1s", opacity: "0.42", driftX: "16px", driftY: "-22px", blur: "" },
-    { left: "58%", top: "83%", size: "h-7 w-7", rotate: "-18deg", delay: "-1.4s", duration: "6s", opacity: "0.5", driftX: "-14px", driftY: "-16px", blur: "" },
-    { left: "73%", top: "70%", size: "h-12 w-12", rotate: "20deg", delay: "-4.8s", duration: "8.1s", opacity: "0.38", driftX: "18px", driftY: "-28px", blur: "blur-[0.3px]" },
-    { left: "91%", top: "78%", size: "h-9 w-9", rotate: "6deg", delay: "-6s", duration: "7.5s", opacity: "0.45", driftX: "-20px", driftY: "-24px", blur: "" },
-  ];
-
   return (
     <section id="depoimentos" className="relative mx-auto max-w-7xl overflow-hidden px-4 py-16 md:px-6 md:py-20">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-10 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-pink/18 via-brand-purple/16 to-orange-500/14 blur-[95px]" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-orange-500/12 via-brand-pink/12 to-brand-purple/12 blur-[90px]" />
-        {floatingTokens.map((token, index) => (
-          <img
-            key={index}
-            src="/freelovable-logo-interface.png"
-            alt=""
-            className={`animate-heart-float absolute rounded-full border border-white/10 object-cover shadow-[0_0_26px_rgba(236,72,153,0.22)] ${token.size} ${token.blur}`}
-            style={{
-              left: token.left,
-              top: token.top,
-              "--heart-delay": token.delay,
-              "--heart-duration": token.duration,
-              "--heart-opacity": token.opacity,
-              "--heart-rotate": token.rotate,
-              "--heart-drift-x": token.driftX,
-              "--heart-drift-y": token.driftY,
-            } as CSSProperties & Record<string, string>}
-          />
-        ))}
+        <div className="absolute left-1/2 top-10 hidden h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand-pink/18 via-brand-purple/16 to-orange-500/14 blur-[95px] md:block" />
+        <div className="absolute bottom-0 right-0 hidden h-80 w-80 rounded-full bg-gradient-to-br from-orange-500/12 via-brand-pink/12 to-brand-purple/12 blur-[90px] md:block" />
       </div>
 
       <div className="relative mx-auto mb-10 max-w-3xl text-center md:mx-0 md:text-left">
@@ -649,8 +632,12 @@ function SocialProof() {
             className="card-glow group relative flex flex-col gap-3 overflow-hidden rounded-2xl border-white/10 p-4 md:gap-4 md:rounded-3xl md:p-6"
           >
             <img
-              src="/freelovable-logo-interface.png"
+              src="/freelovable-logo-interface-160.webp"
               alt=""
+              width={160}
+              height={160}
+              loading="lazy"
+              decoding="async"
               className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full border border-white/8 object-cover opacity-15 transition group-hover:scale-110 group-hover:opacity-25"
             />
 
@@ -664,8 +651,12 @@ function SocialProof() {
                 ))}
               </div>
               <img
-                src="/freelovable-logo-interface.png"
+                src="/freelovable-logo-interface-160.webp"
                 alt=""
+                width={160}
+                height={160}
+                loading="lazy"
+                decoding="async"
                 className="h-3.5 w-3.5 rounded-full object-cover md:h-4 md:w-4"
               />
             </div>
@@ -809,7 +800,7 @@ function Features() {
         O principal é simples:
         <br />
         <span className="inline-flex items-center gap-3 mt-3">
-          <img src="/freelovable-logo-interface.png" className="h-10 w-10 rounded-xl object-contain" alt="" />
+          <img src="/freelovable-logo-interface-160.webp" width={160} height={160} loading="lazy" decoding="async" className="h-10 w-10 rounded-xl object-contain" alt="" />
           <span className="text-gradient">créditos infinitos</span> no Lovable
         </span>
       </h2>
@@ -842,12 +833,12 @@ function Features() {
         </div>
 
         <div className="relative group">
-          <div className="absolute -inset-4 bg-gradient-to-r from-brand-purple/20 to-brand-pink/20 blur-2xl rounded-[32px] opacity-50 group-hover:opacity-100 transition duration-500" />
+          <div className="absolute -inset-4 hidden rounded-[32px] bg-gradient-to-r from-brand-purple/20 to-brand-pink/20 opacity-50 blur-2xl transition duration-500 group-hover:opacity-100 md:block" />
           <div className="relative card-glow rounded-[32px] border-border/40 overflow-hidden shadow-2xl aspect-[1.4/1] bg-[#0A0A0B]">
             <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-brand-pink/5 z-0" />
             
             {/* Window controls overlay */}
-            <div className="absolute top-0 left-0 right-0 h-10 border-b border-border/20 bg-background/40 backdrop-blur-md flex items-center px-4 gap-2 z-20">
+            <div className="absolute top-0 left-0 right-0 h-10 border-b border-border/20 bg-background/80 md:bg-background/40 md:backdrop-blur-md flex items-center px-4 gap-2 z-20">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-danger/40" />
                 <div className="w-3 h-3 rounded-full bg-amber-400/40" />
@@ -954,7 +945,7 @@ function Features() {
                   <div className="flex-1 rounded-2xl border border-border/20 bg-background/20 overflow-hidden flex flex-col">
                     <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-4">
                       <div className="relative">
-                        <div className="absolute inset-0 bg-brand-pink/20 blur-2xl rounded-full" />
+                        <div className="absolute inset-0 hidden rounded-full bg-brand-pink/20 blur-2xl md:block" />
                         <div className="relative h-20 w-20 rounded-full border-2 border-brand-pink flex items-center justify-center bg-background shadow-2xl">
                           <ShieldCheck className="h-10 w-10 text-brand-pink" />
                         </div>
@@ -1091,7 +1082,7 @@ function StepByStep() {
       <div className="grid gap-6 md:grid-cols-3">
         {steps.map(({ icon: Icon, label, title }) => (
           <div key={title} className="flex flex-col items-center text-center">
-            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/[0.03] shadow-[0_0_40px_-18px_rgba(236,72,153,0.8)]">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/[0.03] shadow-[0_0_40px_-18px_rgba(168,85,247,0.78)]">
               <Icon className="h-8 w-8 text-brand-pink" />
             </div>
             <div className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-brand-pink">
@@ -1248,7 +1239,7 @@ function Proof() {
 function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
   const plans = [
     {
-      name: "Plano Diário", price: "R$ 9,90", period: "/dia", note: "Perfeito para testar hoje mesmo.",
+      name: "Plano Diário", price: "R$ 17", period: "/dia", note: "Perfeito para testar hoje mesmo.",
       cta: "QUERO O PLANO DIÁRIO", popular: false,
       features: [
         "Créditos ilimitados",
@@ -1268,7 +1259,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       ],
     },
     {
-      name: "Plano Trimestral", price: "R$ 97", period: "", note: "Pagamento único trimestral.",
+      name: "Plano Trimestral", price: "3x de R$ 37", period: "", note: "R$ 101,13 à vista",
       cta: "QUERO O PLANO TRIMESTRAL", popular: false,
       features: [
         "Créditos ilimitados",
@@ -1278,7 +1269,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       ],
     },
     {
-      name: "Plano Anual", price: "R$ 197", period: "", note: "Pagamento único anual.",
+      name: "Plano Anual", price: "12x de R$ 27", period: "", note: "R$ 261,42 à vista",
       cta: "QUERO O PLANO ANUAL", popular: false,
       features: [
         "Tudo dos outros planos",
@@ -1300,7 +1291,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
         Todos os planos liberam a mesma promessa principal: continuar criando no Lovable sem ficar sem créditos.
       </p>
 
-      <div className="mt-10 grid grid-cols-2 gap-4 md:mt-12 md:gap-6 lg:grid-cols-4">
+      <div className="mt-10 grid grid-cols-1 gap-4 min-[390px]:grid-cols-2 md:mt-12 md:gap-6 lg:grid-cols-4">
         {plans.map((p) => (
           <div key={p.name} className={`relative flex flex-col rounded-3xl border p-4 transition-all duration-500 md:p-6 ${p.name === "Plano Anual" ? 'border-orange-500/70 bg-card/70 ring-1 ring-orange-500/30 shadow-[0_0_60px_-24px_rgba(249,115,22,0.95)] lg:-mt-4 lg:min-h-[580px]' : p.popular ? 'card-glow border-brand-pink/50 bg-brand-pink/5 ring-1 ring-brand-pink/20 shadow-glow' : 'bg-card/40 border-border/40 hover:border-border/80'}`}>
             {p.popular && (
@@ -1315,7 +1306,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
             )}
             <h3 className={`text-sm font-bold leading-tight md:text-lg ${p.name === "Plano Anual" ? "uppercase tracking-[0.14em] text-orange-400 md:tracking-[0.18em]" : ""}`}>{p.name}</h3>
             <div className="mt-3 flex items-baseline gap-1 md:mt-4">
-              <div className={`${p.name === "Plano Anual" ? "text-4xl md:text-4xl" : "text-3xl md:text-4xl"} font-extrabold`}>{p.price}</div>
+              <div className={`${p.name === "Plano Trimestral" || p.name === "Plano Anual" ? "text-2xl md:text-3xl" : "text-3xl md:text-4xl"} font-extrabold`}>{p.price}</div>
               <div className="text-sm text-muted-foreground">{p.period}</div>
             </div>
             <p className={`mt-2 text-xs md:text-sm ${p.name === "Plano Anual" ? "font-bold text-orange-400" : "text-muted-foreground"}`}>{p.note}</p>
@@ -1346,10 +1337,10 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
           <Check className="h-12 w-12 text-brand-pink" />
         </div>
         <div>
-          <h3 className="text-2xl font-black md:text-3xl">7 dias de garantia incondicional</h3>
+          <h3 className="text-2xl font-black md:text-3xl">Teste por 7 dias com garantia total</h3>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Use a FreeLovable sem risco. Se não gostar, peça reembolso dentro do
-            prazo de garantia.
+            Você pode instalar, ativar e usar a FreeLovable no seu fluxo real.
+            Se não fizer sentido para você, solicite o reembolso dentro de 7 dias.
           </p>
         </div>
       </div>
@@ -1437,7 +1428,7 @@ function Footer() {
 
 function MobileStickyCTA() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-background/85 px-4 py-2.5 backdrop-blur-xl md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-background/95 px-4 py-2.5 md:hidden">
       <a
         href="#planos"
         className="btn-gradient flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-xs font-black uppercase tracking-wide shadow-2xl shadow-brand-pink/20"
@@ -1485,6 +1476,51 @@ function Landing() {
   );
 }
 
+type LeadFormData = {
+  name: string;
+  email: string;
+  whatsapp: string;
+};
+
+function normalizeLeadForm(data: LeadFormData) {
+  const nome = data.name.trim().replace(/\s+/g, " ");
+  const email = data.email.trim().toLowerCase();
+  const telefone = data.whatsapp.replace(/\D/g, "");
+  const letterCount = nome.match(/\p{L}/gu)?.length ?? 0;
+
+  if (!nome || letterCount < 2) {
+    throw new Error("Informe um nome válido com pelo menos 2 letras.");
+  }
+  if (!/^[\p{L}\p{M}\s'’-]+$/u.test(nome)) {
+    throw new Error("Use apenas letras, espaços, apóstrofo e hífen no nome.");
+  }
+
+  const emailParts = email.split("@");
+  const emailDomain = emailParts[1] || "";
+  const emailTld = emailDomain.split(".").at(-1) || "";
+  if (
+    !email ||
+    !/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email) ||
+    emailTld.length < 2
+  ) {
+    throw new Error("Informe um e-mail válido.");
+  }
+
+  if (telefone.length < 10 || telefone.length > 13) {
+    throw new Error("Informe um WhatsApp válido com 10 a 13 dígitos.");
+  }
+
+  return { nome, email, telefone };
+}
+
+function sanitizePhoneInput(value: string) {
+  return value.replace(/[^\d\s()+-]/g, "");
+}
+
+function escapePostgrestLike(value: string) {
+  return value.replace(/[%_]/g, (character) => `\\${character}`);
+}
+
 function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: string }) {
   const [formData, setFormData] = useState({ name: '', email: '', whatsapp: '' });
   const [loading, setLoading] = useState(false);
@@ -1514,57 +1550,174 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
   try {
     const plano = planoKey();
+    const normalizedForm = normalizeLeadForm(formData);
+    setFormData({
+      name: normalizedForm.nome,
+      email: normalizedForm.email,
+      whatsapp: normalizedForm.telefone,
+    });
     const checkoutUrls: Record<typeof plano, string> = {
-      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
-      mensal: "https://pay.cakto.com.br/gswneg7_927010",
-      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
-      anual: "https://pay.cakto.com.br/eorwpqd_927027",
+      // Rollback Cakto: trocar pelos links pay.cakto.com.br anteriores se precisar voltar o checkout BR.
+      diario: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36794612",
+      mensal: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795113",
+      trimestral: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795333",
+      anual: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795365",
     };
-    const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
-    let finalCheckoutUrl = checkoutUrl;
     const attribution = getStoredAttribution();
 
     // Grava o lead no Supabase externo antes de redirecionar pro checkout.
     const { supabaseExternal, PLANO_CENTAVOS } = await import(
       "@/integrations/supabase-external/client"
     );
-    const leadId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const recentSince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const latestAttribution = {
+      ...(attribution.utm_source ? { utm_source: attribution.utm_source } : {}),
+      ...(attribution.utm_medium ? { utm_medium: attribution.utm_medium } : {}),
+      ...(attribution.utm_campaign ? { utm_campaign: attribution.utm_campaign } : {}),
+      ...(attribution.utm_content ? { utm_content: attribution.utm_content } : {}),
+      ...(attribution.utm_term ? { utm_term: attribution.utm_term } : {}),
+      ...(attribution.utm_id ? { utm_id: attribution.utm_id } : {}),
+      ...(attribution.fbclid ? { fbclid: attribution.fbclid } : {}),
+      ...(attribution.campaign_id ? { campaign_id: attribution.campaign_id } : {}),
+      ...(attribution.adset_id ? { adset_id: attribution.adset_id } : {}),
+      ...(attribution.ad_id ? { ad_id: attribution.ad_id } : {}),
+    };
+    const [emailLookup, phoneLookup] = await Promise.all([
+      supabaseExternal
+        .from("leads_checkout_br")
+        .select("id, criado_em")
+        .eq("status", "pendente")
+        .is("comprado_em", null)
+        .gte("criado_em", recentSince)
+        .ilike("email", escapePostgrestLike(normalizedForm.email))
+        .order("criado_em", { ascending: false })
+        .limit(5),
+      supabaseExternal
+        .from("leads_checkout_br")
+        .select("id, criado_em")
+        .eq("status", "pendente")
+        .is("comprado_em", null)
+        .gte("criado_em", recentSince)
+        .eq("telefone", normalizedForm.telefone)
+        .order("criado_em", { ascending: false })
+        .limit(5),
+    ]);
+
+    if (emailLookup.error || phoneLookup.error) {
+      console.error("Falha ao verificar lead recente:", {
+        emailError: emailLookup.error,
+        phoneError: phoneLookup.error,
+      });
+      throw new Error(
+        "Não foi possível verificar seus dados. Tente novamente antes de ir ao pagamento.",
+      );
+    }
+
+    const recentLeads = new Map<string, { id: string; criado_em: string }>();
+    for (const lead of [...(emailLookup.data ?? []), ...(phoneLookup.data ?? [])]) {
+      recentLeads.set(lead.id, lead);
+    }
+    const existingLead = [...recentLeads.values()].sort(
+      (a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime(),
+    )[0];
+
+    let leadId = crypto.randomUUID();
+    let reusedLead = false;
+    if (existingLead) {
+      const { data: updatedLead, error: updateError } = await supabaseExternal
+        .from("leads_checkout_br")
+        .update({
+          nome: normalizedForm.nome,
+          email: normalizedForm.email,
+          telefone: normalizedForm.telefone,
+          plano,
+          valor_centavos: PLANO_CENTAVOS[plano],
+          origem: "lp_brasil",
+          idioma: "pt",
+          etapa_funil: "formulario_preenchido",
+          updated_at: now,
+          ...latestAttribution,
+        })
+        .eq("id", existingLead.id)
+        .eq("status", "pendente")
+        .is("comprado_em", null)
+        .gte("criado_em", recentSince)
+        .select("id")
+        .maybeSingle();
+
+      if (updateError) {
+        console.error("Falha ao atualizar lead recente:", updateError);
+        throw new Error(
+          "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
+        );
+      }
+
+      if (updatedLead) {
+        leadId = updatedLead.id;
+        reusedLead = true;
+      }
+    }
+
+    if (!reusedLead) {
+      const { error: insertError } = await supabaseExternal
+        .from("leads_checkout_br")
+        .insert({
+          id: leadId,
+          nome: normalizedForm.nome,
+          email: normalizedForm.email,
+          telefone: normalizedForm.telefone,
+          plano,
+          status: "pendente",
+          etapa_funil: "formulario_preenchido",
+          origem: "lp_brasil",
+          idioma: "pt",
+          utm_source: attribution.utm_source ?? null,
+          utm_medium: attribution.utm_medium ?? null,
+          utm_campaign: attribution.utm_campaign ?? null,
+          utm_content: attribution.utm_content ?? null,
+          utm_term: attribution.utm_term ?? null,
+          utm_id: attribution.utm_id ?? null,
+          fbclid: attribution.fbclid ?? null,
+          campaign_id: attribution.campaign_id ?? null,
+          adset_id: attribution.adset_id ?? null,
+          ad_id: attribution.ad_id ?? null,
+          valor_centavos: PLANO_CENTAVOS[plano],
+        });
+
+      if (insertError) {
+        console.error("Falha ao gravar assinatura:", insertError);
+        throw new Error(
+          "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
+        );
+      }
+    }
+
+    const checkoutUrl = buildTrackedCheckoutUrl(checkoutUrls[plano]);
     const trackedCheckoutUrl = new URL(checkoutUrl);
     trackedCheckoutUrl.searchParams.set("lead_id", leadId);
     trackedCheckoutUrl.searchParams.set("external_reference", leadId);
     trackedCheckoutUrl.searchParams.set("reference", leadId);
-    finalCheckoutUrl = trackedCheckoutUrl.toString();
+    const finalCheckoutUrl = trackedCheckoutUrl.toString();
 
-    const { error: insErr } = await supabaseExternal
+    const { data: checkoutLead, error: checkoutErr } = await supabaseExternal
       .from("leads_checkout_br")
-      .insert({
-        id: leadId,
-        nome: formData.name,
-        email: formData.email,
-        telefone: formData.whatsapp || null,
-        plano,
-        status: "pendente",
-        etapa_funil: "formulario_preenchido",
-        origem: "lp_brasil",
-        idioma: "pt",
+      .update({
+        payment_provider: "appmax",
+        etapa_funil: "checkout_iniciado",
         checkout_url: finalCheckoutUrl,
-        utm_source: attribution.utm_source ?? null,
-        utm_medium: attribution.utm_medium ?? null,
-        utm_campaign: attribution.utm_campaign ?? null,
-        utm_content: attribution.utm_content ?? null,
-        utm_term: attribution.utm_term ?? null,
-        utm_id: attribution.utm_id ?? null,
-        fbclid: attribution.fbclid ?? null,
-        campaign_id: attribution.campaign_id ?? null,
-        adset_id: attribution.adset_id ?? null,
-        ad_id: attribution.ad_id ?? null,
-        valor_centavos: PLANO_CENTAVOS[plano],
-      });
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", leadId)
+      .eq("status", "pendente")
+      .is("comprado_em", null)
+      .select("id")
+      .maybeSingle();
 
-    if (insErr) {
-      console.error("Falha ao gravar assinatura:", insErr);
+    if (checkoutErr || !checkoutLead) {
+      console.error("Falha ao preparar checkout Appmax:", checkoutErr);
       throw new Error(
-        "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
+        "Não foi possível preparar seu checkout. Tente novamente antes de ir ao pagamento.",
       );
     }
 
@@ -1586,17 +1739,20 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
 
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
+      <div className="absolute inset-0 bg-black/88 sm:bg-black/80 sm:backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-md card-glow rounded-[32px] p-8 animate-in zoom-in-95 fade-in duration-300 border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] bg-[#0A0A0B]">
+      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto card-glow rounded-[24px] p-5 animate-in zoom-in-95 fade-in duration-300 border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] bg-[#0A0A0B] sm:rounded-[32px] sm:p-8">
         <button onClick={onClose} className="absolute top-6 right-6 text-muted-foreground hover:text-white transition-colors">
           <X className="h-6 w-6" />
         </button>
 
         <div className="flex flex-col items-center text-center mb-8">
           <img 
-            src="/freelovable-logo-interface.png"
+            src="/freelovable-logo-interface-160.webp"
+            width={160}
+            height={160}
+            decoding="async"
             className="h-12 w-12 rounded-xl object-cover mb-4" 
             alt="Logo" 
           />
@@ -1615,6 +1771,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
                 required type="text" placeholder="Seu nome aqui" 
                 className="w-full bg-muted/20 border border-white/5 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:border-brand-pink/50 transition-colors"
                 value={formData.name}
+                autoComplete="name"
                 onChange={e => setFormData({...formData, name: e.target.value})}
               />
             </div>
@@ -1628,6 +1785,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
                 required type="email" placeholder="exemplo@email.com" 
                 className="w-full bg-muted/20 border border-white/5 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:border-brand-pink/50 transition-colors"
                 value={formData.email}
+                autoComplete="email"
                 onChange={e => setFormData({...formData, email: e.target.value})}
               />
             </div>
@@ -1641,7 +1799,12 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
                 required type="tel" placeholder="(00) 00000-0000" 
                 className="w-full bg-muted/20 border border-white/5 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:border-brand-pink/50 transition-colors"
                 value={formData.whatsapp}
-                onChange={e => setFormData({...formData, whatsapp: e.target.value})}
+                inputMode="tel"
+                autoComplete="tel"
+                onChange={e => setFormData({
+                  ...formData,
+                  whatsapp: sanitizePhoneInput(e.target.value),
+                })}
               />
             </div>
           </div>

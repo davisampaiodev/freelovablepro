@@ -49,18 +49,18 @@
   --secondary-foreground: oklch(0.97 0.01 20);
   --muted: oklch(0.19 0.03 309);
   --muted-foreground: oklch(0.76 0.022 14);
-  --accent: oklch(0.73 0.255 333);
+  --accent: oklch(0.62 0.26 292);
   --accent-foreground: oklch(0.985 0.008 20);
   --destructive: oklch(0.66 0.245 24);
   --destructive-foreground: oklch(0.985 0.008 20);
   --border: oklch(0.42 0.08 321 / 34%);
   --input: oklch(0.195 0.036 313);
-  --ring: oklch(0.72 0.24 334);
+  --ring: oklch(0.62 0.25 292);
 
   --brand-orange: oklch(0.79 0.21 45);
   --brand-coral: oklch(0.74 0.25 20);
-  --brand-pink: oklch(0.71 0.29 337);
-  --brand-magenta: oklch(0.63 0.28 318);
+  --brand-pink: oklch(0.62 0.26 292);
+  --brand-magenta: oklch(0.58 0.25 292);
   --brand-purple: oklch(0.56 0.27 293);
   --brand-blue: oklch(0.64 0.27 265);
   --success: oklch(0.82 0.18 151);
@@ -445,6 +445,77 @@
 @utility animate-email-item-in {
   animation: email-item-in 3.8s ease-out infinite;
   animation-delay: var(--email-item-delay, 0s);
+}
+
+/* Mobile keeps the neon identity without forcing constant GPU compositing. */
+@media (max-width: 767px) {
+  body {
+    background-image:
+      radial-gradient(circle at 18% 6%, color-mix(in oklab, var(--brand-orange) 18%, transparent) 0, transparent 24%),
+      radial-gradient(circle at 82% 68%, color-mix(in oklab, var(--brand-purple) 15%, transparent) 0, transparent 28%),
+      linear-gradient(180deg, oklch(0.14 0.042 20) 0%, oklch(0.11 0.03 320) 18%, oklch(0.105 0.03 312) 55%, oklch(0.11 0.028 298) 100%);
+    background-attachment: scroll;
+  }
+
+  main > section:not(:first-of-type) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+  .card-glow {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.04),
+      0 12px 28px -24px color-mix(in oklab, var(--brand-purple) 32%, transparent);
+  }
+
+  .text-gradient,
+  .hero-highlight {
+    filter: none;
+  }
+
+  .btn-gradient {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 8px 22px -12px color-mix(in oklab, var(--brand-pink) 42%, transparent);
+  }
+
+  .btn-gradient::after {
+    display: none;
+  }
+
+  .btn-gradient:hover {
+    transform: none;
+    box-shadow: 0 8px 22px -12px color-mix(in oklab, var(--brand-pink) 42%, transparent);
+  }
+
+  .animate-bounce-x,
+  .animate-email-arrive,
+  .animate-email-pulse,
+  .animate-email-item-in,
+  .animate-pulse {
+    animation: none !important;
+  }
+
+  .animate-email-item-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Scrollbar Customization */

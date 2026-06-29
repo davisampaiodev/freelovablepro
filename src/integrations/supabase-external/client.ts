@@ -14,8 +14,8 @@ export const PLANO_CENTAVOS: Record<
   "diario" | "mensal" | "trimestral" | "anual",
   number
 > = {
-  diario: 990,
+  diario: 1700,
   mensal: 4700,
-  trimestral: 9700,
-  anual: 19700,
+  trimestral: 10113,
+  anual: 26142,
 };
