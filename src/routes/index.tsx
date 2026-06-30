@@ -1605,17 +1605,17 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     ]);
 
     if (emailLookup.error || phoneLookup.error) {
-      console.error("Falha ao verificar lead recente:", {
+      console.warn("Não foi possível verificar lead recente; seguindo com novo cadastro:", {
         emailError: emailLookup.error,
         phoneError: phoneLookup.error,
       });
-      throw new Error(
-        "Não foi possível verificar seus dados. Tente novamente antes de ir ao pagamento.",
-      );
     }
 
     const recentLeads = new Map<string, { id: string; criado_em: string }>();
-    for (const lead of [...(emailLookup.data ?? []), ...(phoneLookup.data ?? [])]) {
+    for (const lead of [
+      ...(emailLookup.error ? [] : (emailLookup.data ?? [])),
+      ...(phoneLookup.error ? [] : (phoneLookup.data ?? [])),
+    ]) {
       recentLeads.set(lead.id, lead);
     }
     const existingLead = [...recentLeads.values()].sort(
@@ -1625,7 +1625,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     let leadId = crypto.randomUUID();
     let reusedLead = false;
     if (existingLead) {
-      const { data: updatedLead, error: updateError } = await supabaseExternal
+      const { error: updateError } = await supabaseExternal
         .from("leads_checkout_br")
         .update({
           nome: normalizedForm.nome,
@@ -1642,9 +1642,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         .eq("id", existingLead.id)
         .eq("status", "pendente")
         .is("comprado_em", null)
-        .gte("criado_em", recentSince)
-        .select("id")
-        .maybeSingle();
+        .gte("criado_em", recentSince);
 
       if (updateError) {
         console.error("Falha ao atualizar lead recente:", updateError);
@@ -1653,10 +1651,8 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         );
       }
 
-      if (updatedLead) {
-        leadId = updatedLead.id;
-        reusedLead = true;
-      }
+      leadId = existingLead.id;
+      reusedLead = true;
     }
 
     if (!reusedLead) {
@@ -1700,7 +1696,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     trackedCheckoutUrl.searchParams.set("reference", leadId);
     const finalCheckoutUrl = trackedCheckoutUrl.toString();
 
-    const { data: checkoutLead, error: checkoutErr } = await supabaseExternal
+    const { error: checkoutErr } = await supabaseExternal
       .from("leads_checkout_br")
       .update({
         payment_provider: "appmax",
@@ -1710,11 +1706,9 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       })
       .eq("id", leadId)
       .eq("status", "pendente")
-      .is("comprado_em", null)
-      .select("id")
-      .maybeSingle();
+      .is("comprado_em", null);
 
-    if (checkoutErr || !checkoutLead) {
+    if (checkoutErr) {
       console.error("Falha ao preparar checkout Appmax:", checkoutErr);
       throw new Error(
         "Não foi possível preparar seu checkout. Tente novamente antes de ir ao pagamento.",
