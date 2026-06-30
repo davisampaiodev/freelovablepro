@@ -1557,11 +1557,10 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       whatsapp: normalizedForm.telefone,
     });
     const checkoutUrls: Record<typeof plano, string> = {
-      // Rollback Cakto: trocar pelos links pay.cakto.com.br anteriores se precisar voltar o checkout BR.
-      diario: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36794612",
-      mensal: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795113",
-      trimestral: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795333",
-      anual: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795365",
+      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
+      mensal: "https://pay.cakto.com.br/gswneg7_927010",
+      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
+      anual: "https://pay.cakto.com.br/eorwpqd_927027",
     };
     const attribution = getStoredAttribution();
 
@@ -1699,7 +1698,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const { error: checkoutErr } = await supabaseExternal
       .from("leads_checkout_br")
       .update({
-        payment_provider: "appmax",
+        payment_provider: "cakto",
         etapa_funil: "checkout_iniciado",
         checkout_url: finalCheckoutUrl,
         updated_at: new Date().toISOString(),
@@ -1709,7 +1708,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       .is("comprado_em", null);
 
     if (checkoutErr) {
-      console.error("Falha ao preparar checkout Appmax:", checkoutErr);
+      console.error("Falha ao preparar checkout Cakto:", checkoutErr);
       throw new Error(
         "Não foi possível preparar seu checkout. Tente novamente antes de ir ao pagamento.",
       );
