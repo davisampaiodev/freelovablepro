@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/obrigado")({
   head: () => ({
@@ -7,7 +8,7 @@ export const Route = createFileRoute("/obrigado")({
       {
         name: "description",
         content:
-          "Seu pagamento foi recebido. Em instantes você receberá seu token de acesso por email.",
+          "Seu pagamento foi recebido. Fale com nosso suporte para receber seu token de acesso.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -30,23 +31,19 @@ function ObrigadoPage() {
         <p className="text-base text-muted-foreground mb-6 leading-relaxed">
           Obrigado pela sua compra 🎉
           <br />
-          Em alguns instantes você receberá seu{" "}
-          <strong className="text-foreground">
-            token de acesso
-          </strong>{" "}
-          no email informado no checkout.
+          Seu pagamento foi confirmado. Consulte o aviso abaixo para receber
+          seu <strong className="text-foreground">token de acesso</strong>.
         </p>
 
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 mb-6 text-left">
-          <p className="text-sm text-amber-200 font-semibold mb-1">
-            ⚠️ Não recebeu em até 5 minutos?
+        <div className="rounded-2xl border border-amber-400/40 bg-amber-400/10 p-5 mb-6 text-left">
+          <p className="text-base text-amber-200 font-bold mb-2">
+            ⚠️ Aviso importante sobre seu token
           </p>
 
-          <p className="text-xs text-amber-100/80 leading-relaxed">
-            Verifique sua caixa de <strong>spam</strong> ou{" "}
-            <strong>lixo eletrônico</strong>. Alguns provedores
-            (Outlook, Hotmail, Yahoo) costumam filtrar o email
-            automaticamente.
+          <p className="text-sm text-amber-100/85 leading-relaxed">
+            Estamos enfrentando um problema temporário na entrega automática
+            dos tokens. Para receber seu acesso, envie uma mensagem ao nosso
+            suporte pelo WhatsApp e informe o e-mail usado na compra.
           </p>
         </div>
 
@@ -56,31 +53,28 @@ function ObrigadoPage() {
           </p>
 
           <ol className="text-sm space-y-1.5 list-decimal list-inside text-foreground/90">
-            <li>Abra o email com o assunto "Seu token FreeLovable"</li>
-            <li>Copie o token</li>
-            <li>Cole na extensão FreeLovable e ative</li>
+            <li>Clique em "Falar com o suporte" abaixo</li>
+            <li>Informe o e-mail utilizado na compra</li>
+            <li>Nosso suporte enviará seu token de acesso</li>
           </ol>
         </div>
 
+        <a
+          href="https://wa.me/5571993388520"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#1ebe57]"
+        >
+          <MessageCircle className="h-5 w-5" />
+          Falar com o suporte e receber meu token
+        </a>
+
         <Link
           to="/"
-          className="btn-gradient inline-block px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm"
+          className="mt-4 inline-block rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
         >
           Voltar para a página inicial
         </Link>
-
-        <p className="text-xs text-muted-foreground mt-6 mb-3">
-          Precisa de ajuda? Fale com nosso suporte:
-        </p>
-
-        <a
-          href="https://wa.me/5571983463684"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] transition-colors text-white font-semibold text-sm"
-        >
-          WhatsApp: (71) 98346-3684
-        </a>
       </div>
     </main>
   );

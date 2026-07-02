@@ -14,6 +14,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
+import { Route as ApiPublicWebhookAppmaxRouteImport } from './routes/api/public/webhook-appmax'
+import { Route as ApiPublicCriarCheckoutAppmaxRouteImport } from './routes/api/public/criar-checkout-appmax'
 import { Route as ApiInternalWhatsappPixPreviewRouteImport } from './routes/api/internal/whatsapp-pix-preview'
 import { Route as ApiInternalWhatsappMarkSentRouteImport } from './routes/api/internal/whatsapp-mark-sent'
 import { Route as ApiInternalWhatsappFormularioPreviewRouteImport } from './routes/api/internal/whatsapp-formulario-preview'
@@ -44,6 +46,17 @@ const ApiPublicWebhookCaktoRoute = ApiPublicWebhookCaktoRouteImport.update({
   path: '/api/public/webhook-cakto',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhookAppmaxRoute = ApiPublicWebhookAppmaxRouteImport.update({
+  id: '/api/public/webhook-appmax',
+  path: '/api/public/webhook-appmax',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCriarCheckoutAppmaxRoute =
+  ApiPublicCriarCheckoutAppmaxRouteImport.update({
+    id: '/api/public/criar-checkout-appmax',
+    path: '/api/public/criar-checkout-appmax',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiInternalWhatsappPixPreviewRoute =
   ApiInternalWhatsappPixPreviewRouteImport.update({
     id: '/api/internal/whatsapp-pix-preview',
@@ -84,6 +97,8 @@ export interface FileRoutesByFullPath {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
+  '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
 export interface FileRoutesByTo {
@@ -95,6 +110,8 @@ export interface FileRoutesByTo {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
+  '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
 export interface FileRoutesById {
@@ -108,6 +125,8 @@ export interface FileRoutesById {
   '/api/internal/whatsapp-formulario-preview': typeof ApiInternalWhatsappFormularioPreviewRoute
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
+  '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
 export interface FileRouteTypes {
@@ -121,6 +140,8 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
+    | '/api/public/criar-checkout-appmax'
+    | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +153,8 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
+    | '/api/public/criar-checkout-appmax'
+    | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   id:
     | '__root__'
@@ -144,6 +167,8 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-formulario-preview'
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
+    | '/api/public/criar-checkout-appmax'
+    | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   fileRoutesById: FileRoutesById
 }
@@ -156,6 +181,8 @@ export interface RootRouteChildren {
   ApiInternalWhatsappFormularioPreviewRoute: typeof ApiInternalWhatsappFormularioPreviewRoute
   ApiInternalWhatsappMarkSentRoute: typeof ApiInternalWhatsappMarkSentRoute
   ApiInternalWhatsappPixPreviewRoute: typeof ApiInternalWhatsappPixPreviewRoute
+  ApiPublicCriarCheckoutAppmaxRoute: typeof ApiPublicCriarCheckoutAppmaxRoute
+  ApiPublicWebhookAppmaxRoute: typeof ApiPublicWebhookAppmaxRoute
   ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
 }
 
@@ -194,6 +221,20 @@ declare module '@tanstack/react-router' {
       path: '/api/public/webhook-cakto'
       fullPath: '/api/public/webhook-cakto'
       preLoaderRoute: typeof ApiPublicWebhookCaktoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhook-appmax': {
+      id: '/api/public/webhook-appmax'
+      path: '/api/public/webhook-appmax'
+      fullPath: '/api/public/webhook-appmax'
+      preLoaderRoute: typeof ApiPublicWebhookAppmaxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/criar-checkout-appmax': {
+      id: '/api/public/criar-checkout-appmax'
+      path: '/api/public/criar-checkout-appmax'
+      fullPath: '/api/public/criar-checkout-appmax'
+      preLoaderRoute: typeof ApiPublicCriarCheckoutAppmaxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/internal/whatsapp-pix-preview': {
@@ -256,6 +297,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiInternalWhatsappFormularioPreviewRoute,
   ApiInternalWhatsappMarkSentRoute: ApiInternalWhatsappMarkSentRoute,
   ApiInternalWhatsappPixPreviewRoute: ApiInternalWhatsappPixPreviewRoute,
+  ApiPublicCriarCheckoutAppmaxRoute: ApiPublicCriarCheckoutAppmaxRoute,
+  ApiPublicWebhookAppmaxRoute: ApiPublicWebhookAppmaxRoute,
   ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
 }
 export const routeTree = rootRouteImport
