@@ -52,7 +52,7 @@ function Nav({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
         </nav>
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="https://wa.me/+5571983463684"
+            href="https://wa.me/5571993388520"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-gradient px-4 py-2 rounded-lg text-xs font-bold tracking-wide inline-flex items-center gap-2"
@@ -1557,10 +1557,15 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       whatsapp: normalizedForm.telefone,
     });
     const checkoutUrls: Record<typeof plano, string> = {
-      diario: "https://pay.cakto.com.br/tmtnfcw_926988",
-      mensal: "https://pay.cakto.com.br/gswneg7_927010",
-      trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
-      anual: "https://pay.cakto.com.br/eorwpqd_927027",
+      // Rollback Cakto:
+      // diario: "https://pay.cakto.com.br/tmtnfcw_926988",
+      // mensal: "https://pay.cakto.com.br/gswneg7_927010",
+      // trimestral: "https://pay.cakto.com.br/pyfdu57_927020",
+      // anual: "https://pay.cakto.com.br/eorwpqd_927027",
+      diario: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36794612",
+      mensal: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795113",
+      trimestral: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795333",
+      anual: "https://freelovablepro.carrinho.app/one-checkout/ocmtb/36795365",
     };
     const attribution = getStoredAttribution();
 
@@ -1698,7 +1703,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const { error: checkoutErr } = await supabaseExternal
       .from("leads_checkout_br")
       .update({
-        payment_provider: "cakto",
+        payment_provider: "appmax",
         etapa_funil: "checkout_iniciado",
         checkout_url: finalCheckoutUrl,
         updated_at: new Date().toISOString(),
@@ -1708,7 +1713,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       .is("comprado_em", null);
 
     if (checkoutErr) {
-      console.error("Falha ao preparar checkout Cakto:", checkoutErr);
+      console.error("Falha ao preparar checkout Appmax:", checkoutErr);
       throw new Error(
         "Não foi possível preparar seu checkout. Tente novamente antes de ir ao pagamento.",
       );
