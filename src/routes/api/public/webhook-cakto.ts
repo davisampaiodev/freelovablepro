@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 type LeadRow = {
-  ad_id: string | null;
-  adset_id: string | null;
-  campaign_id: string | null;
   id: string;
   criado_em: string;
   status_pagamento: string;
@@ -13,12 +10,8 @@ type LeadRow = {
   plano: "diario" | "mensal" | "trimestral" | "anual";
   valor_oferta: number | null;
   origem: string | null;
-  utm_medium: string | null;
   campanha: string | null;
   criativo: string | null;
-  utm_term: string | null;
-  utm_id: string | null;
-  fbclid: string | null;
   checkout_id: string | null;
   payment_id: string | null;
 };
@@ -186,7 +179,7 @@ async function queryUniqueLead(
   let query = supabaseAdmin
     .from("leads_checkout_br")
     .select(
-      "id, criado_em, status_pagamento, email, telefone, nome, plano, valor_oferta, origem, utm_medium, campanha, criativo, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id, checkout_id, payment_id",
+      "id, criado_em, status_pagamento, email, telefone, nome, plano, valor_oferta, origem, campanha, criativo, checkout_id, payment_id",
     )
     .order("criado_em", { ascending: false })
     .limit(2);

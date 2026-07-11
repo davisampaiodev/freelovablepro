@@ -3,14 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 type Plano = "diario" | "mensal" | "trimestral" | "anual";
 
 type LeadRow = {
-  ad_id: string | null;
-  adset_id: string | null;
-  campaign_id: string | null;
   checkout_id: string | null;
   checkout_url: string | null;
   email: string;
   etapa_funil: string;
-  fbclid: string | null;
   id: string;
   nome: string;
   payment_provider: string | null;
@@ -21,10 +17,7 @@ type LeadRow = {
   atualizado_em: string;
   campanha: string | null;
   criativo: string | null;
-  utm_id: string | null;
-  utm_medium: string | null;
   origem: string | null;
-  utm_term: string | null;
   valor_oferta: number | null;
 };
 
@@ -186,15 +179,8 @@ function buildAppmaxPaymentLinkPayload(
       lead_id: lead.id,
       plano: lead.plano,
       utm_source: lead.origem,
-      utm_medium: lead.utm_medium,
       utm_campaign: lead.campanha,
       utm_content: lead.criativo,
-      utm_term: lead.utm_term,
-      utm_id: lead.utm_id,
-      fbclid: lead.fbclid,
-      campaign_id: lead.campaign_id,
-      adset_id: lead.adset_id,
-      ad_id: lead.ad_id,
     },
     customer: {
       name: lead.nome,
@@ -395,7 +381,7 @@ export const Route = createFileRoute("/api/public/criar-checkout-appmax")({
           const { data: lead, error: lookupError } = await supabaseAdmin
             .from("leads_checkout_br")
             .select(
-              "id, nome, email, telefone, plano, status_pagamento, etapa_funil, payment_provider, payment_id, checkout_id, checkout_url, valor_oferta, atualizado_em, origem, utm_medium, campanha, criativo, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id",
+              "id, nome, email, telefone, plano, status_pagamento, etapa_funil, payment_provider, payment_id, checkout_id, checkout_url, valor_oferta, atualizado_em, origem, campanha, criativo",
             )
             .eq("id", leadId)
             .maybeSingle();

@@ -129,11 +129,8 @@ export type Database = {
       }
       leads_checkout_br: {
         Row: {
-          ad_id: string | null
-          adset_id: string | null
           atualizado_em: string
           campanha: string | null
-          campaign_id: string | null
           checkout_id: string | null
           checkout_iniciado_em: string | null
           checkout_url: string | null
@@ -144,7 +141,6 @@ export type Database = {
           erro_processamento: string | null
           etapa_funil: string
           external_reference: string | null
-          fbclid: string | null
           forma_pagamento: string | null
           id: string
           nome: string
@@ -165,9 +161,6 @@ export type Database = {
           ultima_recuperacao_em: string | null
           ultimo_evento_webhook: string | null
           ultimo_webhook_em: string | null
-          utm_id: string | null
-          utm_medium: string | null
-          utm_term: string | null
           whatsapp_status: string
           whatsapp_opt_out: boolean
           whatsapp_ultimo_erro: string | null
@@ -175,11 +168,8 @@ export type Database = {
           valor_pago: number | null
         }
         Insert: {
-          ad_id?: string | null
-          adset_id?: string | null
           atualizado_em?: string
           campanha?: string | null
-          campaign_id?: string | null
           checkout_id?: string | null
           checkout_iniciado_em?: string | null
           checkout_url?: string | null
@@ -190,7 +180,6 @@ export type Database = {
           erro_processamento?: string | null
           etapa_funil?: string
           external_reference?: string | null
-          fbclid?: string | null
           forma_pagamento?: string | null
           id?: string
           nome: string
@@ -211,9 +200,6 @@ export type Database = {
           ultima_recuperacao_em?: string | null
           ultimo_evento_webhook?: string | null
           ultimo_webhook_em?: string | null
-          utm_id?: string | null
-          utm_medium?: string | null
-          utm_term?: string | null
           whatsapp_status?: string
           whatsapp_opt_out?: boolean
           whatsapp_ultimo_erro?: string | null
@@ -221,11 +207,8 @@ export type Database = {
           valor_pago?: number | null
         }
         Update: {
-          ad_id?: string | null
-          adset_id?: string | null
           atualizado_em?: string
           campanha?: string | null
-          campaign_id?: string | null
           checkout_id?: string | null
           checkout_iniciado_em?: string | null
           checkout_url?: string | null
@@ -236,7 +219,6 @@ export type Database = {
           erro_processamento?: string | null
           etapa_funil?: string
           external_reference?: string | null
-          fbclid?: string | null
           forma_pagamento?: string | null
           id?: string
           nome?: string
@@ -257,9 +239,6 @@ export type Database = {
           ultima_recuperacao_em?: string | null
           ultimo_evento_webhook?: string | null
           ultimo_webhook_em?: string | null
-          utm_id?: string | null
-          utm_medium?: string | null
-          utm_term?: string | null
           whatsapp_status?: string
           whatsapp_opt_out?: boolean
           whatsapp_ultimo_erro?: string | null

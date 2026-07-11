@@ -1577,15 +1577,8 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const recentSince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const latestAttribution = {
       ...(attribution.utm_source ? { origem: attribution.utm_source } : {}),
-      ...(attribution.utm_medium ? { utm_medium: attribution.utm_medium } : {}),
       ...(attribution.utm_campaign ? { campanha: attribution.utm_campaign } : {}),
       ...(attribution.utm_content ? { criativo: attribution.utm_content } : {}),
-      ...(attribution.utm_term ? { utm_term: attribution.utm_term } : {}),
-      ...(attribution.utm_id ? { utm_id: attribution.utm_id } : {}),
-      ...(attribution.fbclid ? { fbclid: attribution.fbclid } : {}),
-      ...(attribution.campaign_id ? { campaign_id: attribution.campaign_id } : {}),
-      ...(attribution.adset_id ? { adset_id: attribution.adset_id } : {}),
-      ...(attribution.ad_id ? { ad_id: attribution.ad_id } : {}),
     };
     const [emailLookup, phoneLookup] = await Promise.all([
       supabaseExternal
@@ -1671,15 +1664,8 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
           status_pagamento: "pendente",
           etapa_funil: "formulario_preenchido",
           origem: attribution.utm_source ?? null,
-          utm_medium: attribution.utm_medium ?? null,
           campanha: attribution.utm_campaign ?? null,
           criativo: attribution.utm_content ?? null,
-          utm_term: attribution.utm_term ?? null,
-          utm_id: attribution.utm_id ?? null,
-          fbclid: attribution.fbclid ?? null,
-          campaign_id: attribution.campaign_id ?? null,
-          adset_id: attribution.adset_id ?? null,
-          ad_id: attribution.ad_id ?? null,
           valor_oferta: PLANO_VALOR_OFERTA[plano],
         });
 
