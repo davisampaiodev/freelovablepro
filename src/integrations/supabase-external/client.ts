@@ -10,12 +10,12 @@ export const supabaseExternal = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-export const PLANO_CENTAVOS: Record<
+export const PLANO_VALOR_OFERTA: Record<
   "diario" | "mensal" | "trimestral" | "anual",
   number
 > = {
-  diario: 1700,
-  mensal: 4700,
-  trimestral: 10113,
-  anual: 26142,
+  diario: 17,
+  mensal: 47,
+  trimestral: 101.13,
+  anual: 261.42,
 };

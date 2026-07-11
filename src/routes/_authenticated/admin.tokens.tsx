@@ -140,8 +140,7 @@ function AdminTokensPage() {
 
   const ativas = assinaturas.filter(
     (a) =>
-      (a.status === "aprovado" || a.status === "concluida") &&
-      (!a.expira_em || new Date(a.expira_em) > new Date()),
+      a.status_pagamento === "aprovado" || a.status_pagamento === "concluida",
   );
 
   function submitBulk(plano: Plano) {
@@ -325,15 +324,13 @@ function AdminTokensPage() {
                   </td>
                   <td className="text-center">{PLANO_LABEL[a.plano as Plano] ?? a.plano}</td>
                   <td className="text-center">
-                    <span className="text-success">{a.status}</span>
+                    <span className="text-success">{a.status_pagamento}</span>
                   </td>
                   <td className="text-center font-mono text-xs">
-                    {a.token_valor ?? "—"}
+                    Fornecedor
                   </td>
                   <td className="text-center text-xs text-muted-foreground">
-                    {a.expira_em
-                      ? new Date(a.expira_em).toLocaleDateString("pt-BR")
-                      : "—"}
+                    —
                   </td>
                   <td className="text-right">
                     <button

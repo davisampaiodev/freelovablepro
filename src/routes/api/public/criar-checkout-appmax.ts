@@ -16,16 +16,16 @@ type LeadRow = {
   payment_provider: string | null;
   payment_id: string | null;
   plano: Plano;
-  status: string;
+  status_pagamento: string;
   telefone: string | null;
-  updated_at: string;
-  utm_campaign: string | null;
-  utm_content: string | null;
+  atualizado_em: string;
+  campanha: string | null;
+  criativo: string | null;
   utm_id: string | null;
   utm_medium: string | null;
-  utm_source: string | null;
+  origem: string | null;
   utm_term: string | null;
-  valor_centavos: number;
+  valor_oferta: number | null;
 };
 
 type AppmaxConfig = {
@@ -87,12 +87,12 @@ function isRecentAppmaxCheckout(lead: LeadRow) {
   if (
     lead.payment_provider !== "appmax" ||
     !lead.checkout_url ||
-    lead.status !== "pendente"
+    lead.status_pagamento !== "pendente"
   ) {
     return false;
   }
 
-  const updatedAt = new Date(lead.updated_at).getTime();
+  const updatedAt = new Date(lead.atualizado_em).getTime();
   if (!Number.isFinite(updatedAt)) return false;
   return Date.now() - updatedAt <= RECENT_CHECKOUT_WINDOW_MS;
 }
@@ -174,7 +174,8 @@ function buildAppmaxPaymentLinkPayload(
   lead: LeadRow,
   config: { siteUrl: string; webhookSecret: string },
 ) {
-  const valorCentavos = PLANO_CENTAVOS[lead.plano] ?? lead.valor_centavos;
+  const valorOferta = lead.valor_oferta ?? PLANO_CENTAVOS[lead.plano] / 100;
+  const valorCentavos = Math.round(valorOferta * 100);
   const webhookUrl = buildWebhookUrl(config.siteUrl, config.webhookSecret);
 
   // Payment link adapter: confirm field names against the real Appmax API docs before production.
@@ -184,10 +185,10 @@ function buildAppmaxPaymentLinkPayload(
     metadata: {
       lead_id: lead.id,
       plano: lead.plano,
-      utm_source: lead.utm_source,
+      utm_source: lead.origem,
       utm_medium: lead.utm_medium,
-      utm_campaign: lead.utm_campaign,
-      utm_content: lead.utm_content,
+      utm_campaign: lead.campanha,
+      utm_content: lead.criativo,
       utm_term: lead.utm_term,
       utm_id: lead.utm_id,
       fbclid: lead.fbclid,
@@ -394,7 +395,7 @@ export const Route = createFileRoute("/api/public/criar-checkout-appmax")({
           const { data: lead, error: lookupError } = await supabaseAdmin
             .from("leads_checkout_br")
             .select(
-              "id, nome, email, telefone, plano, status, etapa_funil, payment_provider, payment_id, checkout_id, checkout_url, valor_centavos, updated_at, utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id",
+              "id, nome, email, telefone, plano, status_pagamento, etapa_funil, payment_provider, payment_id, checkout_id, checkout_url, valor_oferta, atualizado_em, origem, utm_medium, campanha, criativo, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id",
             )
             .eq("id", leadId)
             .maybeSingle();
@@ -413,7 +414,7 @@ export const Route = createFileRoute("/api/public/criar-checkout-appmax")({
 
           const leadRow = lead as LeadRow;
 
-          if (leadRow.status !== "pendente") {
+          if (leadRow.status_pagamento !== "pendente") {
             return Response.json(
               { error: "lead is not pending" },
               { status: 409 },
@@ -453,13 +454,15 @@ export const Route = createFileRoute("/api/public/criar-checkout-appmax")({
               payment_provider: "appmax",
               etapa_funil: "checkout_iniciado",
               checkout_url: appmaxResult.checkoutUrl,
+              external_reference: leadRow.id,
+              checkout_iniciado_em: now,
               ...(appmaxResult.checkoutId
                 ? { checkout_id: appmaxResult.checkoutId }
                 : {}),
               ...(appmaxResult.paymentId
                 ? { payment_id: appmaxResult.paymentId }
                 : {}),
-              updated_at: now,
+              atualizado_em: now,
             })
             .eq("id", leadRow.id);
 

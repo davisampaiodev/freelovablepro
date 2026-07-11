@@ -1570,16 +1570,16 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const attribution = getStoredAttribution();
 
     // Grava o lead no Supabase externo antes de redirecionar pro checkout.
-    const { supabaseExternal, PLANO_CENTAVOS } = await import(
+    const { supabaseExternal, PLANO_VALOR_OFERTA } = await import(
       "@/integrations/supabase-external/client"
     );
     const now = new Date().toISOString();
     const recentSince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const latestAttribution = {
-      ...(attribution.utm_source ? { utm_source: attribution.utm_source } : {}),
+      ...(attribution.utm_source ? { origem: attribution.utm_source } : {}),
       ...(attribution.utm_medium ? { utm_medium: attribution.utm_medium } : {}),
-      ...(attribution.utm_campaign ? { utm_campaign: attribution.utm_campaign } : {}),
-      ...(attribution.utm_content ? { utm_content: attribution.utm_content } : {}),
+      ...(attribution.utm_campaign ? { campanha: attribution.utm_campaign } : {}),
+      ...(attribution.utm_content ? { criativo: attribution.utm_content } : {}),
       ...(attribution.utm_term ? { utm_term: attribution.utm_term } : {}),
       ...(attribution.utm_id ? { utm_id: attribution.utm_id } : {}),
       ...(attribution.fbclid ? { fbclid: attribution.fbclid } : {}),
@@ -1591,7 +1591,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       supabaseExternal
         .from("leads_checkout_br")
         .select("id, criado_em")
-        .eq("status", "pendente")
+        .eq("status_pagamento", "pendente")
         .is("comprado_em", null)
         .gte("criado_em", recentSince)
         .ilike("email", escapePostgrestLike(normalizedForm.email))
@@ -1600,7 +1600,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       supabaseExternal
         .from("leads_checkout_br")
         .select("id, criado_em")
-        .eq("status", "pendente")
+        .eq("status_pagamento", "pendente")
         .is("comprado_em", null)
         .gte("criado_em", recentSince)
         .eq("telefone", normalizedForm.telefone)
@@ -1636,15 +1636,14 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
           email: normalizedForm.email,
           telefone: normalizedForm.telefone,
           plano,
-          valor_centavos: PLANO_CENTAVOS[plano],
-          origem: "lp_brasil",
-          idioma: "pt",
+          external_reference: existingLead.id,
+          valor_oferta: PLANO_VALOR_OFERTA[plano],
           etapa_funil: "formulario_preenchido",
-          updated_at: now,
+          atualizado_em: now,
           ...latestAttribution,
         })
         .eq("id", existingLead.id)
-        .eq("status", "pendente")
+        .eq("status_pagamento", "pendente")
         .is("comprado_em", null)
         .gte("criado_em", recentSince);
 
@@ -1668,21 +1667,20 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
           email: normalizedForm.email,
           telefone: normalizedForm.telefone,
           plano,
-          status: "pendente",
+          external_reference: leadId,
+          status_pagamento: "pendente",
           etapa_funil: "formulario_preenchido",
-          origem: "lp_brasil",
-          idioma: "pt",
-          utm_source: attribution.utm_source ?? null,
+          origem: attribution.utm_source ?? null,
           utm_medium: attribution.utm_medium ?? null,
-          utm_campaign: attribution.utm_campaign ?? null,
-          utm_content: attribution.utm_content ?? null,
+          campanha: attribution.utm_campaign ?? null,
+          criativo: attribution.utm_content ?? null,
           utm_term: attribution.utm_term ?? null,
           utm_id: attribution.utm_id ?? null,
           fbclid: attribution.fbclid ?? null,
           campaign_id: attribution.campaign_id ?? null,
           adset_id: attribution.adset_id ?? null,
           ad_id: attribution.ad_id ?? null,
-          valor_centavos: PLANO_CENTAVOS[plano],
+          valor_oferta: PLANO_VALOR_OFERTA[plano],
         });
 
       if (insertError) {
@@ -1706,10 +1704,12 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         payment_provider: "appmax",
         etapa_funil: "checkout_iniciado",
         checkout_url: finalCheckoutUrl,
-        updated_at: new Date().toISOString(),
+        external_reference: leadId,
+        checkout_iniciado_em: new Date().toISOString(),
+        atualizado_em: new Date().toISOString(),
       })
       .eq("id", leadId)
-      .eq("status", "pendente")
+      .eq("status_pagamento", "pendente")
       .is("comprado_em", null);
 
     if (checkoutErr) {

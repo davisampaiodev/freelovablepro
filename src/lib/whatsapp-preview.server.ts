@@ -14,11 +14,11 @@ type LeadPreviewRow = {
   email: string | null;
   telefone: string | null;
   plano: string | null;
-  status: string | null;
+  status_pagamento: string | null;
   etapa_funil: string | null;
-  whatsapp_tentativas: number | null;
+  quantidade_contatos: number | null;
   criado_em: string | null;
-  updated_at: string | null;
+  atualizado_em: string | null;
 };
 
 const PREVIEW_CONFIG: Record<
@@ -68,7 +68,7 @@ export async function buildWhatsAppPreview(type: PreviewType) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from(config.view)
-    .select("id, nome, email, telefone, plano, status, etapa_funil, whatsapp_tentativas, criado_em, updated_at")
+    .select("id, nome, email, telefone, plano, status_pagamento, etapa_funil, quantidade_contatos, criado_em, atualizado_em")
     .order("criado_em", { ascending: true })
     .limit(50);
 
@@ -89,15 +89,15 @@ export async function buildWhatsAppPreview(type: PreviewType) {
         lead_id: lead.id,
         nome: lead.nome,
         plano: lead.plano,
-        status: lead.status,
+        status_pagamento: lead.status_pagamento,
         etapa_funil: lead.etapa_funil,
         telefone_valido: phone.valid,
         telefone_mascarado: phone.masked,
         telefone_normalizado: phone.valid ? phone.e164 : null,
         telefone_invalido_motivo: phone.valid ? null : phone.reason,
-        whatsapp_tentativas: lead.whatsapp_tentativas ?? 0,
+        quantidade_contatos: lead.quantidade_contatos ?? 0,
         criado_em: lead.criado_em,
-        updated_at: lead.updated_at,
+        atualizado_em: lead.atualizado_em,
         mock: phone.valid
           ? sendWhatsAppMock({
               telefone: phone.e164,

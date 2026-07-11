@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api/internal/whatsapp-mark-sent")({
 
         const { data: lead, error: lookupError } = await supabaseAdmin
           .from("leads_checkout_br")
-          .select("id, whatsapp_tentativas")
+          .select("id, quantidade_contatos")
           .eq("id", lead_id)
           .maybeSingle();
 
@@ -51,19 +51,20 @@ export const Route = createFileRoute("/api/internal/whatsapp-mark-sent")({
           return Response.json({ error: "lead not found" }, { status: 404 });
         }
 
-        const nextTentativas = (lead.whatsapp_tentativas ?? 0) + 1;
+        const nextTentativas = (lead.quantidade_contatos ?? 0) + 1;
         const { data: updated, error: updateError } = await supabaseAdmin
           .from("leads_checkout_br")
           .update({
             whatsapp_status: "enviado",
-            whatsapp_enviado_em: new Date().toISOString(),
-            whatsapp_tentativas: nextTentativas,
-            checkout_abandono_msg: tipo,
-            updated_at: new Date().toISOString(),
+            ultima_recuperacao_em: new Date().toISOString(),
+            quantidade_contatos: nextTentativas,
+            status_recuperacao: tipo,
+            observacao_recuperacao: tipo,
+            atualizado_em: new Date().toISOString(),
           })
           .eq("id", lead_id)
           .select(
-            "id, whatsapp_status, whatsapp_enviado_em, whatsapp_tentativas, checkout_abandono_msg",
+            "id, whatsapp_status, ultima_recuperacao_em, quantidade_contatos, status_recuperacao, observacao_recuperacao",
           )
           .maybeSingle();
 

@@ -6,19 +6,16 @@ type LeadRow = {
   campaign_id: string | null;
   id: string;
   criado_em: string;
-  status: string;
+  status_pagamento: string;
   email: string;
   telefone: string | null;
   nome: string;
   plano: "diario" | "mensal" | "trimestral" | "anual";
-  valor_centavos: number;
-  token_id: string | null;
-  token_valor: string | null;
-  expira_em: string | null;
-  utm_source: string | null;
+  valor_oferta: number | null;
+  origem: string | null;
   utm_medium: string | null;
-  utm_campaign: string | null;
-  utm_content: string | null;
+  campanha: string | null;
+  criativo: string | null;
   utm_term: string | null;
   utm_id: string | null;
   fbclid: string | null;
@@ -189,7 +186,7 @@ async function queryUniqueLead(
   let query = supabaseAdmin
     .from("leads_checkout_br")
     .select(
-      "id, criado_em, status, email, telefone, nome, plano, valor_centavos, token_id, token_valor, expira_em, utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id, checkout_id, payment_id",
+      "id, criado_em, status_pagamento, email, telefone, nome, plano, valor_oferta, origem, utm_medium, campanha, criativo, utm_term, utm_id, fbclid, campaign_id, adset_id, ad_id, checkout_id, payment_id",
     )
     .order("criado_em", { ascending: false })
     .limit(2);
@@ -202,7 +199,7 @@ async function queryUniqueLead(
 
   if (requirePendingRecent) {
     query = query
-      .eq("status", "pendente")
+      .eq("status_pagamento", "pendente")
       .gte(
         "criado_em",
         new Date(Date.now() - RECENT_LOOKUP_WINDOW_MS).toISOString(),
@@ -297,7 +294,7 @@ async function findLead(
 }
 
 function buildLeadUpdatePayload(params: {
-  status: "pendente" | "reprovado" | "aprovado";
+  statusPagamento: "pendente" | "reprovado" | "aprovado";
   etapaFunil:
     | "formulario_preenchido"
     | "checkout_iniciado"
@@ -313,7 +310,7 @@ function buildLeadUpdatePayload(params: {
   formaPagamento?: string | null;
 }) {
   const payload: {
-    status: "pendente" | "reprovado" | "aprovado";
+    status_pagamento: "pendente" | "reprovado" | "aprovado";
     etapa_funil:
       | "formulario_preenchido"
       | "checkout_iniciado"
@@ -321,19 +318,19 @@ function buildLeadUpdatePayload(params: {
       | "pagamento_aprovado"
       | "pagamento_recusado";
     payment_provider: "cakto";
-    updated_at: string;
+    atualizado_em: string;
     payment_id?: string;
     checkout_id?: string;
     checkout_url?: string;
     comprado_em?: string;
     pix_gerado_em?: string;
-    valor?: number;
+    valor_oferta?: number;
     forma_pagamento?: string;
   } = {
-    status: params.status,
+    status_pagamento: params.statusPagamento,
     etapa_funil: params.etapaFunil,
     payment_provider: "cakto",
-    updated_at: new Date().toISOString(),
+    atualizado_em: new Date().toISOString(),
   };
 
   if (params.paymentId) payload.payment_id = params.paymentId;
@@ -341,7 +338,7 @@ function buildLeadUpdatePayload(params: {
   if (params.checkoutUrl) payload.checkout_url = params.checkoutUrl;
   if (params.compradoEm) payload.comprado_em = params.compradoEm;
   if (params.pixGeradoEm) payload.pix_gerado_em = params.pixGeradoEm;
-  if (params.valor != null) payload.valor = params.valor / 100;
+  if (params.valor != null) payload.valor_oferta = params.valor / 100;
   if (params.formaPagamento) payload.forma_pagamento = params.formaPagamento;
 
   return payload;
@@ -473,6 +470,7 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
           const valorCentavos =
             parseValorCentavos(
               firstValue(payload, [
+                "valor_oferta",
                 "valor_centavos",
                 "amount_in_cents",
                 "total_in_cents",
@@ -569,7 +567,7 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             .from("leads_checkout_br")
             .update(
               buildLeadUpdatePayload({
-                status: leadStatus,
+                statusPagamento: leadStatus,
                 etapaFunil,
                 checkoutId: resolvedCheckoutId,
                 paymentId: resolvedPaymentId,
@@ -585,7 +583,7 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
             )
             .eq("id", lookup.lead.id)
             .select(
-              "id, status, etapa_funil, payment_provider, checkout_id, payment_id, pix_gerado_em, comprado_em, updated_at",
+              "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, pix_gerado_em, comprado_em, atualizado_em",
             )
             .maybeSingle();
 

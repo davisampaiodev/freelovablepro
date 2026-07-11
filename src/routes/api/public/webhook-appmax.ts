@@ -5,7 +5,7 @@ type Plano = "diario" | "mensal" | "trimestral" | "anual";
 type LeadRow = {
   id: string;
   criado_em: string;
-  status: string;
+  status_pagamento: string;
   email: string;
   telefone: string | null;
   nome: string;
@@ -14,7 +14,6 @@ type LeadRow = {
   payment_id: string | null;
   pix_gerado_em: string | null;
   comprado_em: string | null;
-  expira_em: string | null;
 };
 
 type LookupResult =
@@ -169,22 +168,6 @@ function isPaidStatus(status: string | null) {
   return status === "aprovado" || status === "concluida";
 }
 
-function calculateExpiration(plano: Plano, compradoEm: Date) {
-  const expiresAt = new Date(compradoEm);
-
-  if (plano === "diario") {
-    expiresAt.setDate(expiresAt.getDate() + 1);
-  } else if (plano === "mensal") {
-    expiresAt.setMonth(expiresAt.getMonth() + 1);
-  } else if (plano === "trimestral") {
-    expiresAt.setMonth(expiresAt.getMonth() + 3);
-  } else {
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-  }
-
-  return expiresAt.toISOString();
-}
-
 async function queryUniqueLead(
   supabaseAdmin: any,
   {
@@ -200,7 +183,7 @@ async function queryUniqueLead(
   let query = supabaseAdmin
     .from("leads_checkout_br")
     .select(
-      "id, criado_em, status, email, telefone, nome, plano, checkout_id, payment_id, pix_gerado_em, comprado_em, expira_em",
+      "id, criado_em, status_pagamento, email, telefone, nome, plano, checkout_id, payment_id, pix_gerado_em, comprado_em",
     )
     .order("criado_em", { ascending: false })
     .limit(2);
@@ -213,7 +196,7 @@ async function queryUniqueLead(
 
   if (requirePendingRecent) {
     query = query
-      .eq("status", "pendente")
+      .eq("status_pagamento", "pendente")
       .gte(
         "criado_em",
         new Date(Date.now() - RECENT_LOOKUP_WINDOW_MS).toISOString(),
@@ -496,11 +479,11 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
           }
 
           if (eventType === "pix_gerado") {
-            if (isPaidStatus(lookup.lead.status)) {
+            if (isPaidStatus(lookup.lead.status_pagamento)) {
               console.log("[webhook-appmax] pix event ignored for paid lead", {
                 via: lookup.via,
                 leadId: lookup.lead.id,
-                status: lookup.lead.status,
+                status_pagamento: lookup.lead.status_pagamento,
               });
               return new Response("ok", { status: 200 });
             }
@@ -509,18 +492,18 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             const { data: updatedLead, error: updateError } = await supabaseAdmin
               .from("leads_checkout_br")
               .update({
-                status: "pendente",
+                status_pagamento: "pendente",
                 etapa_funil: "pix_gerado",
                 payment_provider: "appmax",
                 forma_pagamento: "pix",
                 pix_gerado_em: lookup.lead.pix_gerado_em || now,
                 ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
                 ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
-                updated_at: now,
+                atualizado_em: now,
               })
               .eq("id", lookup.lead.id)
               .select(
-                "id, status, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, pix_gerado_em, updated_at",
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, pix_gerado_em, atualizado_em",
               )
               .maybeSingle();
 
@@ -555,9 +538,8 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
           }
 
           if (
-            isPaidStatus(lookup.lead.status) &&
-            lookup.lead.comprado_em &&
-            lookup.lead.expira_em
+            isPaidStatus(lookup.lead.status_pagamento) &&
+            lookup.lead.comprado_em
           ) {
             const now = new Date().toISOString();
             const { data: updatedLead, error: updateError } = await supabaseAdmin
@@ -567,11 +549,11 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
                 ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
                 ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
                 ...(formaPagamento ? { forma_pagamento: formaPagamento } : {}),
-                updated_at: now,
+                atualizado_em: now,
               })
               .eq("id", lookup.lead.id)
               .select(
-                "id, status, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, expira_em, updated_at",
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, atualizado_em",
               )
               .maybeSingle();
 
@@ -588,7 +570,6 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
               via: lookup.via,
               leadId: lookup.lead.id,
               compradoEm: lookup.lead.comprado_em,
-              expiraEm: lookup.lead.expira_em,
               updatedLead,
             });
 
@@ -596,25 +577,23 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
           }
 
           const compradoEm = new Date();
-          const expiraEm = calculateExpiration(lookup.lead.plano, compradoEm);
           const now = compradoEm.toISOString();
 
           const { data: updatedLead, error: updateError } = await supabaseAdmin
             .from("leads_checkout_br")
             .update({
-              status: "aprovado",
+              status_pagamento: "aprovado",
               etapa_funil: "pagamento_aprovado",
               payment_provider: "appmax",
               ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
               ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
               ...(formaPagamento ? { forma_pagamento: formaPagamento } : {}),
               comprado_em: now,
-              expira_em: expiraEm,
-              updated_at: now,
+              atualizado_em: now,
             })
             .eq("id", lookup.lead.id)
             .select(
-              "id, status, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, expira_em, updated_at",
+              "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, atualizado_em",
             )
             .maybeSingle();
 

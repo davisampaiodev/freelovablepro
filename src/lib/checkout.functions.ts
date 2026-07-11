@@ -19,16 +19,16 @@ export const validarToken = createServerFn({ method: "POST" })
     }
     const { data: ass } = await supabaseAdmin
       .from("leads_checkout_br")
-      .select("status, expira_em, plano")
+      .select("status_pagamento, plano")
       .eq("id", row.assinatura_id)
       .maybeSingle();
-    if (!ass || (ass.status !== "aprovado" && ass.status !== "concluida")) {
+    if (
+      !ass ||
+      (ass.status_pagamento !== "aprovado" && ass.status_pagamento !== "concluida")
+    ) {
       return { ativo: false, motivo: "assinatura_invalida" as const };
     }
-    if (ass.expira_em && new Date(ass.expira_em) < new Date()) {
-      return { ativo: false, motivo: "expirado" as const };
-    }
-    return { ativo: true, plano: ass.plano, expira_em: ass.expira_em };
+    return { ativo: true, plano: ass.plano };
   });
 
 /** Admin: listar tokens + leads do checkout BR */
@@ -49,7 +49,7 @@ export const adminListar = createServerFn({ method: "GET" })
         .limit(1000),
       supabaseAdmin
         .from("leads_checkout_br")
-        .select("id, nome, email, plano, status, token_valor, expira_em, criado_em")
+        .select("id, nome, email, plano, status_pagamento, criado_em")
         .order("criado_em", { ascending: false })
         .limit(200),
     ]);
@@ -102,22 +102,17 @@ export const adminReenviarEmail = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: a, error } = await supabaseAdmin
       .from("leads_checkout_br")
-      .select("nome, email, plano, token_valor, expira_em, status")
+      .select("nome, email, plano, status_pagamento")
       .eq("id", data.assinaturaId)
       .single();
     if (error || !a) throw new Error("Assinatura não encontrada");
-    if ((a.status !== "aprovado" && a.status !== "concluida") || !a.token_valor || !a.expira_em) {
+    if (
+      a.status_pagamento !== "aprovado" &&
+      a.status_pagamento !== "concluida"
+    ) {
       throw new Error("Assinatura ainda não aprovada ou sem token");
     }
-    const { sendTokenEmail } = await import("@/lib/email-sender.server");
-    await sendTokenEmail({
-      nome: a.nome,
-      email: a.email,
-      token: a.token_valor,
-      plano: a.plano as "diario" | "mensal" | "trimestral" | "anual",
-      expiraEm: a.expira_em,
-    });
-    return { ok: true };
+    throw new Error("Reenvio de token desativado: entrega gerenciada pelo fornecedor");
   });
 
 

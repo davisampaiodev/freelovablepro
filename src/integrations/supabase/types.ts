@@ -131,135 +131,142 @@ export type Database = {
         Row: {
           ad_id: string | null
           adset_id: string | null
+          atualizado_em: string
+          campanha: string | null
           campaign_id: string | null
           checkout_id: string | null
+          checkout_iniciado_em: string | null
+          checkout_url: string | null
           comprado_em: string | null
           criado_em: string
+          criativo: string | null
           email: string
+          erro_processamento: string | null
           etapa_funil: string
-          expira_em: string | null
+          external_reference: string | null
           fbclid: string | null
-          checkout_url: string | null
           forma_pagamento: string | null
           id: string
-          idioma: string | null
           nome: string
-          pagamento_mp_id: string | null
+          observacao_recuperacao: string | null
+          observacoes: string | null
+          origem: string | null
           payment_id: string | null
           payment_provider: string | null
           pix_gerado_em: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
-          preference_id: string | null
-          origem: string | null
-          status: Database["public"]["Enums"]["assinatura_status"]
+          quantidade_contatos: number
+          reembolsado_em: string | null
+          recusado_em: string | null
+          respondeu_whatsapp: boolean | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"]
+          status_recuperacao: string | null
           telefone: string | null
-          token_id: string | null
-          token_valor: string | null
-          utm_campaign: string | null
-          utm_content: string | null
+          ultima_recuperacao_em: string | null
+          ultimo_evento_webhook: string | null
+          ultimo_webhook_em: string | null
           utm_id: string | null
           utm_medium: string | null
-          utm_source: string | null
           utm_term: string | null
-          whatsapp_enviado_em: string | null
           whatsapp_status: string
-          whatsapp_tentativas: number
-          checkout_abandono_msg: string | null
-          updated_at: string
-          valor: number | null
-          valor_centavos: number
+          whatsapp_opt_out: boolean
+          whatsapp_ultimo_erro: string | null
+          valor_oferta: number | null
+          valor_pago: number | null
         }
         Insert: {
           ad_id?: string | null
           adset_id?: string | null
+          atualizado_em?: string
+          campanha?: string | null
           campaign_id?: string | null
           checkout_id?: string | null
+          checkout_iniciado_em?: string | null
+          checkout_url?: string | null
           comprado_em?: string | null
           criado_em?: string
+          criativo?: string | null
           email: string
+          erro_processamento?: string | null
           etapa_funil?: string
-          expira_em?: string | null
+          external_reference?: string | null
           fbclid?: string | null
-          checkout_url?: string | null
           forma_pagamento?: string | null
           id?: string
-          idioma?: string | null
           nome: string
-          pagamento_mp_id?: string | null
+          observacao_recuperacao?: string | null
+          observacoes?: string | null
+          origem?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           pix_gerado_em?: string | null
           plano: Database["public"]["Enums"]["plano_tipo"]
-          preference_id?: string | null
-          origem?: string | null
-          status?: Database["public"]["Enums"]["assinatura_status"]
+          quantidade_contatos?: number
+          reembolsado_em?: string | null
+          recusado_em?: string | null
+          respondeu_whatsapp?: boolean | null
+          status_pagamento?: Database["public"]["Enums"]["assinatura_status"]
+          status_recuperacao?: string | null
           telefone?: string | null
-          token_id?: string | null
-          token_valor?: string | null
-          utm_campaign?: string | null
-          utm_content?: string | null
+          ultima_recuperacao_em?: string | null
+          ultimo_evento_webhook?: string | null
+          ultimo_webhook_em?: string | null
           utm_id?: string | null
           utm_medium?: string | null
-          utm_source?: string | null
           utm_term?: string | null
-          whatsapp_enviado_em?: string | null
           whatsapp_status?: string
-          whatsapp_tentativas?: number
-          checkout_abandono_msg?: string | null
-          updated_at?: string
-          valor?: number | null
-          valor_centavos: number
+          whatsapp_opt_out?: boolean
+          whatsapp_ultimo_erro?: string | null
+          valor_oferta?: number | null
+          valor_pago?: number | null
         }
         Update: {
           ad_id?: string | null
           adset_id?: string | null
+          atualizado_em?: string
+          campanha?: string | null
           campaign_id?: string | null
           checkout_id?: string | null
+          checkout_iniciado_em?: string | null
+          checkout_url?: string | null
           comprado_em?: string | null
           criado_em?: string
+          criativo?: string | null
           email?: string
+          erro_processamento?: string | null
           etapa_funil?: string
-          expira_em?: string | null
+          external_reference?: string | null
           fbclid?: string | null
-          checkout_url?: string | null
           forma_pagamento?: string | null
           id?: string
-          idioma?: string | null
           nome?: string
-          pagamento_mp_id?: string | null
+          observacao_recuperacao?: string | null
+          observacoes?: string | null
+          origem?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           pix_gerado_em?: string | null
           plano?: Database["public"]["Enums"]["plano_tipo"]
-          preference_id?: string | null
-          origem?: string | null
-          status?: Database["public"]["Enums"]["assinatura_status"]
+          quantidade_contatos?: number
+          reembolsado_em?: string | null
+          recusado_em?: string | null
+          respondeu_whatsapp?: boolean | null
+          status_pagamento?: Database["public"]["Enums"]["assinatura_status"]
+          status_recuperacao?: string | null
           telefone?: string | null
-          token_id?: string | null
-          token_valor?: string | null
-          utm_campaign?: string | null
-          utm_content?: string | null
+          ultima_recuperacao_em?: string | null
+          ultimo_evento_webhook?: string | null
+          ultimo_webhook_em?: string | null
           utm_id?: string | null
           utm_medium?: string | null
-          utm_source?: string | null
           utm_term?: string | null
-          whatsapp_enviado_em?: string | null
           whatsapp_status?: string
-          whatsapp_tentativas?: number
-          checkout_abandono_msg?: string | null
-          updated_at?: string
-          valor?: number | null
-          valor_centavos?: number
+          whatsapp_opt_out?: boolean
+          whatsapp_ultimo_erro?: string | null
+          valor_oferta?: number | null
+          valor_pago?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "assinaturas_token_id_fkey"
-            columns: ["token_id"]
-            isOneToOne: false
-            referencedRelation: "tokens"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tokens: {
         Row: {
@@ -329,10 +336,10 @@ export type Database = {
           email: string | null
           telefone: string | null
           plano: Database["public"]["Enums"]["plano_tipo"] | null
-          status: Database["public"]["Enums"]["assinatura_status"] | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"] | null
           etapa_funil: string | null
           criado_em: string | null
-          updated_at: string | null
+          atualizado_em: string | null
         }
         Relationships: []
       }
@@ -343,14 +350,14 @@ export type Database = {
           email: string | null
           telefone: string | null
           plano: Database["public"]["Enums"]["plano_tipo"] | null
-          status: Database["public"]["Enums"]["assinatura_status"] | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"] | null
           etapa_funil: string | null
           checkout_id: string | null
           payment_id: string | null
           payment_provider: string | null
           pix_gerado_em: string | null
           criado_em: string | null
-          updated_at: string | null
+          atualizado_em: string | null
         }
         Relationships: []
       }
@@ -361,12 +368,12 @@ export type Database = {
           email: string | null
           telefone: string | null
           plano: Database["public"]["Enums"]["plano_tipo"] | null
-          status: Database["public"]["Enums"]["assinatura_status"] | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"] | null
           etapa_funil: string | null
           criado_em: string | null
-          updated_at: string | null
+          atualizado_em: string | null
           whatsapp_status: string | null
-          whatsapp_tentativas: number | null
+          quantidade_contatos: number | null
         }
         Relationships: []
       }
@@ -377,16 +384,16 @@ export type Database = {
           email: string | null
           telefone: string | null
           plano: Database["public"]["Enums"]["plano_tipo"] | null
-          status: Database["public"]["Enums"]["assinatura_status"] | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"] | null
           etapa_funil: string | null
           checkout_id: string | null
           payment_id: string | null
           payment_provider: string | null
           checkout_url: string | null
           criado_em: string | null
-          updated_at: string | null
+          atualizado_em: string | null
           whatsapp_status: string | null
-          whatsapp_tentativas: number | null
+          quantidade_contatos: number | null
         }
         Relationships: []
       }
@@ -397,19 +404,19 @@ export type Database = {
           email: string | null
           telefone: string | null
           plano: Database["public"]["Enums"]["plano_tipo"] | null
-          status: Database["public"]["Enums"]["assinatura_status"] | null
+          status_pagamento: Database["public"]["Enums"]["assinatura_status"] | null
           etapa_funil: string | null
           checkout_id: string | null
           payment_id: string | null
           payment_provider: string | null
           pix_gerado_em: string | null
           checkout_url: string | null
-          valor: number | null
+          valor_oferta: number | null
           forma_pagamento: string | null
           criado_em: string | null
-          updated_at: string | null
+          atualizado_em: string | null
           whatsapp_status: string | null
-          whatsapp_tentativas: number | null
+          quantidade_contatos: number | null
         }
         Relationships: []
       }
