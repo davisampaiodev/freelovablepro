@@ -434,35 +434,46 @@ export const Route = createFileRoute("/api/public/criar-checkout-appmax")({
           }
 
           const now = new Date().toISOString();
-          const { error: updateError } = await supabaseAdmin
+          const checkoutUpdatePayload = {
+            payment_provider: "appmax",
+            etapa_funil: "checkout_iniciado",
+            checkout_url: appmaxResult.checkoutUrl,
+            external_reference: leadRow.id,
+            checkout_iniciado_em: now,
+            ...(appmaxResult.checkoutId
+              ? { checkout_id: appmaxResult.checkoutId }
+              : {}),
+            ...(appmaxResult.paymentId
+              ? { payment_id: appmaxResult.paymentId }
+              : {}),
+            atualizado_em: now,
+          };
+          const { data: updatedLead, error: updateError } = await supabaseAdmin
             .from("leads_checkout_br")
-            .update({
-              payment_provider: "appmax",
-              etapa_funil: "checkout_iniciado",
-              checkout_url: appmaxResult.checkoutUrl,
-              external_reference: leadRow.id,
-              checkout_iniciado_em: now,
-              ...(appmaxResult.checkoutId
-                ? { checkout_id: appmaxResult.checkoutId }
-                : {}),
-              ...(appmaxResult.paymentId
-                ? { payment_id: appmaxResult.paymentId }
-                : {}),
-              atualizado_em: now,
-            })
-            .eq("id", leadRow.id);
+            .update(checkoutUpdatePayload)
+            .eq("id", leadRow.id)
+            .select("id, etapa_funil, checkout_iniciado_em, checkout_url, payment_provider, atualizado_em")
+            .maybeSingle();
 
           if (updateError) {
             console.error("[criar-checkout-appmax] lead update error", {
               leadId: leadRow.id,
+              checkoutUrl: appmaxResult.checkoutUrl,
+              checkoutUpdatePayload,
               updateError,
             });
-            return Response.json({ error: "lead update failed" }, { status: 500 });
+            return Response.json({
+              checkout_url: appmaxResult.checkoutUrl,
+              reused: false,
+              lead_update_error: true,
+              error: "lead update failed after Appmax checkout was created",
+            });
           }
 
           return Response.json({
             checkout_url: appmaxResult.checkoutUrl,
             reused: false,
+            lead: updatedLead,
           });
         } catch (error) {
           console.error("[criar-checkout-appmax] handler error", error);

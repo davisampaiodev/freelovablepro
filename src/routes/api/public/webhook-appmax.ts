@@ -5,6 +5,7 @@ type Plano = "diario" | "mensal" | "trimestral" | "anual";
 type LeadRow = {
   id: string;
   criado_em: string;
+  external_reference: string | null;
   status_pagamento: string;
   email: string;
   telefone: string | null;
@@ -14,6 +15,7 @@ type LeadRow = {
   payment_id: string | null;
   pix_gerado_em: string | null;
   comprado_em: string | null;
+  observacoes: string | null;
 };
 
 type LookupResult =
@@ -107,12 +109,51 @@ function resolveAppmaxEvent(
     .join(" ");
   const hasPixMethod = normalizedPaymentMethod.includes("pix");
 
+  if (normalizedEvent === "order_pix_created") {
+    return "pix_gerado" as const;
+  }
+
+  if (normalizedEvent === "order_paid_by_pix") {
+    return "purchase_approved_pix" as const;
+  }
+
+  if (normalizedEvent === "order_paid") {
+    return "purchase_approved" as const;
+  }
+
+  if (normalizedEvent === "order_approved") {
+    return "order_approved_info" as const;
+  }
+
+  if (normalizedEvent === "payment_not_authorized") {
+    return "payment_not_authorized" as const;
+  }
+
+  if (normalizedEvent === "order_refund") {
+    return "refund" as const;
+  }
+
+  if (normalizedEvent === "order_pix_expired") {
+    return "pix_expired" as const;
+  }
+
+  if (normalizedEvent === "order_chargeback_in_treatment") {
+    return "chargeback" as const;
+  }
+
+  if (
+    normalizedEvent === "order_billet_created" ||
+    normalizedEvent === "order_billet_overdue"
+  ) {
+    return "billet_ignored" as const;
+  }
+
   if (
     haystack.includes("chargeback") ||
     haystack.includes("refund") ||
     haystack.includes("reembols")
   ) {
-    return "refund_or_chargeback" as const;
+    return "refund" as const;
   }
 
   if (
@@ -124,20 +165,7 @@ function resolveAppmaxEvent(
     haystack.includes("expired") ||
     haystack.includes("expir")
   ) {
-    return "purchase_refused" as const;
-  }
-
-  if (
-    haystack.includes("approved") ||
-    haystack.includes("aprov") ||
-    haystack.includes("paid") ||
-    haystack.includes("pago") ||
-    haystack === "purchase" ||
-    haystack.includes("purchase_approved") ||
-    haystack.includes("compra_aprovada") ||
-    haystack.includes("venda_aprovada")
-  ) {
-    return "purchase_approved" as const;
+    return "payment_not_authorized" as const;
   }
 
   const hasDirectPixEvent =
@@ -165,7 +193,52 @@ function resolveAppmaxEvent(
 }
 
 function isPaidStatus(status: string | null) {
-  return status === "aprovado" || status === "concluida";
+  return status === "aprovado";
+}
+
+function parseMoneyValue(value: string | null) {
+  if (!value) return null;
+  const normalized = value.trim();
+  if (!normalized) return null;
+
+  const decimal =
+    normalized.includes(",") && normalized.includes(".")
+      ? normalized.replace(/\./g, "").replace(",", ".")
+      : normalized.replace(",", ".");
+  const numberValue = Number(decimal);
+  if (!Number.isFinite(numberValue)) return null;
+  return numberValue;
+}
+
+function extractValorPago(payload: unknown) {
+  const centsValue = parseMoneyValue(
+    firstValue(payload, [
+      "valor_pago_centavos",
+      "paid_amount_cents",
+      "amount_in_cents",
+      "total_in_cents",
+    ]),
+  );
+  if (centsValue != null) return centsValue / 100;
+
+  return parseMoneyValue(
+    firstValue(payload, [
+      "valor_pago",
+      "paid_amount",
+      "amount_paid",
+      "amount",
+      "total",
+      "total_amount",
+      "value",
+      "price",
+    ]),
+  );
+}
+
+function buildObservation(current: string | null, message: string) {
+  if (!current) return message;
+  if (current.includes(message)) return current;
+  return `${current}\n${message}`;
 }
 
 async function queryUniqueLead(
@@ -175,7 +248,13 @@ async function queryUniqueLead(
     value,
     requirePendingRecent = false,
   }: {
-    field: "id" | "checkout_id" | "payment_id" | "email" | "telefone";
+    field:
+      | "id"
+      | "external_reference"
+      | "checkout_id"
+      | "payment_id"
+      | "email"
+      | "telefone";
     value: string;
     requirePendingRecent?: boolean;
   },
@@ -183,7 +262,7 @@ async function queryUniqueLead(
   let query = supabaseAdmin
     .from("leads_checkout_br")
     .select(
-      "id, criado_em, status_pagamento, email, telefone, nome, plano, checkout_id, payment_id, pix_gerado_em, comprado_em",
+      "id, criado_em, external_reference, status_pagamento, email, telefone, nome, plano, checkout_id, payment_id, pix_gerado_em, comprado_em, observacoes",
     )
     .order("criado_em", { ascending: false })
     .limit(2);
@@ -236,12 +315,18 @@ async function findLead(
   },
 ) {
   const directLeadIds = uniqueValues([
-    extracted.leadId,
     extracted.externalReference,
+    extracted.leadId,
     extracted.reference,
   ]);
 
   for (const leadId of directLeadIds) {
+    const externalMatch = await queryUniqueLead(supabaseAdmin, {
+      field: "external_reference",
+      value: leadId,
+    });
+    if (externalMatch.kind !== "not_found") return externalMatch;
+
     const match = await queryUniqueLead(supabaseAdmin, { field: "id", value: leadId });
     if (match.kind !== "not_found") return match;
   }
@@ -347,6 +432,7 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
 
           const rawEvent = firstValue(payload, [
             "event",
+            "event_type",
             "event_name",
             "type",
             "action",
@@ -419,8 +505,10 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             rawStatus,
             rawFormaPagamento,
           );
+          const eventName = rawEvent || rawStatus || eventType;
           const resolvedPaymentId = paymentId || transactionId || orderId;
           const resolvedCheckoutId = checkoutId || orderId;
+          const valorPago = extractValorPago(payload);
 
           console.log("[webhook-appmax] extracted", {
             rawEvent,
@@ -436,6 +524,7 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             externalReference,
             reference,
             formaPagamento,
+            valorPago,
           });
 
           const { supabaseAdmin } = await import(
@@ -478,6 +567,9 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             return new Response("ok", { status: 200 });
           }
 
+          const resolvedExternalReference =
+            lookup.lead.external_reference || externalReference || leadId || reference;
+
           if (eventType === "pix_gerado") {
             if (isPaidStatus(lookup.lead.status_pagamento)) {
               console.log("[webhook-appmax] pix event ignored for paid lead", {
@@ -497,13 +589,19 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
                 payment_provider: "appmax",
                 forma_pagamento: "pix",
                 pix_gerado_em: lookup.lead.pix_gerado_em || now,
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
                 ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
                 ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
                 atualizado_em: now,
               })
               .eq("id", lookup.lead.id)
               .select(
-                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, pix_gerado_em, atualizado_em",
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, pix_gerado_em, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
               )
               .maybeSingle();
 
@@ -526,7 +624,228 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             return new Response("ok", { status: 200 });
           }
 
-          if (eventType !== "purchase_approved") {
+          if (eventType === "order_approved_info") {
+            const now = new Date().toISOString();
+            const { data: updatedLead, error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update({
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                atualizado_em: now,
+              })
+              .eq("id", lookup.lead.id)
+              .select(
+                "id, status_pagamento, etapa_funil, comprado_em, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
+              )
+              .maybeSingle();
+
+            if (updateError) {
+              console.error("[webhook-appmax] order approved info update error", {
+                leadId: lookup.lead.id,
+                via: lookup.via,
+                eventType,
+                updateError,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            console.log("[webhook-appmax] order approved recorded as info", {
+              via: lookup.via,
+              eventType,
+              updatedLead,
+            });
+            return new Response("ok", { status: 200 });
+          }
+
+          if (eventType === "payment_not_authorized") {
+            const now = new Date().toISOString();
+            if (isPaidStatus(lookup.lead.status_pagamento)) {
+              console.log("[webhook-appmax] refused event ignored for paid lead", {
+                via: lookup.via,
+                leadId: lookup.lead.id,
+                status_pagamento: lookup.lead.status_pagamento,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            const { data: updatedLead, error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update({
+                status_pagamento: "rejeitado",
+                etapa_funil: "pagamento_recusado",
+                payment_provider: "appmax",
+                recusado_em: now,
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
+                ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
+                ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
+                ...(formaPagamento ? { forma_pagamento: formaPagamento } : {}),
+                atualizado_em: now,
+              })
+              .eq("id", lookup.lead.id)
+              .select(
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, recusado_em, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
+              )
+              .maybeSingle();
+
+            if (updateError) {
+              console.error("[webhook-appmax] refused update error", {
+                leadId: lookup.lead.id,
+                via: lookup.via,
+                eventType,
+                updateError,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            console.log("[webhook-appmax] refused lead updated", {
+              via: lookup.via,
+              eventType,
+              updatedLead,
+            });
+            return new Response("ok", { status: 200 });
+          }
+
+          if (eventType === "refund") {
+            const now = new Date().toISOString();
+            const observation = buildObservation(
+              lookup.lead.observacoes,
+              `Reembolso informado pela Appmax em ${now}`,
+            );
+            const { data: updatedLead, error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update({
+                payment_provider: "appmax",
+                reembolsado_em: now,
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
+                observacoes: observation,
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
+                ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
+                ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
+                atualizado_em: now,
+              })
+              .eq("id", lookup.lead.id)
+              .select(
+                "id, status_pagamento, etapa_funil, payment_provider, reembolsado_em, observacoes, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
+              )
+              .maybeSingle();
+
+            if (updateError) {
+              console.error("[webhook-appmax] refund update error", {
+                leadId: lookup.lead.id,
+                via: lookup.via,
+                eventType,
+                updateError,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            console.log("[webhook-appmax] refund lead annotated", {
+              via: lookup.via,
+              eventType,
+              updatedLead,
+            });
+            return new Response("ok", { status: 200 });
+          }
+
+          if (eventType === "pix_expired") {
+            const now = new Date().toISOString();
+            const statusUpdate = isPaidStatus(lookup.lead.status_pagamento)
+              ? {}
+              : { status_pagamento: "pendente" };
+            const { data: updatedLead, error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update({
+                ...statusUpdate,
+                payment_provider: "appmax",
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
+                ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
+                ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
+                atualizado_em: now,
+              })
+              .eq("id", lookup.lead.id)
+              .select(
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
+              )
+              .maybeSingle();
+
+            if (updateError) {
+              console.error("[webhook-appmax] pix expired update error", {
+                leadId: lookup.lead.id,
+                via: lookup.via,
+                eventType,
+                updateError,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            console.log("[webhook-appmax] pix expired recorded", {
+              via: lookup.via,
+              eventType,
+              updatedLead,
+            });
+            return new Response("ok", { status: 200 });
+          }
+
+          if (eventType === "chargeback") {
+            const now = new Date().toISOString();
+            const observation = buildObservation(
+              lookup.lead.observacoes,
+              `Chargeback em tratamento informado pela Appmax em ${now}`,
+            );
+            const { data: updatedLead, error: updateError } = await supabaseAdmin
+              .from("leads_checkout_br")
+              .update({
+                payment_provider: "appmax",
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
+                observacoes: observation,
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
+                ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
+                ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
+                atualizado_em: now,
+              })
+              .eq("id", lookup.lead.id)
+              .select(
+                "id, status_pagamento, etapa_funil, payment_provider, observacoes, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
+              )
+              .maybeSingle();
+
+            if (updateError) {
+              console.error("[webhook-appmax] chargeback update error", {
+                leadId: lookup.lead.id,
+                via: lookup.via,
+                eventType,
+                updateError,
+              });
+              return new Response("ok", { status: 200 });
+            }
+
+            console.log("[webhook-appmax] chargeback lead annotated", {
+              via: lookup.via,
+              eventType,
+              updatedLead,
+            });
+            return new Response("ok", { status: 200 });
+          }
+
+          if (eventType !== "purchase_approved" && eventType !== "purchase_approved_pix") {
             console.log("[webhook-appmax] event ignored", {
               via: lookup.via,
               eventType,
@@ -548,12 +867,19 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
                 payment_provider: "appmax",
                 ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
                 ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
+                ...(resolvedExternalReference
+                  ? { external_reference: resolvedExternalReference }
+                  : {}),
                 ...(formaPagamento ? { forma_pagamento: formaPagamento } : {}),
+                ...(valorPago != null ? { valor_pago: valorPago } : {}),
+                ultimo_evento_webhook: eventName,
+                ultimo_webhook_em: now,
+                erro_processamento: null,
                 atualizado_em: now,
               })
               .eq("id", lookup.lead.id)
               .select(
-                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, atualizado_em",
+                "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, valor_pago, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
               )
               .maybeSingle();
 
@@ -587,13 +913,24 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
               payment_provider: "appmax",
               ...(resolvedPaymentId ? { payment_id: resolvedPaymentId } : {}),
               ...(resolvedCheckoutId ? { checkout_id: resolvedCheckoutId } : {}),
-              ...(formaPagamento ? { forma_pagamento: formaPagamento } : {}),
+              ...(resolvedExternalReference
+                ? { external_reference: resolvedExternalReference }
+                : {}),
+              ...(eventType === "purchase_approved_pix"
+                ? { forma_pagamento: "pix" }
+                : formaPagamento
+                  ? { forma_pagamento: formaPagamento }
+                  : {}),
+              ...(valorPago != null ? { valor_pago: valorPago } : {}),
+              ultimo_evento_webhook: eventName,
+              ultimo_webhook_em: now,
+              erro_processamento: null,
               comprado_em: now,
               atualizado_em: now,
             })
             .eq("id", lookup.lead.id)
             .select(
-              "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, atualizado_em",
+              "id, status_pagamento, etapa_funil, payment_provider, checkout_id, payment_id, forma_pagamento, comprado_em, valor_pago, ultimo_evento_webhook, ultimo_webhook_em, atualizado_em",
             )
             .maybeSingle();
 
