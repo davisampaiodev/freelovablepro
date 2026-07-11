@@ -1573,13 +1573,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     const { supabaseExternal, PLANO_VALOR_OFERTA } = await import(
       "@/integrations/supabase-external/client"
     );
-    const now = new Date().toISOString();
     const recentSince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const latestAttribution = {
-      ...(attribution.utm_source ? { origem: attribution.utm_source } : {}),
-      ...(attribution.utm_campaign ? { campanha: attribution.utm_campaign } : {}),
-      ...(attribution.utm_content ? { criativo: attribution.utm_content } : {}),
-    };
     const [emailLookup, phoneLookup] = await Promise.all([
       supabaseExternal
         .from("leads_checkout_br")
@@ -1622,31 +1616,6 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     let leadId = crypto.randomUUID();
     let reusedLead = false;
     if (existingLead) {
-      const { error: updateError } = await supabaseExternal
-        .from("leads_checkout_br")
-        .update({
-          nome: normalizedForm.nome,
-          email: normalizedForm.email,
-          telefone: normalizedForm.telefone,
-          plano,
-          external_reference: existingLead.id,
-          valor_oferta: PLANO_VALOR_OFERTA[plano],
-          etapa_funil: "formulario_preenchido",
-          atualizado_em: now,
-          ...latestAttribution,
-        })
-        .eq("id", existingLead.id)
-        .eq("status_pagamento", "pendente")
-        .is("comprado_em", null)
-        .gte("criado_em", recentSince);
-
-      if (updateError) {
-        console.error("Falha ao atualizar lead recente:", updateError);
-        throw new Error(
-          "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
-        );
-      }
-
       leadId = existingLead.id;
       reusedLead = true;
     }
@@ -1684,26 +1653,33 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     trackedCheckoutUrl.searchParams.set("reference", leadId);
     const finalCheckoutUrl = trackedCheckoutUrl.toString();
 
-    const checkoutStartedAt = new Date().toISOString();
-    const checkoutUpdatePayload = {
-      payment_provider: "appmax",
-      etapa_funil: "checkout_iniciado",
-      checkout_url: finalCheckoutUrl,
-      checkout_iniciado_em: checkoutStartedAt,
-      atualizado_em: checkoutStartedAt,
-    };
+    try {
+      const checkoutResponse = await fetch("/api/public/marcar-checkout-iniciado", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lead_id: leadId,
+          checkout_url: finalCheckoutUrl,
+        }),
+      });
 
-    const { error: checkoutErr } = await supabaseExternal
-      .from("leads_checkout_br")
-      .update(checkoutUpdatePayload)
-      .eq("id", leadId);
-
-    if (checkoutErr) {
-      console.error("Falha ao registrar checkout iniciado Appmax; redirecionando mesmo assim:", {
+      if (!checkoutResponse.ok) {
+        const responseBody = await checkoutResponse.text().catch(() => "");
+        console.error("Falha ao registrar checkout iniciado Appmax; redirecionando mesmo assim:", {
+          leadId,
+          plano,
+          checkoutUrl: finalCheckoutUrl,
+          status: checkoutResponse.status,
+          responseBody,
+        });
+      }
+    } catch (checkoutErr) {
+      console.error("Erro ao chamar marcação de checkout iniciado Appmax; redirecionando mesmo assim:", {
         leadId,
         plano,
         checkoutUrl: finalCheckoutUrl,
-        checkoutUpdatePayload,
         checkoutErr,
       });
     }

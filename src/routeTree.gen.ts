@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
 import { Route as ApiPublicWebhookAppmaxRouteImport } from './routes/api/public/webhook-appmax'
+import { Route as ApiPublicMarcarCheckoutIniciadoRouteImport } from './routes/api/public/marcar-checkout-iniciado'
 import { Route as ApiPublicCriarCheckoutAppmaxRouteImport } from './routes/api/public/criar-checkout-appmax'
 import { Route as ApiInternalWhatsappPixPreviewRouteImport } from './routes/api/internal/whatsapp-pix-preview'
 import { Route as ApiInternalWhatsappMarkSentRouteImport } from './routes/api/internal/whatsapp-mark-sent'
@@ -51,6 +52,12 @@ const ApiPublicWebhookAppmaxRoute = ApiPublicWebhookAppmaxRouteImport.update({
   path: '/api/public/webhook-appmax',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMarcarCheckoutIniciadoRoute =
+  ApiPublicMarcarCheckoutIniciadoRouteImport.update({
+    id: '/api/public/marcar-checkout-iniciado',
+    path: '/api/public/marcar-checkout-iniciado',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCriarCheckoutAppmaxRoute =
   ApiPublicCriarCheckoutAppmaxRouteImport.update({
     id: '/api/public/criar-checkout-appmax',
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
@@ -126,6 +135,7 @@ export interface FileRoutesById {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
 }
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/marcar-checkout-iniciado'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   fileRoutesByTo: FileRoutesByTo
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/marcar-checkout-iniciado'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   id:
@@ -168,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/marcar-checkout-iniciado'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
   fileRoutesById: FileRoutesById
@@ -182,6 +195,7 @@ export interface RootRouteChildren {
   ApiInternalWhatsappMarkSentRoute: typeof ApiInternalWhatsappMarkSentRoute
   ApiInternalWhatsappPixPreviewRoute: typeof ApiInternalWhatsappPixPreviewRoute
   ApiPublicCriarCheckoutAppmaxRoute: typeof ApiPublicCriarCheckoutAppmaxRoute
+  ApiPublicMarcarCheckoutIniciadoRoute: typeof ApiPublicMarcarCheckoutIniciadoRoute
   ApiPublicWebhookAppmaxRoute: typeof ApiPublicWebhookAppmaxRoute
   ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
 }
@@ -228,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/webhook-appmax'
       fullPath: '/api/public/webhook-appmax'
       preLoaderRoute: typeof ApiPublicWebhookAppmaxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/marcar-checkout-iniciado': {
+      id: '/api/public/marcar-checkout-iniciado'
+      path: '/api/public/marcar-checkout-iniciado'
+      fullPath: '/api/public/marcar-checkout-iniciado'
+      preLoaderRoute: typeof ApiPublicMarcarCheckoutIniciadoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/criar-checkout-appmax': {
@@ -298,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiInternalWhatsappMarkSentRoute: ApiInternalWhatsappMarkSentRoute,
   ApiInternalWhatsappPixPreviewRoute: ApiInternalWhatsappPixPreviewRoute,
   ApiPublicCriarCheckoutAppmaxRoute: ApiPublicCriarCheckoutAppmaxRoute,
+  ApiPublicMarcarCheckoutIniciadoRoute: ApiPublicMarcarCheckoutIniciadoRoute,
   ApiPublicWebhookAppmaxRoute: ApiPublicWebhookAppmaxRoute,
   ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
 }
