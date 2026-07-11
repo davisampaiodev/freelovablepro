@@ -1652,7 +1652,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     }
 
     if (!reusedLead) {
-      const { data: insertedLead, error: insertError } = await supabaseExternal
+      const { error: insertError } = await supabaseExternal
         .from("leads_checkout_br")
         .insert({
           id: leadId,
@@ -1667,19 +1667,13 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
           campanha: attribution.utm_campaign ?? null,
           criativo: attribution.utm_content ?? null,
           valor_oferta: PLANO_VALOR_OFERTA[plano],
-        })
-        .select("id")
-        .single();
+        });
 
       if (insertError) {
         console.error("Falha ao gravar assinatura:", insertError);
         throw new Error(
           "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
         );
-      }
-
-      if (insertedLead?.id) {
-        leadId = insertedLead.id;
       }
     }
 
@@ -1699,21 +1693,18 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
       atualizado_em: checkoutStartedAt,
     };
 
-    const { data: checkoutUpdatedLead, error: checkoutErr } = await supabaseExternal
+    const { error: checkoutErr } = await supabaseExternal
       .from("leads_checkout_br")
       .update(checkoutUpdatePayload)
-      .eq("id", leadId)
-      .select("id")
-      .maybeSingle();
+      .eq("id", leadId);
 
-    if (checkoutErr || !checkoutUpdatedLead) {
+    if (checkoutErr) {
       console.error("Falha ao registrar checkout iniciado Appmax; redirecionando mesmo assim:", {
         leadId,
         plano,
         checkoutUrl: finalCheckoutUrl,
         checkoutUpdatePayload,
         checkoutErr,
-        nenhumRegistroAtualizado: !checkoutUpdatedLead,
       });
     }
 
