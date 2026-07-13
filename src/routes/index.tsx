@@ -1446,6 +1446,19 @@ function Landing() {
 
   useEffect(() => {
     captureAttribution();
+
+    if (typeof window !== "undefined" && (window as any).ttq) {
+      (window as any).ttq.track("ViewContent", {
+        contents: [
+          {
+            content_id: "freelovable",
+            content_type: "product",
+            content_name: "FreeLovable",
+          },
+        ],
+        status: "viewed",
+      });
+    }
   }, []);
 
   const openModal = (planName?: string) => {
@@ -1519,6 +1532,20 @@ function sanitizePhoneInput(value: string) {
 
 function escapePostgrestLike(value: string) {
   return value.replace(/[%_]/g, (character) => `\\${character}`);
+}
+
+async function sha256(value: string) {
+  const encoded = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", encoded);
+
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+}
+
+function normalizeTikTokPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return `+${digits.startsWith("55") ? digits : `55${digits}`}`;
 }
 
 function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: string }) {
@@ -1690,6 +1717,40 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
         content_category: 'lead_form',
         plano,
       });
+    }
+
+    if (typeof window !== 'undefined' && (window as any).ttq) {
+      try {
+        const [hashedEmail, hashedPhone, hashedExternalId] = await Promise.all([
+          sha256(normalizedForm.email),
+          sha256(normalizeTikTokPhone(normalizedForm.telefone)),
+          sha256(leadId),
+        ]);
+
+        (window as any).ttq.identify({
+          email: hashedEmail,
+          phone_number: hashedPhone,
+          external_id: hashedExternalId,
+        });
+        (window as any).ttq.track('Lead', {
+          contents: [
+            {
+              content_id: plano,
+              content_type: 'product',
+              content_name: `FreeLovable ${plano}`,
+              price: PLANO_VALOR_OFERTA[plano],
+            },
+          ],
+          value: PLANO_VALOR_OFERTA[plano],
+          currency: 'BRL',
+          status: 'submitted',
+        });
+      } catch (tiktokTrackingError) {
+        console.warn('Falha no Advanced Matching do TikTok; seguindo para o checkout:', {
+          leadId,
+          tiktokTrackingError,
+        });
+      }
     }
 
     window.location.href = finalCheckoutUrl;
