@@ -212,6 +212,18 @@ function RootShell({ children }: { children: ReactNode }) {
             `,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.tikTokPixelId = "6a556f9314d5cad587a0d194";
+              var utmifyTikTokScript = document.createElement("script");
+              utmifyTikTokScript.setAttribute("async", "");
+              utmifyTikTokScript.setAttribute("defer", "");
+              utmifyTikTokScript.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+              document.head.appendChild(utmifyTikTokScript);
+            `,
+          }}
+        />
 
         <script
           dangerouslySetInnerHTML={{
