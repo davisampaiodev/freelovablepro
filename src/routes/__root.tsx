@@ -186,14 +186,32 @@ function RootShell({ children }: { children: ReactNode }) {
   async
   defer
 ></script>
-        <script>
-  window.pixelId = "6a304839ea9d4c0ccf6b7db3";
-  var a = document.createElement("script");
-  a.setAttribute("async", "");
-  a.setAttribute("defer", "");
-  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-  document.head.appendChild(a);
-</script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              var utmifyPixelIds = [
+                "6a304839ea9d4c0ccf6b7db3",
+                "6a5558022b73652e47b87922"
+              ];
+
+              function loadUtmifyPixel(index) {
+                if (index >= utmifyPixelIds.length) return;
+
+                window.pixelId = utmifyPixelIds[index];
+                var pixelScript = document.createElement("script");
+                pixelScript.setAttribute("async", "");
+                pixelScript.setAttribute("defer", "");
+                pixelScript.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+                pixelScript.addEventListener("load", function () {
+                  loadUtmifyPixel(index + 1);
+                });
+                document.head.appendChild(pixelScript);
+              }
+
+              loadUtmifyPixel(0);
+            `,
+          }}
+        />
 
         <script
           dangerouslySetInnerHTML={{
@@ -209,6 +227,7 @@ function RootShell({ children }: { children: ReactNode }) {
               'https://connect.facebook.net/en_US/fbevents.js');
 
               fbq('init', '1154397371091882');
+              fbq('init', '1085412293917519');
               fbq('track', 'PageView');
             `,
           }}
@@ -250,6 +269,12 @@ function RootShell({ children }: { children: ReactNode }) {
                 width="1"
                 style="display:none"
                 src="https://www.facebook.com/tr?id=1154397371091882&ev=PageView&noscript=1"
+              />
+              <img
+                height="1"
+                width="1"
+                style="display:none"
+                src="https://www.facebook.com/tr?id=1085412293917519&ev=PageView&noscript=1"
               />
             `,
           }}
