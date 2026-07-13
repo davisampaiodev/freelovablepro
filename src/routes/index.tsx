@@ -52,7 +52,7 @@ function Nav({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
         </nav>
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="https://wa.me/5571983463684"
+            href="https://wa.me/5571991156578"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-gradient px-4 py-2 rounded-lg text-xs font-bold tracking-wide inline-flex items-center gap-2"

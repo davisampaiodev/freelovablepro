@@ -60,7 +60,7 @@ function ObrigadoPage() {
         </div>
 
         <a
-          href="https://wa.me/5571983463684"
+          href="https://wa.me/5571991156578"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#1ebe57]"
