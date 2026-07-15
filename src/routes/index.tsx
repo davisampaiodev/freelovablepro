@@ -1548,6 +1548,26 @@ function normalizeTikTokPhone(value: string) {
   return `+${digits.startsWith("55") ? digits : `55${digits}`}`;
 }
 
+function normalizeMetaPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.startsWith("55") ? digits : `55${digits}`;
+}
+
+function buildMetaAdvancedMatchingData(normalizedForm: ReturnType<typeof normalizeLeadForm>) {
+  const [firstName = "", ...lastNameParts] = normalizedForm.nome
+    .toLowerCase()
+    .split(" ")
+    .filter(Boolean);
+  const lastName = lastNameParts.join(" ");
+
+  return {
+    em: normalizedForm.email,
+    ph: normalizeMetaPhone(normalizedForm.telefone),
+    ...(firstName ? { fn: firstName } : {}),
+    ...(lastName ? { ln: lastName } : {}),
+  };
+}
+
 function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: string }) {
   const [formData, setFormData] = useState({ name: '', email: '', whatsapp: '' });
   const [loading, setLoading] = useState(false);
@@ -1712,6 +1732,10 @@ function RegisterModal({ onClose, planName }: { onClose: () => void, planName?: 
     }
 
     if (typeof window !== 'undefined' && (window as any).fbq) {
+      const metaAdvancedMatchingData = buildMetaAdvancedMatchingData(normalizedForm);
+      localStorage.setItem("meta_advanced_matching", JSON.stringify(metaAdvancedMatchingData));
+      (window as any).fbq('init', '1154397371091882', metaAdvancedMatchingData);
+      (window as any).fbq('init', '1085412293917519', metaAdvancedMatchingData);
       (window as any).fbq('track', 'Lead', {
         content_name: 'FreeLovable Form',
         content_category: 'lead_form',

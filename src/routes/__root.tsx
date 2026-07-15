@@ -238,8 +238,15 @@ function RootShell({ children }: { children: ReactNode }) {
               (window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
 
-              fbq('init', '1154397371091882');
-              fbq('init', '1085412293917519');
+              var metaAdvancedMatching = {};
+              try {
+                metaAdvancedMatching = JSON.parse(localStorage.getItem('meta_advanced_matching') || '{}');
+              } catch (error) {
+                metaAdvancedMatching = {};
+              }
+
+              fbq('init', '1154397371091882', metaAdvancedMatching);
+              fbq('init', '1085412293917519', metaAdvancedMatching);
               fbq('track', 'PageView');
             `,
           }}
