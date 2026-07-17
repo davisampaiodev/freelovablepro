@@ -25,7 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import { captureAttribution, getStoredAttribution } from "@/lib/utm-tracking";
-import { getMetaCookie } from "@/lib/meta-browser";
+import { getMetaCookie, getMetaExternalId } from "@/lib/meta-browser";
 import { FREELOVABLE_PLANS } from "@/lib/freelovable-plans";
 
 declare global {

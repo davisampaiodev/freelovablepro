@@ -126,7 +126,7 @@ function redirectToThankYou(paymentId: string, externalReference: string) {
 
 function CheckoutPage() {
   const search = Route.useSearch();
-  const isPreview = search.preview === "1" || (import.meta.env.DEV && !search.lead_id);
+  const isPreview = search.preview === "1";
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [brickReady, setBrickReady] = useState(false);
