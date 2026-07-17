@@ -1409,6 +1409,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       price: "R$ 17",
       period: "/dia",
       note: "Perfeito para testar hoje mesmo.",
+      savings: null,
       cta: "QUERO O PLANO DIÁRIO",
       popular: false,
       features: ["Créditos infinitos", "Suporte prioritário", "Atualizações", "16 mil fluxos N8N"],
@@ -1418,6 +1419,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       price: "R$ 47",
       period: "/mês",
       note: "Ideal para projetos rápidos.",
+      savings: null,
       cta: "QUERO O PLANO MENSAL",
       popular: true,
       features: ["Créditos infinitos", "Suporte prioritário", "Atualizações", "16 mil fluxos N8N"],
@@ -1427,6 +1429,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       price: "3x de R$ 37",
       period: "",
       note: "R$ 111,00 à vista",
+      savings: "Economize 21%",
       cta: "QUERO O PLANO TRIMESTRAL",
       popular: false,
       features: ["Créditos infinitos", "Suporte prioritário", "Atualizações", "16 mil fluxos N8N"],
@@ -1436,6 +1439,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       price: "12x de R$ 27",
       period: "",
       note: "R$ 324,00 à vista",
+      savings: "Economize 43%",
       cta: "QUERO O PLANO ANUAL",
       popular: false,
       features: [
@@ -1492,6 +1496,13 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
             >
               {p.note}
             </p>
+            {p.savings && (
+              <div className="mt-3">
+                <span className="inline-flex rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 md:text-xs">
+                  {p.savings}
+                </span>
+              </div>
+            )}
             <ul className="mt-5 flex-1 space-y-2 md:mt-6 md:space-y-3">
               {p.features.map((f) => (
                 <li key={f} className="flex gap-2 text-xs leading-snug md:text-sm">
