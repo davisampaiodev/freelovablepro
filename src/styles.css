@@ -76,6 +76,8 @@
   * { border-color: var(--color-border); }
   html { scroll-behavior: smooth; }
   body {
+    max-width: 100%;
+    overflow-x: clip;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-display);
@@ -449,6 +451,25 @@
 
 /* Mobile keeps the neon identity without forcing constant GPU compositing. */
 @media (max-width: 767px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  section[id]:not(#o-que-e) {
+    scroll-margin-top: 5rem;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .mobile-sticky-cta {
+    padding-bottom: calc(0.625rem + env(safe-area-inset-bottom));
+  }
+
   body {
     background-image:
       radial-gradient(circle at 18% 6%, color-mix(in oklab, var(--brand-orange) 18%, transparent) 0, transparent 24%),

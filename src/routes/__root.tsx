@@ -238,15 +238,27 @@ function RootShell({ children }: { children: ReactNode }) {
               (window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
 
-              var metaAdvancedMatching = {};
+              var metaExternalId = "";
               try {
-                metaAdvancedMatching = JSON.parse(localStorage.getItem('meta_advanced_matching') || '{}');
+                metaExternalId = localStorage.getItem("meta_external_id") || "";
+                if (!metaExternalId) {
+                  metaExternalId = crypto.randomUUID ? crypto.randomUUID() : "meta_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+                  localStorage.setItem("meta_external_id", metaExternalId);
+                }
+              } catch (error) {}
+
+              var metaAdvancedMatching = { external_id: metaExternalId };
+              try {
+                metaAdvancedMatching = Object.assign(
+                  {},
+                  JSON.parse(localStorage.getItem('meta_advanced_matching') || '{}'),
+                  { external_id: metaExternalId }
+                );
               } catch (error) {
-                metaAdvancedMatching = {};
+                // Keep the persistent external_id even if optional matching data is invalid.
               }
 
               fbq('init', '1154397371091882', metaAdvancedMatching);
-              fbq('init', '1085412293917519', metaAdvancedMatching);
               fbq('track', 'PageView');
             `,
           }}
@@ -300,12 +312,6 @@ function RootShell({ children }: { children: ReactNode }) {
                 width="1"
                 style="display:none"
                 src="https://www.facebook.com/tr?id=1154397371091882&ev=PageView&noscript=1"
-              />
-              <img
-                height="1"
-                width="1"
-                style="display:none"
-                src="https://www.facebook.com/tr?id=1085412293917519&ev=PageView&noscript=1"
               />
             `,
           }}

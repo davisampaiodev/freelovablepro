@@ -14,6 +14,7 @@ type LeadRow = {
   criativo: string | null;
   checkout_id: string | null;
   payment_id: string | null;
+  external_reference: string | null;
 };
 
 type LookupResult =
@@ -171,7 +172,7 @@ async function queryUniqueLead(
     value,
     requirePendingRecent = false,
   }: {
-    field: "id" | "checkout_id" | "payment_id" | "email" | "telefone";
+    field: "id" | "external_reference" | "checkout_id" | "payment_id" | "email" | "telefone";
     value: string;
     requirePendingRecent?: boolean;
   },
@@ -179,7 +180,7 @@ async function queryUniqueLead(
   let query = supabaseAdmin
     .from("leads_checkout_br")
     .select(
-      "id, criado_em, status_pagamento, email, telefone, nome, plano, valor_oferta, origem, campanha, criativo, checkout_id, payment_id",
+      "id, criado_em, status_pagamento, email, telefone, nome, plano, valor_oferta, origem, campanha, criativo, checkout_id, payment_id, external_reference",
     )
     .order("criado_em", { ascending: false })
     .limit(2);
@@ -231,14 +232,18 @@ async function findLead(
     phone: string | null;
   },
 ) {
-  const directLeadIds = uniqueValues([
-    extracted.leadId,
-    extracted.externalReference,
-    extracted.reference,
-  ]);
+  const directLeadIds = uniqueValues([extracted.leadId, extracted.reference]);
 
   for (const leadId of directLeadIds) {
     const match = await queryUniqueLead(supabaseAdmin, { field: "id", value: leadId });
+    if (match.kind !== "not_found") return match;
+  }
+
+  if (extracted.externalReference) {
+    const match = await queryUniqueLead(supabaseAdmin, {
+      field: "external_reference",
+      value: extracted.externalReference,
+    });
     if (match.kind !== "not_found") return match;
   }
 
@@ -588,6 +593,29 @@ export const Route = createFileRoute("/api/public/webhook-cakto")({
               updateError,
             });
             return new Response("ok", { status: 200 });
+          }
+
+          if (eventType === "purchase_approved") {
+            try {
+              const { sendMetaCapiEvent } = await import("@/lib/meta-capi.server");
+              await sendMetaCapiEvent({
+                eventName: "Purchase",
+                eventId: `purchase_${lookup.lead.id}`,
+                externalId: lookup.lead.external_reference || lookup.lead.id,
+                eventSourceUrl: new URL(request.url).origin,
+                email: lookup.lead.email,
+                phone: lookup.lead.telefone,
+                value: valorCentavos != null ? valorCentavos / 100 : undefined,
+                currency: "BRL",
+                contentId: resolvedPlan || lookup.lead.plano,
+                contentName: `FreeLovable ${resolvedPlan || lookup.lead.plano}`,
+              });
+            } catch (metaCapiError) {
+              console.error("[webhook-cakto] Meta CAPI Purchase failed", {
+                leadId: lookup.lead.id,
+                metaCapiError,
+              });
+            }
           }
 
           console.log("[webhook-cakto] lead updated", {

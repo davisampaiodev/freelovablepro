@@ -944,6 +944,30 @@ export const Route = createFileRoute("/api/public/webhook-appmax")({
             return new Response("ok", { status: 200 });
           }
 
+          try {
+            const { sendMetaCapiEvent } = await import("@/lib/meta-capi.server");
+            await sendMetaCapiEvent({
+              eventName: "Purchase",
+              // This deterministic ID can be reused by a browser Purchase event
+              // when the checkout returns the lead_id to /obrigado.
+              eventId: `purchase_${lookup.lead.id}`,
+              externalId: lookup.lead.external_reference || lookup.lead.id,
+              eventSourceUrl: new URL(request.url).origin,
+              email: lookup.lead.email,
+              phone: lookup.lead.telefone,
+              value: valorPago ?? undefined,
+              currency: "BRL",
+              contentId: lookup.lead.plano,
+              contentName: `FreeLovable ${lookup.lead.plano}`,
+            });
+          } catch (metaCapiError) {
+            // A tracking failure must not make the payment webhook fail or retry.
+            console.error("[webhook-appmax] Meta CAPI Purchase failed", {
+              leadId: lookup.lead.id,
+              metaCapiError,
+            });
+          }
+
           console.log("[webhook-appmax] lead updated", {
             via: lookup.via,
             eventType,
