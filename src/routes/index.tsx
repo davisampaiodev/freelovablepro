@@ -25,6 +25,16 @@ import {
 import { captureAttribution, getStoredAttribution } from "@/lib/utm-tracking";
 import { getMetaCookie, getMetaExternalId } from "@/lib/meta-browser";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+    ttq?: {
+      identify: (payload: unknown) => void;
+      track: (event: string, payload: unknown) => void;
+    };
+  }
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -373,7 +383,7 @@ function WhatIsFreeLovable() {
 
               <div className="grid gap-3">
                 {flow.map(({ title, text, icon: Icon }, index) => (
-                  <div key={title}>
+                  <div key={index}>
                     <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-purple/25 to-brand-pink/25">
                         <Icon className="h-5 w-5 text-brand-pink" />
@@ -1413,7 +1423,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       name: "Plano Trimestral",
       price: "3x de R$ 37",
       period: "",
-      note: "R$ 101,13 à vista",
+      note: "R$ 111,00 à vista",
       cta: "QUERO O PLANO TRIMESTRAL",
       popular: false,
       features: ["Créditos infinitos", "Suporte prioritário", "Atualizações", "16 mil fluxos N8N"],
@@ -1422,7 +1432,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
       name: "Plano Anual",
       price: "12x de R$ 27",
       period: "",
-      note: "R$ 261,42 à vista",
+      note: "R$ 324,00 à vista",
       cta: "QUERO O PLANO ANUAL",
       popular: false,
       features: [
@@ -1659,8 +1669,8 @@ function Landing() {
     const externalId = getMetaExternalId();
     const eventId = `viewcontent_${crypto.randomUUID()}`;
 
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      (window as any).fbq(
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq(
         "track",
         "ViewContent",
         {
@@ -1687,8 +1697,8 @@ function Landing() {
       // Analytics delivery must never affect the page experience.
     });
 
-    if (typeof window !== "undefined" && (window as any).ttq) {
-      (window as any).ttq.track("ViewContent", {
+    if (typeof window !== "undefined" && window.ttq) {
+      window.ttq.track("ViewContent", {
         contents: [
           {
             content_id: "freelovable",
@@ -1886,7 +1896,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
         (a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime(),
       )[0];
 
-      let leadId = crypto.randomUUID();
+      let leadId: string = crypto.randomUUID();
       let reusedLead = false;
       if (existingLead) {
         leadId = existingLead.id;
@@ -1921,18 +1931,18 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
       checkoutUrl.searchParams.set("lead_id", leadId);
       checkoutUrl.searchParams.set("plano", plano);
 
-      if (typeof window !== "undefined" && (window as any).fbq) {
+      if (typeof window !== "undefined" && window.fbq) {
         const metaAdvancedMatchingData = buildMetaAdvancedMatchingData(normalizedForm);
         localStorage.setItem("meta_advanced_matching", JSON.stringify(metaAdvancedMatchingData));
-        (window as any).fbq("init", "1154397371091882", metaAdvancedMatchingData);
-        (window as any).fbq("track", "Lead", {
+        window.fbq("init", "1154397371091882", metaAdvancedMatchingData);
+        window.fbq("track", "Lead", {
           content_name: "FreeLovable Form",
           content_category: "lead_form",
           plano,
         });
       }
 
-      if (typeof window !== "undefined" && (window as any).ttq) {
+      if (typeof window !== "undefined" && window.ttq) {
         try {
           const [hashedEmail, hashedPhone, hashedExternalId] = await Promise.all([
             sha256(normalizedForm.email),
@@ -1940,12 +1950,12 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
             sha256(leadId),
           ]);
 
-          (window as any).ttq.identify({
+          window.ttq.identify({
             email: hashedEmail,
             phone_number: hashedPhone,
             external_id: hashedExternalId,
           });
-          (window as any).ttq.track("Lead", {
+          window.ttq.track("Lead", {
             contents: [
               {
                 content_id: plano,

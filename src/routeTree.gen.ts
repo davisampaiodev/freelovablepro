@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicWebhookMercadopagoRouteImport } from './routes/api/public/webhook-mercadopago'
 import { Route as ApiPublicWebhookCaktoRouteImport } from './routes/api/public/webhook-cakto'
 import { Route as ApiPublicWebhookAppmaxRouteImport } from './routes/api/public/webhook-appmax'
+import { Route as ApiPublicStatusPagamentoMpRouteImport } from './routes/api/public/status-pagamento-mp'
+import { Route as ApiPublicProcessarPagamentoMpRouteImport } from './routes/api/public/processar-pagamento-mp'
+import { Route as ApiPublicMetaCapiEventRouteImport } from './routes/api/public/meta-capi-event'
+import { Route as ApiPublicMarcarCheckoutMpIniciadoRouteImport } from './routes/api/public/marcar-checkout-mp-iniciado'
 import { Route as ApiPublicMarcarCheckoutIniciadoRouteImport } from './routes/api/public/marcar-checkout-iniciado'
+import { Route as ApiPublicDadosCheckoutRouteImport } from './routes/api/public/dados-checkout'
 import { Route as ApiPublicCriarCheckoutAppmaxRouteImport } from './routes/api/public/criar-checkout-appmax'
 import { Route as ApiInternalWhatsappPixPreviewRouteImport } from './routes/api/internal/whatsapp-pix-preview'
 import { Route as ApiInternalWhatsappMarkSentRouteImport } from './routes/api/internal/whatsapp-mark-sent'
@@ -26,6 +33,11 @@ import { Route as AuthenticatedAdminTokensRouteImport } from './routes/_authenti
 const ObrigadoRoute = ObrigadoRouteImport.update({
   id: '/obrigado',
   path: '/obrigado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -42,6 +54,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhookMercadopagoRoute =
+  ApiPublicWebhookMercadopagoRouteImport.update({
+    id: '/api/public/webhook-mercadopago',
+    path: '/api/public/webhook-mercadopago',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhookCaktoRoute = ApiPublicWebhookCaktoRouteImport.update({
   id: '/api/public/webhook-cakto',
   path: '/api/public/webhook-cakto',
@@ -52,12 +70,40 @@ const ApiPublicWebhookAppmaxRoute = ApiPublicWebhookAppmaxRouteImport.update({
   path: '/api/public/webhook-appmax',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStatusPagamentoMpRoute =
+  ApiPublicStatusPagamentoMpRouteImport.update({
+    id: '/api/public/status-pagamento-mp',
+    path: '/api/public/status-pagamento-mp',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicProcessarPagamentoMpRoute =
+  ApiPublicProcessarPagamentoMpRouteImport.update({
+    id: '/api/public/processar-pagamento-mp',
+    path: '/api/public/processar-pagamento-mp',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMetaCapiEventRoute = ApiPublicMetaCapiEventRouteImport.update({
+  id: '/api/public/meta-capi-event',
+  path: '/api/public/meta-capi-event',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMarcarCheckoutMpIniciadoRoute =
+  ApiPublicMarcarCheckoutMpIniciadoRouteImport.update({
+    id: '/api/public/marcar-checkout-mp-iniciado',
+    path: '/api/public/marcar-checkout-mp-iniciado',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicMarcarCheckoutIniciadoRoute =
   ApiPublicMarcarCheckoutIniciadoRouteImport.update({
     id: '/api/public/marcar-checkout-iniciado',
     path: '/api/public/marcar-checkout-iniciado',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicDadosCheckoutRoute = ApiPublicDadosCheckoutRouteImport.update({
+  id: '/api/public/dados-checkout',
+  path: '/api/public/dados-checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCriarCheckoutAppmaxRoute =
   ApiPublicCriarCheckoutAppmaxRouteImport.update({
     id: '/api/public/criar-checkout-appmax',
@@ -98,6 +144,7 @@ const AuthenticatedAdminTokensRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
@@ -105,13 +152,20 @@ export interface FileRoutesByFullPath {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/dados-checkout': typeof ApiPublicDadosCheckoutRoute
   '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
+  '/api/public/marcar-checkout-mp-iniciado': typeof ApiPublicMarcarCheckoutMpIniciadoRoute
+  '/api/public/meta-capi-event': typeof ApiPublicMetaCapiEventRoute
+  '/api/public/processar-pagamento-mp': typeof ApiPublicProcessarPagamentoMpRoute
+  '/api/public/status-pagamento-mp': typeof ApiPublicStatusPagamentoMpRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
+  '/api/public/webhook-mercadopago': typeof ApiPublicWebhookMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/obrigado': typeof ObrigadoRoute
   '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
@@ -119,15 +173,22 @@ export interface FileRoutesByTo {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/dados-checkout': typeof ApiPublicDadosCheckoutRoute
   '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
+  '/api/public/marcar-checkout-mp-iniciado': typeof ApiPublicMarcarCheckoutMpIniciadoRoute
+  '/api/public/meta-capi-event': typeof ApiPublicMetaCapiEventRoute
+  '/api/public/processar-pagamento-mp': typeof ApiPublicProcessarPagamentoMpRoute
+  '/api/public/status-pagamento-mp': typeof ApiPublicStatusPagamentoMpRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
+  '/api/public/webhook-mercadopago': typeof ApiPublicWebhookMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/obrigado': typeof ObrigadoRoute
   '/_authenticated/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/api/internal/whatsapp-checkout-preview': typeof ApiInternalWhatsappCheckoutPreviewRoute
@@ -135,15 +196,22 @@ export interface FileRoutesById {
   '/api/internal/whatsapp-mark-sent': typeof ApiInternalWhatsappMarkSentRoute
   '/api/internal/whatsapp-pix-preview': typeof ApiInternalWhatsappPixPreviewRoute
   '/api/public/criar-checkout-appmax': typeof ApiPublicCriarCheckoutAppmaxRoute
+  '/api/public/dados-checkout': typeof ApiPublicDadosCheckoutRoute
   '/api/public/marcar-checkout-iniciado': typeof ApiPublicMarcarCheckoutIniciadoRoute
+  '/api/public/marcar-checkout-mp-iniciado': typeof ApiPublicMarcarCheckoutMpIniciadoRoute
+  '/api/public/meta-capi-event': typeof ApiPublicMetaCapiEventRoute
+  '/api/public/processar-pagamento-mp': typeof ApiPublicProcessarPagamentoMpRoute
+  '/api/public/status-pagamento-mp': typeof ApiPublicStatusPagamentoMpRoute
   '/api/public/webhook-appmax': typeof ApiPublicWebhookAppmaxRoute
   '/api/public/webhook-cakto': typeof ApiPublicWebhookCaktoRoute
+  '/api/public/webhook-mercadopago': typeof ApiPublicWebhookMercadopagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/checkout'
     | '/obrigado'
     | '/admin/tokens'
     | '/api/internal/whatsapp-checkout-preview'
@@ -151,13 +219,20 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/dados-checkout'
     | '/api/public/marcar-checkout-iniciado'
+    | '/api/public/marcar-checkout-mp-iniciado'
+    | '/api/public/meta-capi-event'
+    | '/api/public/processar-pagamento-mp'
+    | '/api/public/status-pagamento-mp'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
+    | '/api/public/webhook-mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/checkout'
     | '/obrigado'
     | '/admin/tokens'
     | '/api/internal/whatsapp-checkout-preview'
@@ -165,14 +240,21 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/dados-checkout'
     | '/api/public/marcar-checkout-iniciado'
+    | '/api/public/marcar-checkout-mp-iniciado'
+    | '/api/public/meta-capi-event'
+    | '/api/public/processar-pagamento-mp'
+    | '/api/public/status-pagamento-mp'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
+    | '/api/public/webhook-mercadopago'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/checkout'
     | '/obrigado'
     | '/_authenticated/admin/tokens'
     | '/api/internal/whatsapp-checkout-preview'
@@ -180,24 +262,37 @@ export interface FileRouteTypes {
     | '/api/internal/whatsapp-mark-sent'
     | '/api/internal/whatsapp-pix-preview'
     | '/api/public/criar-checkout-appmax'
+    | '/api/public/dados-checkout'
     | '/api/public/marcar-checkout-iniciado'
+    | '/api/public/marcar-checkout-mp-iniciado'
+    | '/api/public/meta-capi-event'
+    | '/api/public/processar-pagamento-mp'
+    | '/api/public/status-pagamento-mp'
     | '/api/public/webhook-appmax'
     | '/api/public/webhook-cakto'
+    | '/api/public/webhook-mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
   ObrigadoRoute: typeof ObrigadoRoute
   ApiInternalWhatsappCheckoutPreviewRoute: typeof ApiInternalWhatsappCheckoutPreviewRoute
   ApiInternalWhatsappFormularioPreviewRoute: typeof ApiInternalWhatsappFormularioPreviewRoute
   ApiInternalWhatsappMarkSentRoute: typeof ApiInternalWhatsappMarkSentRoute
   ApiInternalWhatsappPixPreviewRoute: typeof ApiInternalWhatsappPixPreviewRoute
   ApiPublicCriarCheckoutAppmaxRoute: typeof ApiPublicCriarCheckoutAppmaxRoute
+  ApiPublicDadosCheckoutRoute: typeof ApiPublicDadosCheckoutRoute
   ApiPublicMarcarCheckoutIniciadoRoute: typeof ApiPublicMarcarCheckoutIniciadoRoute
+  ApiPublicMarcarCheckoutMpIniciadoRoute: typeof ApiPublicMarcarCheckoutMpIniciadoRoute
+  ApiPublicMetaCapiEventRoute: typeof ApiPublicMetaCapiEventRoute
+  ApiPublicProcessarPagamentoMpRoute: typeof ApiPublicProcessarPagamentoMpRoute
+  ApiPublicStatusPagamentoMpRoute: typeof ApiPublicStatusPagamentoMpRoute
   ApiPublicWebhookAppmaxRoute: typeof ApiPublicWebhookAppmaxRoute
   ApiPublicWebhookCaktoRoute: typeof ApiPublicWebhookCaktoRoute
+  ApiPublicWebhookMercadopagoRoute: typeof ApiPublicWebhookMercadopagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -207,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/obrigado'
       fullPath: '/obrigado'
       preLoaderRoute: typeof ObrigadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -230,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhook-mercadopago': {
+      id: '/api/public/webhook-mercadopago'
+      path: '/api/public/webhook-mercadopago'
+      fullPath: '/api/public/webhook-mercadopago'
+      preLoaderRoute: typeof ApiPublicWebhookMercadopagoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhook-cakto': {
       id: '/api/public/webhook-cakto'
       path: '/api/public/webhook-cakto'
@@ -244,11 +353,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhookAppmaxRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/status-pagamento-mp': {
+      id: '/api/public/status-pagamento-mp'
+      path: '/api/public/status-pagamento-mp'
+      fullPath: '/api/public/status-pagamento-mp'
+      preLoaderRoute: typeof ApiPublicStatusPagamentoMpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/processar-pagamento-mp': {
+      id: '/api/public/processar-pagamento-mp'
+      path: '/api/public/processar-pagamento-mp'
+      fullPath: '/api/public/processar-pagamento-mp'
+      preLoaderRoute: typeof ApiPublicProcessarPagamentoMpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/meta-capi-event': {
+      id: '/api/public/meta-capi-event'
+      path: '/api/public/meta-capi-event'
+      fullPath: '/api/public/meta-capi-event'
+      preLoaderRoute: typeof ApiPublicMetaCapiEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/marcar-checkout-mp-iniciado': {
+      id: '/api/public/marcar-checkout-mp-iniciado'
+      path: '/api/public/marcar-checkout-mp-iniciado'
+      fullPath: '/api/public/marcar-checkout-mp-iniciado'
+      preLoaderRoute: typeof ApiPublicMarcarCheckoutMpIniciadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/marcar-checkout-iniciado': {
       id: '/api/public/marcar-checkout-iniciado'
       path: '/api/public/marcar-checkout-iniciado'
       fullPath: '/api/public/marcar-checkout-iniciado'
       preLoaderRoute: typeof ApiPublicMarcarCheckoutIniciadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/dados-checkout': {
+      id: '/api/public/dados-checkout'
+      path: '/api/public/dados-checkout'
+      fullPath: '/api/public/dados-checkout'
+      preLoaderRoute: typeof ApiPublicDadosCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/criar-checkout-appmax': {
@@ -311,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
   ObrigadoRoute: ObrigadoRoute,
   ApiInternalWhatsappCheckoutPreviewRoute:
     ApiInternalWhatsappCheckoutPreviewRoute,
@@ -319,9 +464,16 @@ const rootRouteChildren: RootRouteChildren = {
   ApiInternalWhatsappMarkSentRoute: ApiInternalWhatsappMarkSentRoute,
   ApiInternalWhatsappPixPreviewRoute: ApiInternalWhatsappPixPreviewRoute,
   ApiPublicCriarCheckoutAppmaxRoute: ApiPublicCriarCheckoutAppmaxRoute,
+  ApiPublicDadosCheckoutRoute: ApiPublicDadosCheckoutRoute,
   ApiPublicMarcarCheckoutIniciadoRoute: ApiPublicMarcarCheckoutIniciadoRoute,
+  ApiPublicMarcarCheckoutMpIniciadoRoute:
+    ApiPublicMarcarCheckoutMpIniciadoRoute,
+  ApiPublicMetaCapiEventRoute: ApiPublicMetaCapiEventRoute,
+  ApiPublicProcessarPagamentoMpRoute: ApiPublicProcessarPagamentoMpRoute,
+  ApiPublicStatusPagamentoMpRoute: ApiPublicStatusPagamentoMpRoute,
   ApiPublicWebhookAppmaxRoute: ApiPublicWebhookAppmaxRoute,
   ApiPublicWebhookCaktoRoute: ApiPublicWebhookCaktoRoute,
+  ApiPublicWebhookMercadopagoRoute: ApiPublicWebhookMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

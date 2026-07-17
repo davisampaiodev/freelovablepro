@@ -2,8 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { useEffect } from "react";
 import { getMetaExternalId } from "@/lib/meta-browser";
+import { z } from "zod";
 
 export const Route = createFileRoute("/obrigado")({
+  validateSearch: z.object({
+    payment_id: z
+      .string()
+      .regex(/^\d{1,30}$/)
+      .optional()
+      .catch(undefined),
+  }),
   head: () => ({
     meta: [
       { title: "Pagamento confirmado — FreeLovable" },
@@ -19,12 +27,14 @@ export const Route = createFileRoute("/obrigado")({
 });
 
 function ObrigadoPage() {
+  const { payment_id: paymentId } = Route.useSearch();
   useEffect(() => {
+    if (paymentId) return;
     const leadId = new URLSearchParams(window.location.search).get("lead_id");
     if (!leadId || !/^[0-9a-f-]{36}$/i.test(leadId)) return;
 
     const eventId = `purchase_${leadId}`;
-    const fbq = (window as any).fbq;
+    const fbq = window.fbq;
     if (!fbq) return;
 
     // external_id is supplied through the Pixel's advanced-matching object
@@ -37,7 +47,31 @@ function ObrigadoPage() {
       { content_type: "product", content_ids: ["freelovable"], currency: "BRL" },
       { eventID: eventId },
     );
-  }, []);
+  }, [paymentId]);
+
+  if (paymentId) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12 text-foreground">
+        <div className="card-glow w-full max-w-lg rounded-3xl border border-white/10 bg-[#0A0A0B] p-8 text-center sm:p-10">
+          <div className="mx-auto mb-6 h-12 w-12 animate-pulse rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-violet-500" />
+          <h1 className="mb-3 text-3xl font-extrabold text-gradient sm:text-4xl">
+            Pagamento recebido
+          </h1>
+          <p className="mb-6 text-base leading-relaxed text-muted-foreground">
+            Estamos confirmando o status definitivo do seu pagamento. A presença do identificador
+            nesta página não libera o produto automaticamente.
+          </p>
+          <p className="text-xs text-muted-foreground">Identificação: {paymentId}</p>
+          <Link
+            to="/"
+            className="mt-6 inline-block rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+          >
+            Voltar para a página inicial
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-12">
@@ -53,8 +87,8 @@ function ObrigadoPage() {
         <p className="text-base text-muted-foreground mb-6 leading-relaxed">
           Obrigado pela sua compra 🎉
           <br />
-          Seu pagamento foi confirmado. Consulte o aviso abaixo para receber
-          seu <strong className="text-foreground">token de acesso</strong>.
+          Seu pagamento foi confirmado. Consulte o aviso abaixo para receber seu{" "}
+          <strong className="text-foreground">token de acesso</strong>.
         </p>
 
         <div className="rounded-2xl border border-amber-400/40 bg-amber-400/10 p-5 mb-6 text-left">
@@ -63,9 +97,9 @@ function ObrigadoPage() {
           </p>
 
           <p className="text-sm text-amber-100/85 leading-relaxed">
-            Estamos enfrentando um problema temporário na entrega automática
-            dos tokens. Para receber seu acesso, envie uma mensagem ao nosso
-            suporte pelo WhatsApp e informe o e-mail usado na compra.
+            Estamos enfrentando um problema temporário na entrega automática dos tokens. Para
+            receber seu acesso, envie uma mensagem ao nosso suporte pelo WhatsApp e informe o e-mail
+            usado na compra.
           </p>
         </div>
 
