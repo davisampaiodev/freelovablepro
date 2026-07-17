@@ -11,12 +11,12 @@ export const Route = createFileRoute("/api/public/webhook-mercadopago")({
           const body = await request.text();
           const query = new URL(request.url).search;
           const response = await fetch(
-            `${getFelipeFunctionUrl("mercadopago-webhook-v2")}${query}`,
+            `${await getFelipeFunctionUrl("mercadopago-webhook-v2")}${query}`,
             {
               method: "POST",
               headers: {
                 "Content-Type": request.headers.get("content-type") || "application/json",
-                ...getFelipeFunctionAuthHeaders(),
+                ...(await getFelipeFunctionAuthHeaders()),
                 ...(request.headers.get("x-signature")
                   ? { "x-signature": request.headers.get("x-signature")! }
                   : {}),

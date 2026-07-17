@@ -23,13 +23,6 @@ const BodySchema = z.object({
   idempotency_key: z.string().uuid(),
 });
 
-const DELIVERY_PLAN = {
-  diario: "plan_1d",
-  mensal: "plan_30d",
-  trimestral: "plan_90d",
-  anual: "plan_3650d",
-} as const;
-
 type ProviderResult = Record<string, unknown> & {
   success?: boolean;
   error?: unknown;
@@ -60,29 +53,22 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
             getFelipeFunctionUrl,
           } =
             await import("@/lib/felipe-checkout.server");
-          const functionName = isPix
-            ? FUNCTION_NAMES.createPreference
-            : FUNCTION_NAMES.createPayment;
-          const endpoint = getFelipeFunctionUrl(functionName);
-          const payload = isPix
-            ? {
-                plan: DELIVERY_PLAN[input.plano],
-                name: input.customer.name,
-                email: input.customer.email,
-                whatsapp: input.customer.phone,
-              }
-            : {
-                lead_id: input.lead_id,
-                plano: input.plano,
-                token: input.token,
-                payment_method_id: input.payment_method_id,
-                issuer_id: input.issuer_id,
-                installments: input.installments ?? 1,
-                payer: input.payer,
-                customer: input.customer,
-                tracking: input.tracking,
-                idempotency_key: input.idempotency_key,
-              };
+          // A Function de pagamento v2 trata Pix e cartão. Para Pix ela cria o
+          // pagamento pendente e devolve o QR Code; para cartão exige o token.
+          const functionName = FUNCTION_NAMES.createPayment;
+          const endpoint = await getFelipeFunctionUrl(functionName);
+          const payload = {
+            lead_id: input.lead_id,
+            plano: input.plano,
+            ...(input.token ? { token: input.token } : {}),
+            payment_method_id: input.payment_method_id,
+            issuer_id: input.issuer_id,
+            installments: input.installments ?? 1,
+            payer: input.payer,
+            customer: input.customer,
+            tracking: input.tracking,
+            idempotency_key: input.idempotency_key,
+          };
 
           console.log("[checkout:06] pagamento solicitado", {
             leadId: `${input.lead_id.slice(0, 8)}…${input.lead_id.slice(-4)}`,
@@ -93,7 +79,7 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...getFelipeFunctionAuthHeaders(),
+              ...(await getFelipeFunctionAuthHeaders()),
             },
             body: JSON.stringify(payload),
           });

@@ -5,10 +5,12 @@ const FUNCTION_NAMES = {
   webhook: "mercadopago-webhook-v2",
 } as const;
 
-export function getFelipeFunctionUrl(
+export async function getFelipeFunctionUrl(
   functionName: (typeof FUNCTION_NAMES)[keyof typeof FUNCTION_NAMES],
 ) {
-  const configuredUrl = process.env.FELIPE_SUPABASE_URL?.trim().replace(/\/+$/, "");
+  const configuredUrl = (await getServerEnv("FELIPE_SUPABASE_URL"))
+    .trim()
+    .replace(/\/+$/, "");
   if (!configuredUrl) {
     throw new Error("Missing checkout environment variable: FELIPE_SUPABASE_URL");
   }
@@ -18,8 +20,8 @@ export function getFelipeFunctionUrl(
   return `${url}/functions/v1/${functionName}`;
 }
 
-export function getFelipeFunctionAuthHeaders() {
-  const serviceRoleKey = process.env.FELIPE_SUPABASE_SERVICE_ROLE_KEY?.trim();
+export async function getFelipeFunctionAuthHeaders() {
+  const serviceRoleKey = (await getServerEnv("FELIPE_SUPABASE_SERVICE_ROLE_KEY")).trim();
   if (!serviceRoleKey) {
     throw new Error(
       "Missing checkout environment variable: FELIPE_SUPABASE_SERVICE_ROLE_KEY",
@@ -32,3 +34,4 @@ export function getFelipeFunctionAuthHeaders() {
 }
 
 export { FUNCTION_NAMES };
+import { getServerEnv } from "@/lib/config.server";

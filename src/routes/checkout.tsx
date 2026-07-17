@@ -17,7 +17,7 @@ const SearchSchema = z.object({
   preview: z.literal("1").optional().catch(undefined),
 });
 
-const MERCADO_PAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY?.trim() ?? "";
+const BUILD_MERCADO_PAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY?.trim() ?? "";
 let initializedPublicKey = "";
 
 type CheckoutData = {
@@ -126,8 +126,12 @@ function redirectToThankYou(paymentId: string, externalReference: string) {
 
 function CheckoutPage() {
   const search = Route.useSearch();
-  const isPreview = search.preview === "1";
+  const isPreview = search.preview === "1" || (import.meta.env.DEV && !search.lead_id);
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
+  const [mercadoPagoPublicKey, setMercadoPagoPublicKey] = useState(
+    BUILD_MERCADO_PAGO_PUBLIC_KEY,
+  );
+  const [publicKeyLoaded, setPublicKeyLoaded] = useState(Boolean(BUILD_MERCADO_PAGO_PUBLIC_KEY));
   const [loadError, setLoadError] = useState(false);
   const [brickReady, setBrickReady] = useState(false);
   const [sdkReady, setSdkReady] = useState(false);
@@ -216,17 +220,35 @@ function CheckoutPage() {
   }, [isPreview, search.lead_id, search.plano, search.forma_pagamento]);
 
   useEffect(() => {
-    if (!checkout || !MERCADO_PAGO_PUBLIC_KEY) return;
+    if (BUILD_MERCADO_PAGO_PUBLIC_KEY) return;
+    let active = true;
+    void fetch("/api/public/mercado-pago-config")
+      .then(async (response) => {
+        const body = (await response.json().catch(() => null)) as { public_key?: unknown } | null;
+        if (active && typeof body?.public_key === "string") {
+          setMercadoPagoPublicKey(body.public_key.trim());
+        }
+      })
+      .finally(() => {
+        if (active) setPublicKeyLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!checkout || !mercadoPagoPublicKey) return;
     try {
-      if (initializedPublicKey !== MERCADO_PAGO_PUBLIC_KEY) {
-        initMercadoPago(MERCADO_PAGO_PUBLIC_KEY, { locale: "pt-BR" });
-        initializedPublicKey = MERCADO_PAGO_PUBLIC_KEY;
+      if (initializedPublicKey !== mercadoPagoPublicKey) {
+        initMercadoPago(mercadoPagoPublicKey, { locale: "pt-BR" });
+        initializedPublicKey = mercadoPagoPublicKey;
       }
       setSdkReady(true);
     } catch {
       setBrickError("Não foi possível carregar o pagamento seguro. Tente novamente mais tarde.");
     }
-  }, [checkout]);
+  }, [checkout, mercadoPagoPublicKey]);
 
   useEffect(() => {
     if (
@@ -504,7 +526,7 @@ function CheckoutPage() {
 
   const trustedPlan = FREELOVABLE_PLANS[checkout.plan];
   const customerFirstName = checkout.customer_name.trim().split(/\s+/)[0] || "cliente";
-  const publicKeyMissing = !MERCADO_PAGO_PUBLIC_KEY;
+  const publicKeyMissing = publicKeyLoaded && !mercadoPagoPublicKey;
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:py-12">
@@ -684,6 +706,10 @@ function CheckoutPage() {
                   Pagar {formatCurrency(checkout.value)}
                 </div>
               </div>
+            ) : !publicKeyLoaded ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                Carregando pagamento seguro...
+              </p>
             ) : publicKeyMissing ? (
               <PaymentMessage tone="error">
                 O pagamento está temporariamente indisponível. Tente novamente mais tarde.

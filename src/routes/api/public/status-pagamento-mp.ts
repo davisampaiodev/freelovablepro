@@ -30,11 +30,11 @@ export const Route = createFileRoute("/api/public/status-pagamento-mp")({
             getFelipeFunctionUrl,
           } =
             await import("@/lib/felipe-checkout.server");
-          const response = await fetch(getFelipeFunctionUrl(FUNCTION_NAMES.paymentStatus), {
+          const response = await fetch(await getFelipeFunctionUrl(FUNCTION_NAMES.paymentStatus), {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...getFelipeFunctionAuthHeaders(),
+              ...(await getFelipeFunctionAuthHeaders()),
             },
             body: JSON.stringify(parsed.data),
           });
