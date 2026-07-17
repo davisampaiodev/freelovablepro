@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMetaExternalId } from "@/lib/meta-browser";
 import { z } from "zod";
 
 export const Route = createFileRoute("/obrigado")({
@@ -44,25 +43,6 @@ function ObrigadoPage() {
       )
       .catch(() => setApproved(false));
   }, [externalReference, paymentId]);
-
-  useEffect(() => {
-    if (!approved || !externalReference) return;
-
-    const eventId = `purchase_${externalReference}`;
-    const fbq = window.fbq;
-    if (!fbq) return;
-
-    // external_id is supplied through the Pixel's advanced-matching object
-    // initialized in the root document. Reading it here guarantees the same
-    // persistent browser ID is available on the Purchase event.
-    getMetaExternalId();
-    fbq(
-      "track",
-      "Purchase",
-      { content_type: "product", content_ids: ["freelovable"], currency: "BRL" },
-      { eventID: eventId },
-    );
-  }, [approved, externalReference]);
 
   if (!approved) {
     return (
