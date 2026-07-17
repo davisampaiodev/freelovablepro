@@ -25,7 +25,8 @@ import {
   Zap,
 } from "lucide-react";
 import { captureAttribution, getStoredAttribution } from "@/lib/utm-tracking";
-import { getMetaCookie, getMetaExternalId } from "@/lib/meta-browser";
+import { getMetaCookie } from "@/lib/meta-browser";
+import { FREELOVABLE_PLANS } from "@/lib/freelovable-plans";
 
 declare global {
   interface Window {
@@ -1848,88 +1849,24 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
     try {
       const plano = planoKey();
       const normalizedForm = normalizeLeadForm(formData);
-      const metaExternalId = getMetaExternalId();
       setFormData({
         name: normalizedForm.nome,
         email: normalizedForm.email,
         whatsapp: normalizedForm.telefone,
       });
       const attribution = getStoredAttribution();
-
-      // Grava o lead no Supabase externo antes de redirecionar pro checkout.
-      const { supabaseExternal, PLANO_VALOR_OFERTA } =
-        await import("@/integrations/supabase-external/client");
-      const recentSince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const [emailLookup, phoneLookup] = await Promise.all([
-        supabaseExternal
-          .from("leads_checkout_br")
-          .select("id, criado_em")
-          .eq("status_pagamento", "pendente")
-          .is("comprado_em", null)
-          .gte("criado_em", recentSince)
-          .ilike("email", escapePostgrestLike(normalizedForm.email))
-          .order("criado_em", { ascending: false })
-          .limit(5),
-        supabaseExternal
-          .from("leads_checkout_br")
-          .select("id, criado_em")
-          .eq("status_pagamento", "pendente")
-          .is("comprado_em", null)
-          .gte("criado_em", recentSince)
-          .eq("telefone", normalizedForm.telefone)
-          .order("criado_em", { ascending: false })
-          .limit(5),
-      ]);
-
-      if (emailLookup.error || phoneLookup.error) {
-        console.warn("Não foi possível verificar lead recente; seguindo com novo cadastro:", {
-          emailError: emailLookup.error,
-          phoneError: phoneLookup.error,
-        });
-      }
-
-      const recentLeads = new Map<string, { id: string; criado_em: string }>();
-      for (const lead of [
-        ...(emailLookup.error ? [] : (emailLookup.data ?? [])),
-        ...(phoneLookup.error ? [] : (phoneLookup.data ?? [])),
-      ]) {
-        recentLeads.set(lead.id, lead);
-      }
-      const existingLead = [...recentLeads.values()].sort(
-        (a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime(),
-      )[0];
-
-      let leadId: string = crypto.randomUUID();
-      let reusedLead = false;
-      if (existingLead) {
-        leadId = existingLead.id;
-        reusedLead = true;
-      }
-
-      if (!reusedLead) {
-        const { error: insertError } = await supabaseExternal.from("leads_checkout_br").insert({
-          id: leadId,
+      const leadId = crypto.randomUUID();
+      sessionStorage.setItem(
+        `freelovable_checkout_${leadId}`,
+        JSON.stringify({
           nome: normalizedForm.nome,
           email: normalizedForm.email,
           telefone: normalizedForm.telefone,
           plano,
-          external_reference: metaExternalId,
-          status_pagamento: "pendente",
-          etapa_funil: "formulario_preenchido",
-          origem: attribution.utm_source ?? null,
-          campanha: attribution.utm_campaign ?? null,
-          criativo: attribution.utm_content ?? null,
-          valor_oferta: PLANO_VALOR_OFERTA[plano],
-        });
-
-        if (insertError) {
-          console.error("Falha ao gravar assinatura:", insertError);
-          throw new Error(
-            "Não foi possível registrar seus dados. Tente novamente antes de ir ao pagamento.",
-          );
-        }
-      }
-
+          paymentType,
+          tracking: attribution,
+        }),
+      );
       const checkoutUrl = new URL("/checkout", window.location.origin);
       checkoutUrl.searchParams.set("lead_id", leadId);
       checkoutUrl.searchParams.set("plano", plano);
@@ -1965,10 +1902,10 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
                 content_id: plano,
                 content_type: "product",
                 content_name: `FreeLovable ${plano}`,
-                price: PLANO_VALOR_OFERTA[plano],
+                price: FREELOVABLE_PLANS[plano].valor,
               },
             ],
-            value: PLANO_VALOR_OFERTA[plano],
+            value: FREELOVABLE_PLANS[plano].valor,
             currency: "BRL",
             status: "submitted",
           });

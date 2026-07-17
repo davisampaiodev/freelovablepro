@@ -14,19 +14,23 @@ const SearchSchema = z.object({
   lead_id: z.string().uuid().optional().catch(undefined),
   plano: z.enum(["diario", "mensal", "trimestral", "anual"]).optional().catch(undefined),
   forma_pagamento: z.enum(["pix", "credit_card"]).optional().catch(undefined),
+  preview: z.literal("1").optional().catch(undefined),
 });
 
 const MERCADO_PAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY?.trim() ?? "";
 let initializedPublicKey = "";
 
 type CheckoutData = {
-  lead_id: string;
-  nome: string;
-  email: string;
-  telefone_mascarado: string;
-  plano: FreelovablePlanId;
-  nome_plano: string;
-  valor: number;
+  session_id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_whatsapp: string;
+  plan: FreelovablePlanId;
+  duration_days: number;
+  value: number;
+  status: string;
+  payment_method: PaymentType | null;
+  tracking?: Record<string, string>;
 };
 
 type CardPaymentFormData = {
@@ -45,6 +49,7 @@ type PaymentStatus =
 
 type PaymentResponse = {
   success: true;
+  external_reference?: string;
   payment: {
     id: string;
     status: PaymentStatus;
@@ -77,14 +82,14 @@ function isCheckoutData(value: unknown): value is CheckoutData {
   if (!value || typeof value !== "object") return false;
   const checkout = value as Record<string, unknown>;
   return (
-    typeof checkout.lead_id === "string" &&
-    typeof checkout.nome === "string" &&
-    typeof checkout.email === "string" &&
-    typeof checkout.telefone_mascarado === "string" &&
-    isFreelovablePlanId(checkout.plano) &&
-    typeof checkout.nome_plano === "string" &&
-    typeof checkout.valor === "number" &&
-    Number.isFinite(checkout.valor)
+    typeof checkout.session_id === "string" &&
+    typeof checkout.customer_name === "string" &&
+    typeof checkout.customer_email === "string" &&
+    typeof checkout.customer_whatsapp === "string" &&
+    isFreelovablePlanId(checkout.plan) &&
+    typeof checkout.duration_days === "number" &&
+    typeof checkout.value === "number" &&
+    Number.isFinite(checkout.value)
   );
 }
 
@@ -106,20 +111,22 @@ function formatCurrency(value: number) {
 }
 
 function installmentsLabel(checkout: CheckoutData) {
-  const plan = FREELOVABLE_PLANS[checkout.plano];
-  const installmentValue = checkout.valor / plan.maxParcelas;
-  if (plan.maxParcelas === 1) return `1x de ${formatCurrency(checkout.valor)}`;
+  const plan = FREELOVABLE_PLANS[checkout.plan];
+  const installmentValue = checkout.value / plan.maxParcelas;
+  if (plan.maxParcelas === 1) return `1x de ${formatCurrency(checkout.value)}`;
   return `até ${plan.maxParcelas}x sem acréscimo · ${plan.maxParcelas}x de ${formatCurrency(installmentValue)}`;
 }
 
-function redirectToThankYou(paymentId: string) {
+function redirectToThankYou(paymentId: string, externalReference: string) {
   const thankYouUrl = new URL("/obrigado", window.location.origin);
   thankYouUrl.searchParams.set("payment_id", paymentId);
+  thankYouUrl.searchParams.set("external_reference", externalReference);
   window.location.href = thankYouUrl.toString();
 }
 
 function CheckoutPage() {
   const search = Route.useSearch();
+  const isPreview = search.preview === "1" || (import.meta.env.DEV && !search.lead_id);
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [brickReady, setBrickReady] = useState(false);
@@ -132,6 +139,7 @@ function CheckoutPage() {
   const [pixSubmitting, setPixSubmitting] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [externalReference, setExternalReference] = useState<string | null>(null);
   const [pollingTimedOut, setPollingTimedOut] = useState(false);
   const trackingStartedRef = useRef<string | null>(null);
   const submittingRef = useRef(false);
@@ -139,37 +147,73 @@ function CheckoutPage() {
   const pollingStartedAtRef = useRef<{ paymentId: string; startedAt: number } | null>(null);
 
   useEffect(() => {
+    if (isPreview) {
+      const previewPlan = search.plano ?? "anual";
+      const plan = FREELOVABLE_PLANS[previewPlan];
+      setLoadError(false);
+      setCheckout({
+        session_id: "00000000-0000-4000-8000-000000000000",
+        customer_name: "Davi",
+        customer_email: "da***@exemplo.com",
+        customer_whatsapp: "(**) *****-2026",
+        plan: previewPlan,
+        duration_days:
+          previewPlan === "diario"
+            ? 1
+            : previewPlan === "mensal"
+              ? 30
+              : previewPlan === "trimestral"
+                ? 90
+                : 365,
+        value: plan.valor,
+        status: "pending",
+        payment_method: search.forma_pagamento ?? "pix",
+        tracking: {},
+      });
+      return;
+    }
+
     if (!search.lead_id || !search.plano) {
       setLoadError(true);
       return;
     }
-
-    const controller = new AbortController();
-    setLoadError(false);
-    setCheckout(null);
-
-    void fetch(`/api/public/dados-checkout?lead_id=${encodeURIComponent(search.lead_id)}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        const body: unknown = await response.json().catch(() => null);
-        if (!response.ok || !body || typeof body !== "object") {
-          throw new Error("checkout_unavailable");
-        }
-        const payload = body as { success?: unknown; checkout?: unknown };
-        if (payload.success !== true || !isCheckoutData(payload.checkout)) {
-          throw new Error("unexpected_response");
-        }
-        setCheckout(payload.checkout);
-      })
-      .catch((fetchError: unknown) => {
-        if (fetchError instanceof DOMException && fetchError.name === "AbortError") return;
-        setLoadError(true);
+    try {
+      const raw = sessionStorage.getItem(`freelovable_checkout_${search.lead_id}`);
+      const stored = raw ? JSON.parse(raw) : null;
+      if (
+        !stored ||
+        typeof stored.nome !== "string" ||
+        typeof stored.email !== "string" ||
+        typeof stored.telefone !== "string" ||
+        stored.plano !== search.plano
+      ) {
+        throw new Error("checkout_unavailable");
+      }
+      const plan = FREELOVABLE_PLANS[search.plano];
+      setCheckout({
+        session_id: search.lead_id,
+        customer_name: stored.nome,
+        customer_email: stored.email,
+        customer_whatsapp: stored.telefone,
+        plan: search.plano,
+        duration_days:
+          search.plano === "diario"
+            ? 1
+            : search.plano === "mensal"
+              ? 30
+              : search.plano === "trimestral"
+                ? 90
+                : 365,
+        value: plan.valor,
+        status: "pending",
+        payment_method: search.forma_pagamento ?? "pix",
+        tracking: stored.tracking && typeof stored.tracking === "object" ? stored.tracking : {},
       });
-
-    return () => controller.abort();
-  }, [search.lead_id, search.plano]);
+      setLoadError(false);
+    } catch {
+      setLoadError(true);
+    }
+  }, [isPreview, search.lead_id, search.plano, search.forma_pagamento]);
 
   useEffect(() => {
     if (!checkout || !MERCADO_PAGO_PUBLIC_KEY) return;
@@ -210,7 +254,7 @@ function CheckoutPage() {
       try {
         const query = new URLSearchParams({
           payment_id: paymentId,
-          lead_id: checkout.lead_id,
+          external_reference: externalReference ?? checkout.session_id,
         });
         const response = await fetch(`/api/public/status-pagamento-mp?${query.toString()}`, {
           cache: "no-store",
@@ -240,7 +284,7 @@ function CheckoutPage() {
             const status = payment.status as PaymentStatus;
             setPaymentStatus(status);
             if (status === "approved") {
-              redirectToThankYou(paymentId);
+              redirectToThankYou(paymentId, externalReference ?? checkout.session_id);
               return;
             }
             if (status === "rejected" || status === "cancelled") {
@@ -262,21 +306,13 @@ function CheckoutPage() {
       controller.abort();
       if (timer) window.clearTimeout(timer);
     };
-  }, [checkout, paymentId, paymentStatus]);
+  }, [checkout, externalReference, paymentId, paymentStatus]);
 
   useEffect(() => {
-    if (!checkout || trackingStartedRef.current === checkout.lead_id) return;
-    trackingStartedRef.current = checkout.lead_id;
+    if (isPreview || !checkout || trackingStartedRef.current === checkout.session_id) return;
+    trackingStartedRef.current = checkout.session_id;
 
-    void fetch("/api/public/marcar-checkout-mp-iniciado", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lead_id: checkout.lead_id }),
-    }).catch(() => {
-      // A telemetria de funil não deve impedir o comprador de visualizar o checkout.
-    });
-
-    const storageKey = `meta_ic_${checkout.lead_id}`;
+    const storageKey = `meta_ic_${checkout.session_id}`;
     let attempts = 0;
     const tryTrack = () => {
       attempts += 1;
@@ -287,14 +323,14 @@ function CheckoutPage() {
           "track",
           "InitiateCheckout",
           {
-            content_ids: [checkout.plano],
+            content_ids: [checkout.plan],
             content_type: "product",
-            content_name: `FreeLovable - ${checkout.nome_plano}`,
-            value: checkout.valor,
+            content_name: `FreeLovable - ${FREELOVABLE_PLANS[checkout.plan].nome}`,
+            value: checkout.value,
             currency: "BRL",
             num_items: 1,
           },
-          { eventID: `ic_${checkout.lead_id}` },
+          { eventID: `ic_${checkout.session_id}` },
         );
         sessionStorage.setItem(storageKey, "1");
         return true;
@@ -309,7 +345,7 @@ function CheckoutPage() {
     }, 250);
 
     return () => window.clearInterval(pixelTimer);
-  }, [checkout]);
+  }, [checkout, isPreview]);
 
   const handlePayment = useCallback(
     async (formData: CardPaymentFormData) => {
@@ -319,7 +355,8 @@ function CheckoutPage() {
       setPaymentStatus(null);
 
       const requestBody = {
-        lead_id: checkout.lead_id,
+        lead_id: checkout.session_id,
+        plano: checkout.plan,
         token: formData.token,
         payment_method_id: formData.payment_method_id,
         issuer_id: formData.issuer_id || null,
@@ -330,6 +367,12 @@ function CheckoutPage() {
             ? { identification: formData.payer.identification }
             : {}),
         },
+        customer: {
+          name: checkout.customer_name,
+          email: checkout.customer_email,
+          phone: checkout.customer_whatsapp,
+        },
+        tracking: checkout.tracking,
         idempotency_key: idempotencyKeyRef.current,
       };
 
@@ -346,10 +389,11 @@ function CheckoutPage() {
 
         setPaymentId(body.payment.id);
         setPaymentStatus(body.payment.status);
+        setExternalReference(body.external_reference ?? checkout.session_id);
 
         if (body.payment.status === "approved") {
           window.setTimeout(() => {
-            redirectToThankYou(body.payment.id);
+            redirectToThankYou(body.payment.id, body.external_reference ?? checkout.session_id);
           }, 900);
           return;
         }
@@ -381,9 +425,15 @@ function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          lead_id: checkout.lead_id,
+          lead_id: checkout.session_id,
+          plano: checkout.plan,
           payment_method_id: "pix",
-          payer: { email: checkout.email },
+          customer: {
+            name: checkout.customer_name,
+            email: checkout.customer_email,
+            phone: checkout.customer_whatsapp,
+          },
+          tracking: checkout.tracking,
           idempotency_key: idempotencyKeyRef.current,
         }),
       });
@@ -402,6 +452,7 @@ function CheckoutPage() {
       }
       setPaymentId(body.payment.id);
       setPaymentStatus(body.payment.status);
+      setExternalReference(body.external_reference ?? checkout.session_id);
       setPixCode(body.payment.qr_code);
       setPixQrCodeBase64(body.payment.qr_code_base64);
     } catch (error) {
@@ -426,16 +477,15 @@ function CheckoutPage() {
 
   const cardInitialization = useMemo(
     () => ({
-      amount: checkout?.valor ?? 0,
-      payer: { email: checkout?.email ?? "" },
+      amount: checkout?.value ?? 0,
     }),
-    [checkout?.email, checkout?.valor],
+    [checkout?.value],
   );
   const cardCustomization = useMemo(
     () => ({
       paymentMethods: {
         minInstallments: 1,
-        maxInstallments: checkout ? FREELOVABLE_PLANS[checkout.plano].maxParcelas : 1,
+        maxInstallments: checkout ? FREELOVABLE_PLANS[checkout.plan].maxParcelas : 1,
         types: { included: ["credit_card" as const] },
       },
       visual: { style: { theme: "dark" } },
@@ -452,7 +502,8 @@ function CheckoutPage() {
   if (loadError) return <CheckoutError />;
   if (!checkout) return <CheckoutLoading />;
 
-  const trustedPlan = FREELOVABLE_PLANS[checkout.plano];
+  const trustedPlan = FREELOVABLE_PLANS[checkout.plan];
+  const customerFirstName = checkout.customer_name.trim().split(/\s+/)[0] || "cliente";
   const publicKeyMissing = !MERCADO_PAGO_PUBLIC_KEY;
 
   return (
@@ -478,7 +529,12 @@ function CheckoutPage() {
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-pink">
                 Resumo do pedido
               </p>
-              <h1 className="mt-3 text-2xl font-extrabold">{checkout.nome_plano}</h1>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Olá,{" "}
+                <span className="text-xl font-extrabold text-gradient">{customerFirstName}</span>!
+                <span className="mt-1 block">Confira os detalhes do seu pedido:</span>
+              </p>
+              <h1 className="mt-4 text-2xl font-extrabold">{trustedPlan.nome}</h1>
               <div className="mt-5 space-y-3 border-y border-white/10 py-5 text-sm">
                 <div className="flex justify-between gap-4">
                   <span className="text-muted-foreground">Período de acesso</span>
@@ -486,7 +542,7 @@ function CheckoutPage() {
                 </div>
                 <div className="flex items-end justify-between gap-4">
                   <span className="text-muted-foreground">Total</span>
-                  <strong className="text-2xl">{formatCurrency(checkout.valor)}</strong>
+                  <strong className="text-2xl">{formatCurrency(checkout.value)}</strong>
                 </div>
                 <p className="text-right text-xs font-semibold text-brand-pink">
                   {installmentsLabel(checkout)}
@@ -503,15 +559,15 @@ function CheckoutPage() {
               <dl className="mt-4 space-y-3 text-sm">
                 <div>
                   <dt className="text-xs text-muted-foreground">Nome</dt>
-                  <dd className="mt-0.5 font-semibold">{checkout.nome}</dd>
+                  <dd className="mt-0.5 font-semibold">{checkout.customer_name}</dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">E-mail</dt>
-                  <dd className="mt-0.5 break-all font-semibold">{checkout.email}</dd>
+                  <dd className="mt-0.5 break-all font-semibold">{checkout.customer_email}</dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">Telefone</dt>
-                  <dd className="mt-0.5 font-semibold">{checkout.telefone_mascarado}</dd>
+                  <dd className="mt-0.5 font-semibold">{checkout.customer_whatsapp}</dd>
                 </div>
               </dl>
             </section>
@@ -585,13 +641,49 @@ function CheckoutPage() {
               ) : (
                 <button
                   type="button"
-                  disabled={pixSubmitting}
+                  disabled={pixSubmitting || isPreview}
                   onClick={() => void handlePixPayment()}
                   className="btn-gradient w-full rounded-xl px-5 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {pixSubmitting ? "Gerando Pix..." : "Gerar QR Code Pix"}
+                  {isPreview
+                    ? "Gerar QR Code Pix"
+                    : pixSubmitting
+                      ? "Gerando Pix..."
+                      : "Gerar QR Code Pix"}
                 </button>
               )
+            ) : isPreview ? (
+              <div className="space-y-4" aria-label="Prévia do formulário de cartão">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold text-muted-foreground">
+                    Número do cartão
+                  </label>
+                  <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/40">
+                    0000 0000 0000 0000
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold text-muted-foreground">
+                      Validade
+                    </label>
+                    <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/40">
+                      MM/AA
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold text-muted-foreground">
+                      Código de segurança
+                    </label>
+                    <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/40">
+                      CVV
+                    </div>
+                  </div>
+                </div>
+                <div className="btn-gradient w-full rounded-xl px-5 py-3 text-center text-sm font-bold opacity-60">
+                  Pagar {formatCurrency(checkout.value)}
+                </div>
+              </div>
             ) : publicKeyMissing ? (
               <PaymentMessage tone="error">
                 O pagamento está temporariamente indisponível. Tente novamente mais tarde.
@@ -604,7 +696,7 @@ function CheckoutPage() {
                   </p>
                 )}
                 <CardPayment
-                  id={`card-payment-${checkout.lead_id}`}
+                  id={`card-payment-${checkout.session_id}`}
                   locale="pt-BR"
                   initialization={cardInitialization}
                   customization={cardCustomization}
@@ -648,8 +740,7 @@ function CheckoutPage() {
             {paymentType === "credit_card" && (
               <div className="mt-5 flex items-start gap-3 rounded-xl bg-black/20 p-4 text-xs leading-relaxed text-muted-foreground">
                 <LockKeyhole className="h-4 w-4 shrink-0 text-brand-pink" />
-                Seus dados completos de cartão são coletados e tokenizados pelo Mercado Pago e não
-                passam pelos servidores do FreeLovable.
+                Seus dados de cartão são tokenizados e criptografados pelo Mercado Pago.
               </div>
             )}
           </section>

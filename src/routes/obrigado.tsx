@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getMetaExternalId } from "@/lib/meta-browser";
 import { z } from "zod";
 
@@ -11,6 +11,7 @@ export const Route = createFileRoute("/obrigado")({
       .regex(/^\d{1,30}$/)
       .optional()
       .catch(undefined),
+    external_reference: z.string().trim().min(1).max(160).optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -27,13 +28,27 @@ export const Route = createFileRoute("/obrigado")({
 });
 
 function ObrigadoPage() {
-  const { payment_id: paymentId } = Route.useSearch();
-  useEffect(() => {
-    if (paymentId) return;
-    const leadId = new URLSearchParams(window.location.search).get("lead_id");
-    if (!leadId || !/^[0-9a-f-]{36}$/i.test(leadId)) return;
+  const { payment_id: paymentId, external_reference: externalReference } = Route.useSearch();
+  const [approved, setApproved] = useState(false);
 
-    const eventId = `purchase_${leadId}`;
+  useEffect(() => {
+    if (!paymentId || !externalReference) return;
+    const query = new URLSearchParams({
+      payment_id: paymentId,
+      external_reference: externalReference,
+    });
+    void fetch(`/api/public/status-pagamento-mp?${query.toString()}`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((result) =>
+        setApproved(result?.success === true && result?.payment?.status === "approved"),
+      )
+      .catch(() => setApproved(false));
+  }, [externalReference, paymentId]);
+
+  useEffect(() => {
+    if (!approved || !externalReference) return;
+
+    const eventId = `purchase_${externalReference}`;
     const fbq = window.fbq;
     if (!fbq) return;
 
@@ -47,9 +62,9 @@ function ObrigadoPage() {
       { content_type: "product", content_ids: ["freelovable"], currency: "BRL" },
       { eventID: eventId },
     );
-  }, [paymentId]);
+  }, [approved, externalReference]);
 
-  if (paymentId) {
+  if (!approved) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12 text-foreground">
         <div className="card-glow w-full max-w-lg rounded-3xl border border-white/10 bg-[#0A0A0B] p-8 text-center sm:p-10">
