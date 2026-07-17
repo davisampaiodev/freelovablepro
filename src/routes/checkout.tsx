@@ -604,7 +604,7 @@ function CheckoutPage() {
             </div>
 
             <div
-              className="mb-6 grid grid-cols-2 gap-3"
+              className="grid grid-cols-2 gap-3"
               role="radiogroup"
               aria-label="Forma de pagamento"
             >
@@ -634,6 +634,25 @@ function CheckoutPage() {
               >
                 <CreditCard className="h-4 w-4" /> Cartão
               </button>
+            </div>
+
+            <div className="mb-6 mt-4 rounded-2xl bg-gradient-to-r from-brand-pink/70 via-violet-500/60 to-blue-500/70 p-px">
+              <div className="flex items-center gap-3 rounded-[15px] bg-[#11101a] px-4 py-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-pink/20 to-blue-500/20">
+                  <ShieldCheck className="h-6 w-6 text-brand-pink" aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Você está em um
+                  </p>
+                  <p className="text-sm font-extrabold uppercase tracking-wide text-gradient sm:text-base">
+                    Ambiente seguro
+                  </p>
+                  <p className="mt-0.5 text-[11px] font-medium text-white/60">
+                    SSL · Criptografia 128 bits
+                  </p>
+                </div>
+              </div>
             </div>
 
             {paymentType === "pix" ? (
