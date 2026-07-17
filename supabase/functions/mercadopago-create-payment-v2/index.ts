@@ -105,7 +105,8 @@ serve(async (req) => {
     const planId = String(body?.plano || "").trim() as PlanId;
     const plan = plans[planId];
     const token = String(body?.token || "").trim();
-    const method = String(body?.payment_method_id || "").trim();
+    const paymentMethodId = String(body?.payment_method_id || "").trim();
+    const isPix = paymentMethodId === "pix";
     const idempotencyKey = String(body?.idempotency_key || "").trim();
     const installments = Number(body?.installments);
     const customerName = String(body?.customer?.name || "").trim();
@@ -117,19 +118,20 @@ serve(async (req) => {
 
     if (!uuidPattern.test(leadId)) return json({ success: false, error: "lead_id invalido." }, 400);
     if (!plan) return json({ success: false, error: "Plano invalido." }, 400);
-    if (!token || !method || !uuidPattern.test(idempotencyKey)) {
-      return json({ success: false, error: "Dados do pagamento invalidos." }, 400);
-    }
+    if (!paymentMethodId)
+      return json({ success: false, error: "Forma de pagamento nao informada." }, 400);
+    if (!uuidPattern.test(idempotencyKey))
+      return json({ success: false, error: "Chave de idempotencia invalida." }, 400);
+    if (!isPix && !token) return json({ success: false, error: "Token do cartao ausente." }, 400);
     if (!customerName || !customerEmail || !payerEmail) {
       return json({ success: false, error: "Cliente invalido." }, 400);
     }
-    if ((idType && !idNumber) || (!idType && idNumber)) {
+    if (!isPix && ((idType && !idNumber) || (!idType && idNumber))) {
       return json({ success: false, error: "Identificacao invalida." }, 400);
     }
     if (
-      !Number.isInteger(installments) ||
-      installments < 1 ||
-      installments > plan.maxInstallments
+      !isPix &&
+      (!Number.isInteger(installments) || installments < 1 || installments > plan.maxInstallments)
     ) {
       return json({ success: false, error: "Parcelas invalidas." }, 400);
     }
@@ -171,12 +173,36 @@ serve(async (req) => {
     const firstName = nameParts.shift() || customerName;
     const lastName = nameParts.join(" ") || ".";
     const issuerId = body?.issuer_id == null ? "" : String(body.issuer_id).trim();
-    const paymentPayload = {
+    const metadata = {
+      lead_id: leadId,
+      plano: planId,
+      plan: plan.sessionPlanId,
+      duration_days: plan.durationDays,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_whatsapp: customerPhone,
+      ...compact(body?.tracking || {}),
+    };
+    const additionalInfo = {
+      items: [{ id: plan.sessionPlanId, title: plan.title, quantity: 1, unit_price: plan.price }],
+      payer: { first_name: firstName, last_name: lastName, phone: { number: customerPhone } },
+    };
+    const pixPaymentPayload = {
+      transaction_amount: plan.price,
+      description: plan.title,
+      payment_method_id: "pix",
+      payer: { email: payerEmail },
+      external_reference: leadId,
+      notification_url: notificationUrl,
+      metadata,
+      additional_info: additionalInfo,
+    };
+    const cardPaymentPayload = {
       transaction_amount: plan.price,
       token,
       description: plan.title,
       installments,
-      payment_method_id: method,
+      payment_method_id: paymentMethodId,
       ...(issuerId ? { issuer_id: issuerId } : {}),
       payer: {
         email: payerEmail,
@@ -184,22 +210,11 @@ serve(async (req) => {
       },
       external_reference: leadId,
       notification_url: notificationUrl,
-      metadata: {
-        lead_id: leadId,
-        plano: planId,
-        plan: plan.sessionPlanId,
-        duration_days: plan.durationDays,
-        customer_name: customerName,
-        customer_email: customerEmail,
-        customer_whatsapp: customerPhone,
-        ...compact(body?.tracking || {}),
-      },
-      additional_info: {
-        items: [{ id: plan.sessionPlanId, title: plan.title, quantity: 1, unit_price: plan.price }],
-        payer: { first_name: firstName, last_name: lastName, phone: { number: customerPhone } },
-      },
+      metadata,
+      additional_info: additionalInfo,
     };
-    const response = await fetch("https://api.mercadopago.com/v1/payments", {
+    const paymentPayload = isPix ? pixPaymentPayload : cardPaymentPayload;
+    const mercadoPagoResponse = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -208,16 +223,28 @@ serve(async (req) => {
       },
       body: JSON.stringify(paymentPayload),
     });
-    const payment = await response.json().catch(() => null);
-    if (!response.ok || !payment?.id || !payment?.status) {
+    const payment = await mercadoPagoResponse.json().catch(() => null);
+    if (!mercadoPagoResponse.ok || !payment?.id || !payment?.status) {
+      console.error("Mercado Pago payment error", {
+        status: mercadoPagoResponse.status,
+        cause: payment?.cause,
+        message: payment?.message,
+        error: payment?.error,
+      });
       await db
         .from("checkout_sessions_v2")
         .update({ status: "error" })
         .eq("provider", "mercadopago")
         .eq("external_reference", leadId);
       return json(
-        { success: false, error: "Falha ao criar pagamento." },
-        response.status >= 500 ? 502 : 422,
+        {
+          success: false,
+          error: "Falha ao criar pagamento.",
+          details: String(
+            payment?.message || payment?.error || "Pagamento recusado pelo provedor.",
+          ),
+        },
+        mercadoPagoResponse.status >= 500 ? 502 : 422,
       );
     }
     const { error: updateError } = await db
@@ -228,12 +255,17 @@ serve(async (req) => {
     if (updateError)
       return json({ success: false, error: "Pagamento criado, mas sessao nao atualizada." }, 500);
 
+    const transactionData = payment?.point_of_interaction?.transaction_data;
     return json({
       success: true,
       payment: {
         id: String(payment.id),
         status: String(payment.status),
         ...(payment.status_detail ? { status_detail: String(payment.status_detail) } : {}),
+        ...(transactionData?.qr_code ? { qr_code: String(transactionData.qr_code) } : {}),
+        ...(transactionData?.qr_code_base64
+          ? { qr_code_base64: String(transactionData.qr_code_base64) }
+          : {}),
       },
     });
   } catch (error) {

@@ -10,22 +10,38 @@ const IdentificationSchema = z
   })
   .strict();
 
-const PaymentSchema = z
-  .object({
-    lead_id: z.string().uuid(),
-    token: z.string().trim().min(10).max(300),
-    payment_method_id: z.string().trim().min(1).max(50),
-    issuer_id: z.union([z.string(), z.number()]).nullish(),
-    installments: z.number().int().positive().max(12),
-    payer: z
-      .object({
-        email: z.string().email().optional(),
-        identification: IdentificationSchema.optional(),
-      })
-      .strict(),
-    idempotency_key: z.string().uuid(),
-  })
-  .strict();
+const CommonPaymentSchema = z.object({
+  lead_id: z.string().uuid(),
+  idempotency_key: z.string().uuid(),
+});
+
+const PaymentSchema = CommonPaymentSchema.extend({
+  token: z.string().trim().min(10).max(300).optional(),
+  payment_method_id: z.string().trim().min(1).max(50),
+  issuer_id: z.union([z.string(), z.number()]).nullish(),
+  installments: z.number().int().positive().max(12).optional(),
+  payer: z
+    .object({
+      email: z.string().email().optional(),
+      identification: IdentificationSchema.optional(),
+    })
+    .strict()
+    .optional(),
+})
+  .strict()
+  .superRefine((input, context) => {
+    if (input.payment_method_id === "pix") return;
+    if (!input.token) {
+      context.addIssue({ code: z.ZodIssueCode.custom, path: ["token"], message: "Token ausente" });
+    }
+    if (!input.installments) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["installments"],
+        message: "Parcelas ausentes",
+      });
+    }
+  });
 
 const ALLOWED_STATUSES = new Set(["approved", "pending", "in_process", "rejected"]);
 const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
@@ -39,7 +55,10 @@ type EdgeFunctionResponse = {
     id?: string | number;
     status?: string;
     status_detail?: string;
+    qr_code?: string;
+    qr_code_base64?: string;
   };
+  details?: string;
 };
 
 function json(body: unknown, status = 200) {
@@ -90,20 +109,27 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
           }
 
           const plan = FREELOVABLE_PLANS[lead.plano];
-          if (input.installments > plan.maxParcelas) {
+          const isPix = input.payment_method_id === "pix";
+          if (!isPix && input.installments! > plan.maxParcelas) {
             return json({ success: false, error: "parcelas_invalidas" }, 400);
           }
 
           const edgePayload = {
             lead_id: lead.id,
             plano: lead.plano,
-            token: input.token,
             payment_method_id: input.payment_method_id,
-            issuer_id: input.issuer_id,
-            installments: input.installments,
+            ...(isPix
+              ? {}
+              : {
+                  token: input.token!,
+                  issuer_id: input.issuer_id,
+                  installments: input.installments!,
+                }),
             payer: {
               email: lead.email,
-              ...(input.payer.identification ? { identification: input.payer.identification } : {}),
+              ...(!isPix && input.payer?.identification
+                ? { identification: input.payer.identification }
+                : {}),
             },
             customer: { name: lead.nome, email: lead.email, phone: lead.telefone || "" },
             tracking: compactRecord({
@@ -131,7 +157,11 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
               code: edgeResult?.error || "invalid_response",
             });
             return json(
-              { success: false, error: "falha_processar_pagamento" },
+              {
+                success: false,
+                error: edgeResult?.error || "Falha ao processar pagamento.",
+                ...(edgeResult?.details ? { details: edgeResult.details } : {}),
+              },
               edgeResponse.status >= 500 ? 502 : 422,
             );
           }
@@ -148,7 +178,7 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
           const baseUpdate = {
             payment_provider: "mercado_pago",
             payment_id: String(payment.id),
-            forma_pagamento: "cartao",
+            forma_pagamento: isPix ? "pix" : "cartao",
             atualizado_em: now,
             ultimo_evento_webhook: `payment_response:${payment.status}`,
             ultimo_webhook_em: now,
@@ -192,6 +222,8 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
               id: String(payment.id),
               status: payment.status,
               ...(payment.status_detail ? { status_detail: payment.status_detail } : {}),
+              ...(payment.qr_code ? { qr_code: payment.qr_code } : {}),
+              ...(payment.qr_code_base64 ? { qr_code_base64: payment.qr_code_base64 } : {}),
             },
           });
         } catch (error) {

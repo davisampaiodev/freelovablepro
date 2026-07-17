@@ -1,6 +1,6 @@
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, LockKeyhole, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, LockKeyhole, QrCode, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -40,18 +40,20 @@ type CardPaymentFormData = {
 };
 
 type PaymentStatus =
-  | "approved"
-  | "pending"
-  | "in_process"
-  | "rejected"
-  | "cancelled"
-  | "refunded"
-  | "charged_back";
+  "approved" | "pending" | "in_process" | "rejected" | "cancelled" | "refunded" | "charged_back";
 
 type PaymentResponse = {
   success: true;
-  payment: { id: string; status: PaymentStatus; status_detail?: string };
+  payment: {
+    id: string;
+    status: PaymentStatus;
+    status_detail?: string;
+    qr_code?: string;
+    qr_code_base64?: string;
+  };
 };
+
+type PaymentType = "pix" | "credit_card";
 
 declare global {
   interface Window {
@@ -91,7 +93,10 @@ function isPaymentResponse(value: unknown): value is PaymentResponse {
   return (
     response.success === true &&
     typeof response.payment?.id === "string" &&
-    ["approved", "pending", "in_process", "rejected"].includes(String(response.payment.status))
+    ["approved", "pending", "in_process", "rejected"].includes(String(response.payment.status)) &&
+    (response.payment.qr_code === undefined || typeof response.payment.qr_code === "string") &&
+    (response.payment.qr_code_base64 === undefined ||
+      typeof response.payment.qr_code_base64 === "string")
   );
 }
 
@@ -119,6 +124,11 @@ function CheckoutPage() {
   const [brickReady, setBrickReady] = useState(false);
   const [sdkReady, setSdkReady] = useState(false);
   const [brickError, setBrickError] = useState<string | null>(null);
+  const [paymentType, setPaymentType] = useState<PaymentType>("pix");
+  const [pixCode, setPixCode] = useState("");
+  const [pixQrCodeBase64, setPixQrCodeBase64] = useState("");
+  const [pixCopied, setPixCopied] = useState(false);
+  const [pixSubmitting, setPixSubmitting] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [pollingTimedOut, setPollingTimedOut] = useState(false);
@@ -358,6 +368,61 @@ function CheckoutPage() {
     [checkout],
   );
 
+  const handlePixPayment = useCallback(async () => {
+    if (!checkout || submittingRef.current) return;
+    submittingRef.current = true;
+    setPixSubmitting(true);
+    setBrickError(null);
+    setPaymentStatus(null);
+
+    try {
+      const response = await fetch("/api/public/processar-pagamento-mp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lead_id: checkout.lead_id,
+          payment_method_id: "pix",
+          payer: { email: checkout.email },
+          idempotency_key: idempotencyKeyRef.current,
+        }),
+      });
+      const body: unknown = await response.json().catch(() => null);
+      if (!response.ok || !isPaymentResponse(body)) {
+        const payload =
+          body && typeof body === "object"
+            ? (body as { details?: unknown; error?: unknown })
+            : null;
+        throw new Error(
+          String(payload?.details || payload?.error || "Não foi possível gerar o Pix."),
+        );
+      }
+      if (!body.payment.qr_code || !body.payment.qr_code_base64) {
+        throw new Error("O Mercado Pago não retornou o QR Code do Pix.");
+      }
+      setPaymentId(body.payment.id);
+      setPaymentStatus(body.payment.status);
+      setPixCode(body.payment.qr_code);
+      setPixQrCodeBase64(body.payment.qr_code_base64);
+    } catch (error) {
+      idempotencyKeyRef.current = crypto.randomUUID();
+      setBrickError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Não foi possível gerar o Pix. Tente novamente.",
+      );
+    } finally {
+      submittingRef.current = false;
+      setPixSubmitting(false);
+    }
+  }, [checkout]);
+
+  const copyPixCode = useCallback(async () => {
+    if (!pixCode) return;
+    await navigator.clipboard.writeText(pixCode);
+    setPixCopied(true);
+    window.setTimeout(() => setPixCopied(false), 2500);
+  }, [pixCode]);
+
   const cardInitialization = useMemo(
     () => ({
       amount: checkout?.valor ?? 0,
@@ -453,13 +518,80 @@ function CheckoutPage() {
 
           <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl sm:p-7">
             <div className="mb-6">
-              <h2 className="text-xl font-extrabold">Pagamento com cartão de crédito</h2>
+              <h2 className="text-xl font-extrabold">Forma de pagamento</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Pagamento processado com segurança pelo Mercado Pago
               </p>
             </div>
 
-            {publicKeyMissing ? (
+            <div
+              className="mb-6 grid grid-cols-2 gap-3"
+              role="radiogroup"
+              aria-label="Forma de pagamento"
+            >
+              <button
+                type="button"
+                role="radio"
+                aria-checked={paymentType === "pix"}
+                onClick={() => setPaymentType("pix")}
+                className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${
+                  paymentType === "pix"
+                    ? "border-brand-pink bg-brand-pink/10 text-white"
+                    : "border-white/10 bg-black/20 text-muted-foreground"
+                }`}
+              >
+                <QrCode className="h-4 w-4" /> Pix
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={paymentType === "credit_card"}
+                onClick={() => setPaymentType("credit_card")}
+                className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${
+                  paymentType === "credit_card"
+                    ? "border-brand-pink bg-brand-pink/10 text-white"
+                    : "border-white/10 bg-black/20 text-muted-foreground"
+                }`}
+              >
+                <CreditCard className="h-4 w-4" /> Cartão
+              </button>
+            </div>
+
+            {paymentType === "pix" ? (
+              pixCode ? (
+                <div className="space-y-4 text-center">
+                  <img
+                    src={`data:image/png;base64,${pixQrCodeBase64}`}
+                    alt="QR Code Pix"
+                    className="mx-auto w-full max-w-64 rounded-xl bg-white p-3"
+                  />
+                  <p className="text-sm font-bold text-blue-200">Aguardando pagamento</p>
+                  <textarea
+                    readOnly
+                    value={pixCode}
+                    aria-label="Código Pix copia e cola"
+                    className="min-h-24 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-foreground"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void copyPixCode()}
+                    className="btn-gradient inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold"
+                  >
+                    <Copy className="h-4 w-4" />
+                    {pixCopied ? "Código copiado" : "Copiar código Pix"}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={pixSubmitting}
+                  onClick={() => void handlePixPayment()}
+                  className="btn-gradient w-full rounded-xl px-5 py-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {pixSubmitting ? "Gerando Pix..." : "Gerar QR Code Pix"}
+                </button>
+              )
+            ) : publicKeyMissing ? (
               <PaymentMessage tone="error">
                 O pagamento está temporariamente indisponível. Tente novamente mais tarde.
               </PaymentMessage>
@@ -512,11 +644,13 @@ function CheckoutPage() {
             )}
             {brickError && <PaymentMessage tone="error">{brickError}</PaymentMessage>}
 
-            <div className="mt-5 flex items-start gap-3 rounded-xl bg-black/20 p-4 text-xs leading-relaxed text-muted-foreground">
-              <LockKeyhole className="h-4 w-4 shrink-0 text-brand-pink" />
-              Seus dados completos de cartão são coletados e tokenizados pelo Mercado Pago e não
-              passam pelos servidores do FreeLovable.
-            </div>
+            {paymentType === "credit_card" && (
+              <div className="mt-5 flex items-start gap-3 rounded-xl bg-black/20 p-4 text-xs leading-relaxed text-muted-foreground">
+                <LockKeyhole className="h-4 w-4 shrink-0 text-brand-pink" />
+                Seus dados completos de cartão são coletados e tokenizados pelo Mercado Pago e não
+                passam pelos servidores do FreeLovable.
+              </div>
+            )}
           </section>
         </div>
       </div>
