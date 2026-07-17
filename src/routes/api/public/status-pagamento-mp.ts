@@ -24,11 +24,18 @@ export const Route = createFileRoute("/api/public/status-pagamento-mp")({
           return Response.json({ success: false, error: "consulta_invalida" }, { status: 400 });
         }
         try {
-          const { FUNCTION_NAMES, getFelipeFunctionUrl } =
+          const {
+            FUNCTION_NAMES,
+            getFelipeFunctionAuthHeaders,
+            getFelipeFunctionUrl,
+          } =
             await import("@/lib/felipe-checkout.server");
           const response = await fetch(getFelipeFunctionUrl(FUNCTION_NAMES.paymentStatus), {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...getFelipeFunctionAuthHeaders(),
+            },
             body: JSON.stringify(parsed.data),
           });
           const result = (await response.json().catch(() => null)) as Record<

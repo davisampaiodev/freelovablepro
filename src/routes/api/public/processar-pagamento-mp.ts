@@ -54,7 +54,11 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
         }
 
         try {
-          const { FUNCTION_NAMES, getFelipeFunctionUrl } =
+          const {
+            FUNCTION_NAMES,
+            getFelipeFunctionAuthHeaders,
+            getFelipeFunctionUrl,
+          } =
             await import("@/lib/felipe-checkout.server");
           const functionName = isPix
             ? FUNCTION_NAMES.createPreference
@@ -87,7 +91,10 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
           });
           const response = await fetch(endpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...getFelipeFunctionAuthHeaders(),
+            },
             body: JSON.stringify(payload),
           });
           const result = (await response.json().catch(() => null)) as ProviderResult | null;
@@ -132,6 +139,7 @@ export const Route = createFileRoute("/api/public/processar-pagamento-mp")({
         } catch (error) {
           console.error("[checkout:06] falha no proxy de pagamento", {
             message: error instanceof Error ? error.message : "unknown",
+            stack: error instanceof Error ? error.stack : undefined,
           });
           return json({ success: false, error: "pagamento_indisponivel" }, 500);
         }

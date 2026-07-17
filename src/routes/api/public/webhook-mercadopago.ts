@@ -6,7 +6,8 @@ export const Route = createFileRoute("/api/public/webhook-mercadopago")({
       POST: async ({ request }) => {
         console.log("[checkout:09] webhook recebido");
         try {
-          const { getFelipeFunctionUrl } = await import("@/lib/felipe-checkout.server");
+          const { getFelipeFunctionAuthHeaders, getFelipeFunctionUrl } =
+            await import("@/lib/felipe-checkout.server");
           const body = await request.text();
           const query = new URL(request.url).search;
           const response = await fetch(
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/api/public/webhook-mercadopago")({
               method: "POST",
               headers: {
                 "Content-Type": request.headers.get("content-type") || "application/json",
+                ...getFelipeFunctionAuthHeaders(),
                 ...(request.headers.get("x-signature")
                   ? { "x-signature": request.headers.get("x-signature")! }
                   : {}),

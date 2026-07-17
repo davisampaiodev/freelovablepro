@@ -8,9 +8,27 @@ const FUNCTION_NAMES = {
 export function getFelipeFunctionUrl(
   functionName: (typeof FUNCTION_NAMES)[keyof typeof FUNCTION_NAMES],
 ) {
-  const url = process.env.FELIPE_SUPABASE_URL?.trim().replace(/\/+$/, "");
-  if (!url) throw new Error("Missing checkout environment variable: FELIPE_SUPABASE_URL");
+  const configuredUrl = process.env.FELIPE_SUPABASE_URL?.trim().replace(/\/+$/, "");
+  if (!configuredUrl) {
+    throw new Error("Missing checkout environment variable: FELIPE_SUPABASE_URL");
+  }
+  const url = /^https?:\/\//i.test(configuredUrl)
+    ? configuredUrl
+    : `https://${configuredUrl}.supabase.co`;
   return `${url}/functions/v1/${functionName}`;
+}
+
+export function getFelipeFunctionAuthHeaders() {
+  const serviceRoleKey = process.env.FELIPE_SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!serviceRoleKey) {
+    throw new Error(
+      "Missing checkout environment variable: FELIPE_SUPABASE_SERVICE_ROLE_KEY",
+    );
+  }
+  return {
+    Authorization: `Bearer ${serviceRoleKey}`,
+    apikey: serviceRoleKey,
+  };
 }
 
 export { FUNCTION_NAMES };
