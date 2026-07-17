@@ -19,6 +19,8 @@ import {
   User,
   Mail,
   Phone,
+  CreditCard,
+  QrCode,
   Lock,
   Zap,
 } from "lucide-react";
@@ -1815,6 +1817,7 @@ function buildMetaAdvancedMatchingData(normalizedForm: ReturnType<typeof normali
 
 function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: string }) {
   const [formData, setFormData] = useState({ name: "", email: "", whatsapp: "" });
+  const [paymentType, setPaymentType] = useState<"pix" | "credit_card">("pix");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submittingRef = useRef(false);
@@ -1930,6 +1933,7 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
       const checkoutUrl = new URL("/checkout", window.location.origin);
       checkoutUrl.searchParams.set("lead_id", leadId);
       checkoutUrl.searchParams.set("plano", plano);
+      checkoutUrl.searchParams.set("forma_pagamento", paymentType);
 
       if (typeof window !== "undefined" && window.fbq) {
         const metaAdvancedMatchingData = buildMetaAdvancedMatchingData(normalizedForm);
@@ -2076,6 +2080,42 @@ function RegisterModal({ onClose, planName }: { onClose: () => void; planName?: 
               />
             </div>
           </div>
+
+          <fieldset className="space-y-2">
+            <legend className="ml-1 text-[10px] font-bold uppercase text-muted-foreground">
+              Forma de pagamento
+            </legend>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={paymentType === "pix"}
+                onClick={() => setPaymentType("pix")}
+                className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                  paymentType === "pix"
+                    ? "border-brand-pink/70 bg-brand-pink/10 text-white"
+                    : "border-white/5 bg-muted/20 text-muted-foreground hover:border-white/15"
+                }`}
+              >
+                <QrCode className="h-4 w-4" />
+                Pix
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={paymentType === "credit_card"}
+                onClick={() => setPaymentType("credit_card")}
+                className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                  paymentType === "credit_card"
+                    ? "border-brand-pink/70 bg-brand-pink/10 text-white"
+                    : "border-white/5 bg-muted/20 text-muted-foreground hover:border-white/15"
+                }`}
+              >
+                <CreditCard className="h-4 w-4" />
+                Cartão
+              </button>
+            </div>
+          </fieldset>
 
           {error && <p className="text-xs text-red-400">{error}</p>}
 

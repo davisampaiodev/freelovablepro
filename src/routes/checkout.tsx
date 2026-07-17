@@ -13,6 +13,7 @@ import {
 const SearchSchema = z.object({
   lead_id: z.string().uuid().optional().catch(undefined),
   plano: z.enum(["diario", "mensal", "trimestral", "anual"]).optional().catch(undefined),
+  forma_pagamento: z.enum(["pix", "credit_card"]).optional().catch(undefined),
 });
 
 const MERCADO_PAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY?.trim() ?? "";
@@ -124,7 +125,7 @@ function CheckoutPage() {
   const [brickReady, setBrickReady] = useState(false);
   const [sdkReady, setSdkReady] = useState(false);
   const [brickError, setBrickError] = useState<string | null>(null);
-  const [paymentType, setPaymentType] = useState<PaymentType>("pix");
+  const [paymentType, setPaymentType] = useState<PaymentType>(search.forma_pagamento ?? "pix");
   const [pixCode, setPixCode] = useState("");
   const [pixQrCodeBase64, setPixQrCodeBase64] = useState("");
   const [pixCopied, setPixCopied] = useState(false);
