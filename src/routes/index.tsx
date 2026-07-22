@@ -238,11 +238,18 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 }
 
 function VimeoPlayer({ videoId }: { videoId: string }) {
+  const [hasLoadedPlayer, setHasLoadedPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const togglePlay = () => {
+    if (!hasLoadedPlayer) {
+      setHasLoadedPlayer(true);
+      setIsPlaying(true);
+      return;
+    }
+
     const action = isPlaying ? "pause" : "play";
     iframeRef.current?.contentWindow?.postMessage({ method: action }, "*");
     setIsPlaying(!isPlaying);
@@ -258,21 +265,23 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
     <div className="relative w-full h-full">
       <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-t from-black/90 via-transparent to-black/20" />
 
-      <iframe
-        ref={iframeRef}
-        src={`https://player.vimeo.com/video/${videoId}?autoplay=0&loop=1&muted=0&quality=auto&controls=0&api=1`}
-        title="Demonstração do FreeLovable"
-        loading="lazy"
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350%] h-[110%] z-0 pointer-events-none scale-110"
-        allow="autoplay; fullscreen"
-        style={{ border: "none", background: "transparent" }}
-      />
+      {hasLoadedPlayer && (
+        <iframe
+          ref={iframeRef}
+          src={`https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1&muted=0&quality=auto&controls=0&api=1`}
+          title="Demonstração do FreeLovable"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350%] h-[110%] z-0 pointer-events-none scale-110"
+          allow="autoplay; fullscreen"
+          style={{ border: "none", background: "transparent" }}
+        />
+      )}
 
       {/* Custom Controls Layer */}
       <div className="absolute inset-0 z-30 flex items-center justify-center">
         {!isPlaying && (
           <button
             onClick={togglePlay}
+            aria-label="Reproduzir vídeo de demonstração"
             className="h-16 w-16 rounded-full btn-gradient flex items-center justify-center shadow-lg scale-100 hover:scale-105 transition-transform duration-300 pointer-events-auto cursor-pointer md:h-24 md:w-24 md:shadow-2xl md:hover:scale-110"
           >
             <Play className="h-7 w-7 text-white fill-current ml-0.5 md:h-10 md:w-10 md:ml-1" />
@@ -713,7 +722,7 @@ function SocialProof() {
         </p>
       </div>
 
-      <div className="relative mb-12 grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-3">
+      <div className="relative mb-12 grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 md:gap-5 lg:grid-cols-3">
         {testimonials.map((item) => (
           <div
             key={item.name}
@@ -1462,7 +1471,7 @@ function Pricing({ onOpenModal }: { onOpenModal: (planName?: string) => void }) 
         sem créditos.
       </p>
 
-      <div className="mt-10 grid grid-cols-1 gap-4 min-[390px]:grid-cols-2 md:mt-12 md:gap-6 lg:grid-cols-4">
+      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-12 md:gap-6 lg:grid-cols-4">
         {plans.map((p) => (
           <div
             key={p.name}

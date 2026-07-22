@@ -73,8 +73,15 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
+  * {
+    border-color: var(--color-border);
+    min-width: 0;
+  }
+  html {
+    max-width: 100%;
+    overflow-x: clip;
+    scroll-behavior: smooth;
+  }
   body {
     max-width: 100%;
     overflow-x: clip;
@@ -90,6 +97,21 @@
       linear-gradient(180deg, oklch(0.14 0.042 20) 0%, oklch(0.11 0.03 320) 16%, oklch(0.105 0.03 312) 52%, oklch(0.11 0.028 298) 100%);
     background-attachment: fixed;
   }
+}
+
+img,
+video,
+iframe,
+svg {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
 }
 
 @utility text-gradient {
@@ -521,6 +543,46 @@
   .animate-email-item-in {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .mobile-sticky-cta a,
+  button,
+  input,
+  select {
+    min-height: 44px;
+  }
+}
+
+/* Avoid painting below-the-fold sections until they approach the viewport. */
+@media (min-width: 768px) {
+  main > section:nth-of-type(n + 3) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 820px;
+  }
+}
+
+/* Coarse pointers usually indicate phones/tablets, including wider landscape layouts. */
+@media (hover: none), (pointer: coarse) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .card-glow {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .btn-gradient:hover,
+  .group:hover .btn-gradient {
+    transform: none;
+  }
+
+  .animate-bounce-x,
+  .animate-email-arrive,
+  .animate-email-pulse,
+  .animate-email-item-in,
+  .animate-pulse {
+    animation: none !important;
   }
 }
 
