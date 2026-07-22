@@ -15,7 +15,6 @@ import {
   ArrowRight,
   Play,
   Pause,
-  Maximize,
   User,
   Mail,
   Phone,
@@ -240,7 +239,6 @@ function Hero({ onOpenModal }: { onOpenModal: (planName?: string) => void }) {
 function VimeoPlayer({ videoId }: { videoId: string }) {
   const [hasLoadedPlayer, setHasLoadedPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const togglePlay = () => {
@@ -253,12 +251,6 @@ function VimeoPlayer({ videoId }: { videoId: string }) {
     const action = isPlaying ? "pause" : "play";
     iframeRef.current?.contentWindow?.postMessage({ method: action }, "*");
     setIsPlaying(!isPlaying);
-  };
-
-  const toggleMute = () => {
-    const value = isMuted ? 1 : 0;
-    iframeRef.current?.contentWindow?.postMessage({ method: "setVolume", value: value }, "*");
-    setIsMuted(!isMuted);
   };
 
   return (
@@ -1682,7 +1674,56 @@ function MobileStickyCTA() {
   );
 }
 
+const CONTINUOUS_ANIMATION_SELECTOR = [
+  ".animate-bounce-x",
+  ".animate-email-arrive",
+  ".animate-email-pulse",
+  ".animate-email-item-in",
+].join(",");
+
+function usePauseOffscreenAnimations() {
+  useEffect(() => {
+    const animatedElements = Array.from(
+      document.querySelectorAll<HTMLElement>(CONTINUOUS_ANIMATION_SELECTOR),
+    );
+
+    const handleVisibilityChange = () => {
+      document.documentElement.toggleAttribute("data-page-hidden", document.hidden);
+    };
+
+    handleVisibilityChange();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    if (!("IntersectionObserver" in window)) {
+      return () => {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+        document.documentElement.removeAttribute("data-page-hidden");
+      };
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        (entry.target as HTMLElement).toggleAttribute(
+          "data-animation-offscreen",
+          !entry.isIntersecting,
+        );
+      });
+    });
+
+    animatedElements.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      animatedElements.forEach((element) => element.removeAttribute("data-animation-offscreen"));
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.documentElement.removeAttribute("data-page-hidden");
+    };
+  }, []);
+}
+
 function Landing() {
+  usePauseOffscreenAnimations();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
 

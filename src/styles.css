@@ -236,25 +236,9 @@ textarea {
     0 0 18px color-mix(in oklab, var(--brand-blue) 14%, transparent);
 }
 
-@keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
-}
-
 @keyframes bounce-x {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(4px); }
-}
-
-@keyframes heart-float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(var(--heart-rotate, 0deg)) scale(1);
-    opacity: var(--heart-opacity, 0.55);
-  }
-  50% {
-    transform: translate3d(var(--heart-drift-x, 12px), var(--heart-drift-y, -22px), 0) rotate(calc(var(--heart-rotate, 0deg) + 8deg)) scale(1.08);
-    opacity: calc(var(--heart-opacity, 0.55) + 0.18);
-  }
 }
 
 @keyframes email-arrive {
@@ -294,168 +278,8 @@ textarea {
   }
 }
 
-@keyframes ambient-section-float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -10px, 0);
-  }
-}
-
-@keyframes ambient-card-float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(0, -8px, 0) scale(1.01);
-  }
-}
-
-@keyframes ambient-button-breathe {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    box-shadow: 0 10px 36px -10px color-mix(in oklab, var(--brand-pink) 50%, transparent);
-  }
-  50% {
-    transform: translate3d(0, -3px, 0) scale(1.025);
-    box-shadow:
-      0 18px 48px -14px color-mix(in oklab, var(--brand-pink) 62%, transparent),
-      0 0 32px -10px color-mix(in oklab, var(--brand-orange) 34%, transparent);
-  }
-}
-
-@keyframes ambient-gradient-pan {
-  0%, 100% {
-    background-position: 0% 50%;
-    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--brand-pink) 20%, transparent));
-  }
-  50% {
-    background-position: 100% 50%;
-    filter: drop-shadow(0 0 18px color-mix(in oklab, var(--brand-purple) 28%, transparent));
-  }
-}
-
-@keyframes ambient-orb-drift {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translate3d(0, -24px, 0) scale(1.08);
-    opacity: 0.48;
-  }
-}
-
-@keyframes tech-grid-drift {
-  0% {
-    transform: translate3d(0, 0, 0);
-    background-position: 0 0, 0 0;
-    opacity: 0.24;
-  }
-  50% {
-    transform: translate3d(0, -18px, 0);
-    background-position: 24px 18px, -18px 24px;
-    opacity: 0.34;
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-    background-position: 48px 36px, -36px 48px;
-    opacity: 0.24;
-  }
-}
-
-@keyframes tech-scan-sweep {
-  0% {
-    transform: translate3d(-12%, -8%, 0) rotate(0deg);
-    opacity: 0;
-  }
-  16% {
-    opacity: 0.22;
-  }
-  50% {
-    transform: translate3d(8%, 6%, 0) rotate(1.5deg);
-    opacity: 0.36;
-  }
-  84% {
-    opacity: 0.14;
-  }
-  100% {
-    transform: translate3d(18%, 10%, 0) rotate(3deg);
-    opacity: 0;
-  }
-}
-
-@keyframes tech-beam-float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(var(--beam-rotate, -14deg)) scaleY(1);
-    opacity: 0.16;
-  }
-  50% {
-    transform: translate3d(0, -26px, 0) rotate(calc(var(--beam-rotate, -14deg) + 2deg)) scaleY(1.08);
-    opacity: 0.34;
-  }
-}
-
-@keyframes tech-particle-rise {
-  0% {
-    transform: translate3d(0, 16px, 0) scale(0.7);
-    opacity: 0;
-  }
-  18% {
-    opacity: 0.55;
-  }
-  82% {
-    opacity: 0.2;
-  }
-  100% {
-    transform: translate3d(0, -48px, 0) scale(1.18);
-    opacity: 0;
-  }
-}
-
-@keyframes tech-border-pan {
-  0%, 100% {
-    background-position: 0% 50%;
-    opacity: 0.82;
-  }
-  50% {
-    background-position: 100% 50%;
-    opacity: 1;
-  }
-}
-
-@keyframes tech-button-shine {
-  0% {
-    transform: translateX(-135%) skewX(-18deg);
-    opacity: 0;
-  }
-  16% {
-    opacity: 0.16;
-  }
-  38% {
-    opacity: 0.34;
-  }
-  62% {
-    opacity: 0.12;
-  }
-  100% {
-    transform: translateX(180%) skewX(-18deg);
-    opacity: 0;
-  }
-}
-
-@utility animate-shimmer {
-  animation: shimmer 2s infinite linear;
-}
-
 @utility animate-bounce-x {
   animation: bounce-x 1s infinite ease-in-out;
-}
-
-@utility animate-heart-float {
-  animation: heart-float var(--heart-duration, 7s) ease-in-out infinite;
-  animation-delay: var(--heart-delay, 0s);
 }
 
 @utility animate-email-arrive {
@@ -551,6 +375,17 @@ textarea {
   select {
     min-height: 44px;
   }
+}
+
+:root[data-page-hidden] .animate-bounce-x,
+:root[data-page-hidden] .animate-email-arrive,
+:root[data-page-hidden] .animate-email-pulse,
+:root[data-page-hidden] .animate-email-item-in,
+.animate-bounce-x[data-animation-offscreen],
+.animate-email-arrive[data-animation-offscreen],
+.animate-email-pulse[data-animation-offscreen],
+.animate-email-item-in[data-animation-offscreen] {
+  animation-play-state: paused !important;
 }
 
 /* Avoid painting below-the-fold sections until they approach the viewport. */
