@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.npm-cache/
+/.codex-local.*.log
 /.pnp
 .pnp.*
 .yarn/*

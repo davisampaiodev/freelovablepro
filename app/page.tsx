@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import FeatureExperience from "./FeatureExperience";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
@@ -77,15 +78,7 @@ export default function Home() {
         <div className="full-cta"><Button>COMECE AGORA</Button></div>
       </section>
 
-      <section className="container features">
-        <h2>Confira as funcionalidades<br/> exclusivas do<br/><Gradient>✦ FreeLovable</Gradient></h2>
-        <div className="feature-showcase">
-          <div className="feature-list">
-            {['Créditos ilimitados','Quantidade de projetos','Sem risco de bloqueio','Melhora especial com I.A.'].map((x,i)=><div key={x} className={i===0?'active':''}><FeatureIcon>{['♾','▦','◉','✦'][i]}</FeatureIcon><span><b>{x}</b><small>{i===0?'Crie à vontade durante seu plano':'Liberdade para produzir sem pausas'}</small></span></div>)}
-          </div>
-          <div className="lovable-ui"><header><b>Lovable</b><small>Conta conectada</small></header><div className="balance">5.00</div><div className="yellow-line"/><p>Seus créditos</p>{[85,64,72,55].map((w,i)=><div className="bar" key={i}><i/><span style={{width:`${w}%`}}/></div>)}<button>Gerenciar projetos</button></div>
-        </div>
-      </section>
+      <FeatureExperience />
 
       <Arrow />
 
