@@ -312,7 +312,7 @@ export default function Home() {
 
       <section className="container faq"><h2>Perguntas frequentes</h2>{faqs.map(([q,a],i)=><div className={`faq-item ${openFaq===i?'open':''}`} key={q}><button onClick={()=>setOpenFaq(openFaq===i?null:i)} aria-expanded={openFaq===i}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><p>{a}</p></div>)}</section>
 
-      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href="#planos">LIBERAR MEU ACESSO ⚡</Button><div className="safe">✓ Instalação em menos de 1 minuto &nbsp;&nbsp; ✓ Sem limites de uso &nbsp;&nbsp; ✓ Direto da sua própria conta</div></div></section>
+      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href="#planos">LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
       <footer className="site-footer"><div className="container"><span className="footer-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span><b>Free</b>Lovable</span></span><small>© 2026 FreeLovable. Todos os direitos reservados.</small></div></footer>
       {selectedPlan && (
         <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-title">
