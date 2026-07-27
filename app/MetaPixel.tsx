@@ -14,7 +14,9 @@ export default function MetaPixel() {
   useEffect(() => {
     const pixelWindow = window as typeof window & { fbq?: Fbq; _fbq?: Fbq };
     if (pixelWindow.fbq) {
-      document.documentElement.dataset.metaPixel = "ready";
+      if (!document.documentElement.dataset.metaPixel) {
+        document.documentElement.dataset.metaPixel = "loading";
+      }
       return;
     }
 
@@ -29,11 +31,18 @@ export default function MetaPixel() {
     fbq.push = (...args: unknown[]) => fbq(...args);
     pixelWindow.fbq = fbq;
     pixelWindow._fbq = fbq;
-    document.documentElement.dataset.metaPixel = "ready";
+    document.documentElement.dataset.metaPixel = "loading";
 
     const script = document.createElement("script");
     script.async = true;
     script.src = "https://connect.facebook.net/en_US/fbevents.js";
+    script.onload = () => {
+      document.documentElement.dataset.metaPixel = "loaded";
+    };
+    script.onerror = () => {
+      document.documentElement.dataset.metaPixel = "error";
+      console.error("[Meta Pixel] Falha ao carregar fbevents.js");
+    };
     document.head.appendChild(script);
 
     fbq("init", "1154397371091882");
