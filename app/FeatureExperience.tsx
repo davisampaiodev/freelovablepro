@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import TechIcon from "./TechIcon";
 
 const tabs = [
-  { icon: "∞", title: "Créditos ilimitados", description: "Mande quantos prompts quiser, sem consumir créditos e crie o quanto quiser!" },
-  { icon: "⇩", title: "Download de projetos", description: "Faça o download do código fonte dos seus projetos em um único zip com apenas um clique." },
-  { icon: "◉", title: "Sem marca d’água", description: "Remova as tags da Lovable e dê um ar mais profissional ao seu projeto com um clique!" },
-  { icon: "✦", title: "Melhore o prompt com I.A", description: "Descreva em poucas palavras o que você quer e a I.A detalha e melhora o seu prompt." },
+  { icon: "infinity", title: "Créditos ilimitados", description: "Mande quantos prompts quiser, sem consumir créditos e crie o quanto quiser!" },
+  { icon: "download", title: "Download de projetos", description: "Faça o download do código fonte dos seus projetos em um único zip com apenas um clique." },
+  { icon: "shield", title: "Sem marca d’água", description: "Remova as tags da Lovable e dê um ar mais profissional ao seu projeto com um clique!" },
+  { icon: "ai", title: "Melhore o prompt com I.A", description: "Descreva em poucas palavras o que você quer e a I.A detalha e melhora o seu prompt." },
 ];
 
 export default function FeatureExperience() {
@@ -30,7 +31,7 @@ export default function FeatureExperience() {
       <div className="feature-experience-inner">
         <h2 id="features-title">
           Confira as funcionalidades<br /> exclusivas do{" "}
-          <span className="feature-brand"><span className="feature-logo">✦</span><b>Free</b>Lovable</span>
+          <span className="feature-brand"><img className="feature-logo" src="/freelovable-logo-transparent.png" alt="" /><span className="feature-word"><b>Free</b>Lovable</span></span>
         </h2>
         <div className="feature-interactive">
           <div className="feature-tabs" role="tablist" aria-label="Funcionalidades do FreeLovable">
@@ -48,7 +49,7 @@ export default function FeatureExperience() {
                   if (event.key === "ArrowUp" || event.key === "ArrowLeft") setActive((index + tabs.length - 1) % tabs.length);
                 }}
               >
-                <span className="tab-icon">{tab.icon}</span>
+                <TechIcon type={tab.icon} />
                 <span><strong>{tab.title}</strong><small>{tab.description}</small></span>
               </button>
             ))}
@@ -81,7 +82,8 @@ function CreditsDemo() {
   const logs = Array.from({ length: Math.min(step, 5) }, (_, i) => unlimited ? `Prompt ${i + 1} enviado · 0 créditos gastos` : `Prompt ${i + 1} enviado · 0,84 créditos gastos`);
   return (
     <div className={`demo-window credits-demo ${unlimited ? "unlimited" : ""}`}>
-      <MockupHeader title="FreeLovable" />
+      <div className="lovable-demo-brand"><img src="/lovable-logo.jpg" alt="Lovable" /><span>Lovable</span></div>
+      <MockupHeader title="Lovable" />
       <div className="demo-body">
         <div className={`mode-badge ${unlimited ? "on" : ""}`}>{unlimited ? "✓ Com FreeLovable" : "Sem FreeLovable"}</div>
         <p className="demo-label">Saldo de créditos</p>
