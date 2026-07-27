@@ -138,12 +138,12 @@ export default function Home() {
     if (!video) return;
     if (video.paused) {
       if (video.readyState === HTMLMediaElement.HAVE_NOTHING) video.load();
+      video.muted = false;
+      video.volume = 1;
       try {
         await video.play();
-      } catch {
-        video.muted = true;
-        video.load();
-        await video.play();
+      } catch (error) {
+        console.error("Não foi possível reproduzir o vídeo com áudio.", error);
       }
     } else {
       video.pause();
@@ -189,7 +189,6 @@ export default function Home() {
             <span className="phone-notch"/>
             <video
               ref={videoRef}
-              muted
               loop
               playsInline
               preload="auto"
