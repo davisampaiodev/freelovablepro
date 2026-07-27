@@ -88,12 +88,20 @@ export default function Home() {
       return;
     }
     const form = new FormData(event.currentTarget);
+    const leadEventId = createMetaEventId("lead");
+    const initiateCheckoutEventId = createMetaEventId("ic");
+    const metaTracking = getMetaTracking();
     const payload = {
       plan: plan.id,
       name: String(form.get("name") || "").trim(),
       email: String(form.get("email") || "").trim().toLowerCase(),
       whatsapp: String(form.get("whatsapp") || "").replace(/\D+/g, ""),
-      tracking: getMetaTracking(),
+      tracking: {
+        ...metaTracking,
+        lead_event_id: leadEventId,
+        initiate_checkout_event_id: initiateCheckoutEventId,
+        event_source_url: window.location.href,
+      },
     };
     trackMeta("Lead", {
       content_name: `Lead - ${selectedPlan}`,
@@ -101,7 +109,7 @@ export default function Home() {
       currency: "BRL",
       value: plan.value,
       plan: plan.id,
-    });
+    }, leadEventId);
     setCheckoutLoading(true);
     setCheckoutError("");
     try {
@@ -125,7 +133,7 @@ export default function Home() {
         currency: "BRL",
         value: plan.value,
         num_items: 1,
-      });
+      }, initiateCheckoutEventId);
       window.location.assign(data.init_point);
     } catch (error) {
       setCheckoutError(error instanceof Error ? error.message : "Não foi possível iniciar o pagamento.");
@@ -400,11 +408,26 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
   );
 }
 
-function trackMeta(event: string, data?: Record<string, unknown>) {
+function createMetaEventId(prefix: string) {
+  const unique = typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  return `${prefix}_${unique}`;
+}
+
+function trackMeta(event: string, data?: Record<string, unknown>, eventId?: string) {
   if (typeof window === "undefined") return;
   document.documentElement.dataset.metaEvent = event;
   const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
-  if (fbq) fbq("track", event, data);
+  if (!fbq) {
+    console.error(`[Meta Pixel] ${event} não enfileirado: fbq indisponível.`);
+    return;
+  }
+  if (document.documentElement.dataset.metaPixel !== "loaded") {
+    console.warn(`[Meta Pixel] ${event} enfileirado antes da confirmação de carregamento.`);
+  }
+  if (eventId) fbq("track", event, data, { eventID: eventId });
+  else fbq("track", event, data);
 }
 
 function trackCustomMeta(event: string, data?: Record<string, unknown>) {
