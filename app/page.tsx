@@ -126,12 +126,6 @@ export default function Home() {
         value: plan.value,
         num_items: 1,
       });
-      window.localStorage.setItem("freelovable_pending_purchase", JSON.stringify({
-        id: plan.id,
-        contentName: plan.contentName,
-        value: plan.value,
-        currency: "BRL",
-      }));
       window.location.assign(data.init_point);
     } catch (error) {
       setCheckoutError(error instanceof Error ? error.message : "Não foi possível iniciar o pagamento.");

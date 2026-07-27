@@ -66,7 +66,6 @@ export default function PaymentResult({ initialKind }: { initialKind: ResultKind
         if (data.approved || status === "approved") {
           setKind("approved");
           setChecking(false);
-          trackApprovedPurchase(paymentId || externalReference);
           return;
         }
         if (["rejected", "cancelled", "refunded", "charged_back"].includes(status)) {
@@ -110,46 +109,4 @@ export default function PaymentResult({ initialKind }: { initialKind: ResultKind
       </section>
     </main>
   );
-}
-
-function trackApprovedPurchase(reference: string) {
-  if (!reference) return;
-
-  const deduplicationKey = `freelovable_purchase_${reference}`;
-  if (window.localStorage.getItem(deduplicationKey)) return;
-
-  const rawPurchase = window.localStorage.getItem("freelovable_pending_purchase");
-  if (!rawPurchase) return;
-
-  try {
-    const purchase = JSON.parse(rawPurchase) as {
-      id?: string;
-      contentName?: string;
-      value?: number;
-      currency?: string;
-    };
-    if (!purchase.id || !purchase.contentName || !Number.isFinite(purchase.value)) return;
-
-    const eventId = `mp-${reference}`;
-    const fbq = (window as typeof window & {
-      fbq?: (...args: unknown[]) => void;
-    }).fbq;
-    if (!fbq) return;
-
-    fbq("track", "Purchase", {
-      content_ids: [purchase.id],
-      content_type: "product",
-      content_name: purchase.contentName,
-      currency: purchase.currency || "BRL",
-      value: purchase.value,
-      num_items: 1,
-    }, {
-      eventID: eventId,
-    });
-
-    window.localStorage.setItem(deduplicationKey, "1");
-    window.localStorage.removeItem("freelovable_pending_purchase");
-  } catch {
-    // Invalid local checkout data must never create a Purchase with a wrong value.
-  }
 }
