@@ -6,7 +6,31 @@ const PAYMENT_STATUS_URL =
   "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/mercadopago-payment-status-v2";
 
 type ResultKind = "approved" | "pending" | "rejected";
-type PaymentStatus = { success?: boolean; status?: string; approved?: boolean };
+type PaymentStatus = {
+  success?: boolean;
+  status?: string;
+  approved?: boolean;
+  paymentId?: string;
+  value?: number;
+  currency?: string;
+  eventId?: string;
+};
+
+function readLocalFlag(key: string) {
+  try {
+    return localStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeLocalFlag(key: string) {
+  try {
+    localStorage.setItem(key, "1");
+  } catch {
+    // Storage restrictions must not interrupt the confirmation screen.
+  }
+}
 
 const content: Record<ResultKind, { eyebrow: string; title: string; description: string; icon: string }> = {
   approved: {
@@ -30,16 +54,17 @@ const content: Record<ResultKind, { eyebrow: string; title: string; description:
 };
 
 export default function PaymentResult({ initialKind }: { initialKind: ResultKind }) {
-  const [kind, setKind] = useState<ResultKind>(initialKind);
+  const [kind, setKind] = useState<ResultKind>(
+    initialKind === "approved" ? "pending" : initialKind,
+  );
   const [checking, setChecking] = useState(true);
   const [reference, setReference] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get("payment_id") || params.get("collection_id") || "";
     const externalReference = params.get("external_reference") || "";
-    setReference(paymentId || externalReference);
-    if (!paymentId && !externalReference) {
+    setReference(externalReference);
+    if (!externalReference) {
       setChecking(false);
       return;
     }
@@ -51,8 +76,7 @@ export default function PaymentResult({ initialKind }: { initialKind: ResultKind
       attempts += 1;
       try {
         const query = new URLSearchParams();
-        if (paymentId) query.set("payment_id", paymentId);
-        if (externalReference) query.set("external_reference", externalReference);
+        query.set("external_reference", externalReference);
         const response = await fetch(`${PAYMENT_STATUS_URL}?${query.toString()}`, {
           headers: { Accept: "application/json" },
           cache: "no-store",
@@ -64,6 +88,37 @@ export default function PaymentResult({ initialKind }: { initialKind: ResultKind
         }
         const status = String(data.status || "").toLowerCase();
         if (data.approved || status === "approved") {
+          const paymentId = String(data.paymentId || "").trim();
+          const eventId = String(data.eventId || "").trim();
+          const value = Number(data.value);
+          const currency = String(data.currency || "").trim();
+          const expectedEventId = paymentId ? `mp_${paymentId}` : "";
+
+          if (
+            paymentId &&
+            eventId === expectedEventId &&
+            Number.isFinite(value) &&
+            value > 0 &&
+            currency
+          ) {
+            const localKey = `meta_purchase_sent_${eventId}`;
+            if (!readLocalFlag(localKey)) {
+              const fbq = (
+                window as typeof window & {
+                  fbq?: (...args: unknown[]) => void;
+                }
+              ).fbq;
+              if (fbq) {
+                fbq(
+                  "track",
+                  "Purchase",
+                  { value, currency },
+                  { eventID: eventId },
+                );
+                writeLocalFlag(localKey);
+              }
+            }
+          }
           setKind("approved");
           setChecking(false);
           return;
@@ -77,7 +132,10 @@ export default function PaymentResult({ initialKind }: { initialKind: ResultKind
         if (attempts < 6) timer = setTimeout(check, 5000);
         else setChecking(false);
       } catch {
-        if (!cancelled) setChecking(false);
+        if (!cancelled) {
+          console.error("payment confirmation failed");
+          setChecking(false);
+        }
       }
     };
     void check();

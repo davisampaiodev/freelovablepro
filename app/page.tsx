@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import FeatureExperience from "./FeatureExperience";
 import TechIcon from "./TechIcon";
+import { resolveMetaTracking } from "./metaTracking";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
@@ -58,6 +59,10 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    resolveMetaTracking();
+  }, []);
+
+  useEffect(() => {
     const section = pricingRef.current;
     if (!section) return;
     let fired = false;
@@ -90,14 +95,15 @@ export default function Home() {
     const form = new FormData(event.currentTarget);
     const leadEventId = createMetaEventId("lead");
     const initiateCheckoutEventId = createMetaEventId("ic");
-    const metaTracking = getMetaTracking();
+    const metaTracking = resolveMetaTracking();
     const payload = {
       plan: plan.id,
       name: String(form.get("name") || "").trim(),
       email: String(form.get("email") || "").trim().toLowerCase(),
       whatsapp: String(form.get("whatsapp") || "").replace(/\D+/g, ""),
       tracking: {
-        ...metaTracking,
+        fbp: metaTracking.fbp || null,
+        fbc: metaTracking.fbc || null,
         lead_event_id: leadEventId,
         initiate_checkout_event_id: initiateCheckoutEventId,
         event_source_url: window.location.href,
@@ -126,6 +132,7 @@ export default function Home() {
       if (!response.ok || !data?.success || !data.init_point) {
         throw new Error(data?.error || "Não foi possível iniciar o pagamento.");
       }
+      resolveMetaTracking();
       trackMeta("InitiateCheckout", {
         content_ids: [plan.id],
         content_type: "product",
@@ -435,37 +442,4 @@ function trackCustomMeta(event: string, data?: Record<string, unknown>) {
   document.documentElement.dataset.metaCustomEvent = event;
   const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
   if (fbq) fbq("trackCustom", event, data);
-}
-
-function getMetaTracking() {
-  if (typeof window === "undefined") return { fbp: "", fbc: "" };
-
-  const fbp = readCookie("_fbp");
-  let fbc = readCookie("_fbc");
-
-  if (!fbc) {
-    const fbclid = new URLSearchParams(window.location.search).get("fbclid")?.trim();
-    if (fbclid) {
-      fbc = `fb.1.${Date.now()}.${fbclid}`;
-      writeTrackingCookie("_fbc", fbc);
-    }
-  }
-
-  return { fbp, fbc };
-}
-
-function readCookie(name: string) {
-  if (typeof document === "undefined") return "";
-  const prefix = `${encodeURIComponent(name)}=`;
-  const cookie = document.cookie
-    .split(";")
-    .map(part => part.trim())
-    .find(part => part.startsWith(prefix));
-  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : "";
-}
-
-function writeTrackingCookie(name: string, value: string) {
-  if (typeof document === "undefined") return;
-  const secure = window.location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Path=/; Max-Age=7776000; SameSite=Lax${secure}`;
 }
