@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import FeatureExperience from "./FeatureExperience";
 import TechIcon from "./TechIcon";
 import { resolveMetaTracking } from "./metaTracking";
+import { resolveUtmTracking } from "./utmTracking";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
@@ -60,6 +61,7 @@ export default function Home() {
 
   useEffect(() => {
     resolveMetaTracking();
+    resolveUtmTracking();
   }, []);
 
   useEffect(() => {
@@ -96,6 +98,7 @@ export default function Home() {
     const leadEventId = createMetaEventId("lead");
     const initiateCheckoutEventId = createMetaEventId("ic");
     const metaTracking = resolveMetaTracking();
+    const utmTracking = resolveUtmTracking();
     const payload = {
       plan: plan.id,
       name: String(form.get("name") || "").trim(),
@@ -104,6 +107,7 @@ export default function Home() {
       tracking: {
         fbp: metaTracking.fbp || null,
         fbc: metaTracking.fbc || null,
+        ...utmTracking,
         lead_event_id: leadEventId,
         initiate_checkout_event_id: initiateCheckoutEventId,
         event_source_url: window.location.href,

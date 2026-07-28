@@ -13,6 +13,13 @@ type Tracking = {
   lead_event_id?: string;
   initiate_checkout_event_id?: string;
   event_source_url?: string;
+  src?: string | null;
+  sck?: string | null;
+  utm_source?: string | null;
+  utm_campaign?: string | null;
+  utm_medium?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
 };
 
 type RequestBody = {
@@ -76,6 +83,32 @@ function normalizeEmail(value: unknown) {
 
 function cleanTrackingValue(value: unknown, maxLength: number) {
   return String(value || "").trim().slice(0, maxLength);
+}
+
+function resolveClientIp(request: Request) {
+  const cloudflareIp = String(
+    request.headers.get("cf-connecting-ip") || "",
+  ).trim();
+
+  if (cloudflareIp) {
+    return cloudflareIp;
+  }
+
+  const forwardedFor = String(
+    request.headers.get("x-forwarded-for") || "",
+  ).trim();
+
+  if (forwardedFor) {
+    return String(
+      forwardedFor.split(",")[0] || "",
+    ).trim();
+  }
+
+  const realIp = String(
+    request.headers.get("x-real-ip") || "",
+  ).trim();
+
+  return realIp || null;
 }
 
 function createExternalReference() {
@@ -214,8 +247,39 @@ serve(async (req) => {
     if (!name) return json({ success: false, error: "Nome obrigatório." }, 400);
     if (!email) return json({ success: false, error: "E-mail obrigatório." }, 400);
 
-    const fbp = cleanTrackingValue(body.tracking?.fbp, 255);
-    const fbc = cleanTrackingValue(body.tracking?.fbc, 500);
+    const normalizedFbp = cleanTrackingValue(body.tracking?.fbp, 255);
+    const normalizedFbc = cleanTrackingValue(body.tracking?.fbc, 500);
+    const utmTracking = {
+      src: cleanTrackingValue(body.tracking?.src, 500) || null,
+      sck: cleanTrackingValue(body.tracking?.sck, 500) || null,
+      utm_source:
+        cleanTrackingValue(body.tracking?.utm_source, 500) || null,
+      utm_campaign:
+        cleanTrackingValue(body.tracking?.utm_campaign, 1000) || null,
+      utm_medium:
+        cleanTrackingValue(body.tracking?.utm_medium, 1000) || null,
+      utm_content:
+        cleanTrackingValue(body.tracking?.utm_content, 1000) || null,
+      utm_term:
+        cleanTrackingValue(body.tracking?.utm_term, 1000) || null,
+    };
+    const clientIpAddress = resolveClientIp(req);
+    const clientUserAgent = String(
+      req.headers.get("user-agent") || "",
+    ).trim();
+
+    console.log(
+      "mercadopago-create-preference-v2 tracking:",
+      JSON.stringify({
+        fbp_present: Boolean(normalizedFbp),
+        fbc_present: Boolean(normalizedFbc),
+        client_ip_address_present:
+          Boolean(clientIpAddress),
+        client_user_agent_present:
+          Boolean(clientUserAgent),
+      }),
+    );
+
     const leadEventId = cleanTrackingValue(body.tracking?.lead_event_id, 160);
     const initiateCheckoutEventId = cleanTrackingValue(
       body.tracking?.initiate_checkout_event_id,
@@ -268,13 +332,14 @@ serve(async (req) => {
         plan,
         duration_days: selectedPlan.durationDays,
         external_reference: externalReference,
-        fbp,
-        fbc,
+        fbp: normalizedFbp,
+        fbc: normalizedFbc,
         tracking: {
-          fbp,
-          fbc,
+          fbp: normalizedFbp,
+          fbc: normalizedFbc,
           lead_event_id: leadEventId,
           initiate_checkout_event_id: initiateCheckoutEventId,
+          ...utmTracking,
         },
       },
     };
@@ -321,6 +386,10 @@ serve(async (req) => {
       customer_whatsapp: whatsapp || null,
       reseller_id: fallbackResellerId,
       status: "pending",
+      fbp: normalizedFbp || null,
+      fbc: normalizedFbc || null,
+      client_ip_address: clientIpAddress || null,
+      client_user_agent: clientUserAgent || null,
     };
     const { error: sessionError } = await supabaseAdmin
       .from("checkout_sessions_v2")
@@ -333,7 +402,13 @@ serve(async (req) => {
       }, 500);
     }
 
-    const userData = await buildMetaUserData({ name, email, whatsapp, fbp, fbc });
+    const userData = await buildMetaUserData({
+      name,
+      email,
+      whatsapp,
+      fbp: normalizedFbp,
+      fbc: normalizedFbc,
+    });
     const eventTime = Math.floor(Date.now() / 1000);
     const commonCustomData = {
       content_ids: [plan],
