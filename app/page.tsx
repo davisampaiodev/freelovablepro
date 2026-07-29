@@ -194,7 +194,11 @@ export default function Home() {
         <div className="container hero-content">
           <div className="hero-brand"><img src="/freelovable-logo-transparent.png" alt="FreeLovable" /></div>
           <div className="eyebrow"><span /> NOVA EXTENSÃO · ACESSO ILIMITADO</div>
-          <h1>Nunca mais fique sem<br className="title-break"/>{" "}<Gradient>créditos no Lovable.</Gradient></h1>
+          <h1 className="hero-new-headline">
+            <span>Seu <Gradient>Lovable</Gradient> agora é <Gradient>Free.</Gradient></span>
+            <span>Crie seus projetos</span>
+            <span><Gradient>sem consumir créditos.</Gradient></span>
+          </h1>
           <p>Instale em menos de 1 minuto e continue criando apps, automações e<br className="desktop"/> projetos sem interrupções, filas ou bloqueios.</p>
           <div className="hero-benefits"><span>✓ WINDOWS & MAC</span><span>✓ ACESSO IMEDIATO</span><span>✓ INSTALAÇÃO SIMPLES</span></div>
           <Button>VER COMO FUNCIONA</Button>
@@ -231,20 +235,18 @@ export default function Home() {
           <span className="comparison-line comparison-line-secondary">
             <span>O problema é que </span>
             <strong>os créditos acabam rápido</strong>
-            <span> e os planos para continuar criando são caros demais.</span>
+            <span className="comparison-expensive"> e os planos para continuar criando são caros demais.</span>
           </span>
         </h2>
         <div className="price-panel lovable-price">
           <header><img src="/lovable-logo.jpg" alt="Lovable"/><span><b>Plano Pro do Lovable</b><small>COBRANÇA MENSAL</small></span><em>100 CRÉDITOS</em></header>
           <div><small>PREÇO EM DÓLAR</small><strong>US$ 25<em>/mês</em></strong><span>US$ 0,25 por crédito</span></div>
           <div><small>CONVERTIDO EM REAIS</small><strong className="pink">R$ 127,77<em>/mês</em></strong><span>≈ R$ 1,28 por crédito</span></div>
-          <footer>Conversão aproximada pela cotação comercial, sem IOF ou taxas.</footer>
         </div>
         <div className="project-credit-impact">
           <span>CONSUMO MÉDIO POR PROJETO</span>
           <strong>300 a 600 créditos</strong>
           <p>Isso representa aproximadamente <b>R$ 383,31 a R$ 766,62</b> em créditos para concluir um único projeto.</p>
-          <small>Estimativa baseada em 3 a 6 pacotes de 100 créditos pelo valor convertido acima.</small>
         </div>
         <div className="tiny-divider">✦</div>
         <h3>Com a <span className="solution-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span className="solution-word"><Gradient>Free</Gradient><b>Lovable</b></span></span>, você continua criando sem se<br className="title-break"/>{" "}preocupar com créditos.</h3>
@@ -325,7 +327,19 @@ export default function Home() {
         <div className="plan-dots" aria-label="Navegação dos planos">
           {[0,1,2].map(index=><button key={index} type="button" className={`${activePlan===index?"active":""} ${index===2?"gift-dot":""}`} aria-label={index===2?"Ver oferta secreta":`Ver plano ${index+1}`} aria-current={activePlan===index?"true":undefined} onClick={()=>showPlan(index)}>{index===2&&<TechIcon type="gift"/>}</button>)}
         </div>
-        <div className="guarantee"><span>✓</span><div><h3>Teste por 7 dias com garantia total</h3><p>Você pode instalar, ativar e usar a FreeLovable no seu fluxo real. Se não fizer sentido para você, solicite o reembolso dentro de 7 dias.</p></div></div>
+        <aside className="guarantee" aria-labelledby="guarantee-title">
+          <div className="guarantee-seal" aria-hidden="true"><strong>7</strong><small>DIAS</small></div>
+          <div className="guarantee-copy">
+            <span className="guarantee-kicker">RISCO ZERO · GARANTIA INCONDICIONAL</span>
+            <h3 id="guarantee-title">Teste por 7 dias, se não gostar, devolvemos seu dinheiro.</h3>
+            <p>Instale, ative e use a FreeLovable em projetos reais. Se não fizer sentido para você, basta solicitar o reembolso dentro de 7 dias.</p>
+            <div className="guarantee-points" aria-label="Benefícios da garantia">
+              <span><i>✓</i> Compra protegida</span>
+              <span><i>✓</i> Reembolso simples</span>
+              <span><i>✓</i> Sem letras miúdas</span>
+            </div>
+          </div>
+        </aside>
       </section>
 
       <section className="container faq"><h2>Perguntas frequentes</h2>{faqs.map(([q,a],i)=><div className={`faq-item ${openFaq===i?'open':''}`} key={q}><button onClick={()=>setOpenFaq(openFaq===i?null:i)} aria-expanded={openFaq===i}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><p>{a}</p></div>)}</section>
