@@ -3,6 +3,7 @@ const UTM_STORAGE_PREFIX = "utmify_";
 export type UtmTracking = {
   src: string | null;
   sck: string | null;
+  fbclid: string | null;
   utm_source: string | null;
   utm_campaign: string | null;
   utm_medium: string | null;
@@ -13,6 +14,7 @@ export type UtmTracking = {
 const TRACKING_KEYS = [
   "src",
   "sck",
+  "fbclid",
   "utm_source",
   "utm_campaign",
   "utm_medium",
@@ -66,6 +68,7 @@ export function resolveUtmTracking(): UtmTracking {
   console.log("utm tracking resolved:", {
     src_present: Boolean(resolved.src),
     sck_present: Boolean(resolved.sck),
+    fbclid_present: Boolean(resolved.fbclid),
     utm_source_present: Boolean(resolved.utm_source),
     utm_campaign_present: Boolean(resolved.utm_campaign),
     utm_medium_present: Boolean(resolved.utm_medium),

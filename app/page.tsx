@@ -16,12 +16,44 @@ const Button = ({ children, href = "#planos", secondary = false }: { children: R
   <a href={href} className={`cta ${secondary ? "cta-secondary" : ""}`}>{children}<span>→</span></a>
 );
 
-const CREATE_PREFERENCE_URL =
-  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/mercadopago-create-preference-v2";
-const checkoutPlans: Record<string, { id: string; value: number; contentName: string }> = {
-  "Plano Mensal": { id: "plan_30d", value: 47, contentName: "FreeLovable 30 dias" },
-  "Plano Trimestral": { id: "plan_90d", value: 111, contentName: "FreeLovable 90 dias" },
-  "Oferta Especial": { id: "plan_3650d", value: 324, contentName: "FreeLovable Anual" },
+const REGISTER_LEAD_URL =
+  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-ticto";
+const REGISTER_LEAD_TIMEOUT_MS = 12_000;
+const CHECKOUT_ERROR_MESSAGE =
+  "Não foi possível continuar agora. Verifique seus dados e tente novamente.";
+
+type CheckoutPlan = {
+  alias: "mensal" | "trimestral" | "anual";
+  value: number;
+  contentName: string;
+  checkoutUrl: string;
+};
+
+const TICTO_CHECKOUT_URLS = {
+  mensal: "https://checkout.ticto.app/O6D10A539",
+  trimestral: "https://checkout.ticto.app/OB2852D90",
+  anual: "https://checkout.ticto.app/OC4D85FE3",
+} as const;
+
+const checkoutPlans: Record<string, CheckoutPlan> = {
+  "Plano Mensal": {
+    alias: "mensal",
+    value: 47,
+    contentName: "FreeLovable 30 dias",
+    checkoutUrl: TICTO_CHECKOUT_URLS.mensal,
+  },
+  "Plano Trimestral": {
+    alias: "trimestral",
+    value: 111,
+    contentName: "FreeLovable 90 dias",
+    checkoutUrl: TICTO_CHECKOUT_URLS.trimestral,
+  },
+  "Oferta Especial": {
+    alias: "anual",
+    value: 324,
+    contentName: "FreeLovable Anual",
+    checkoutUrl: TICTO_CHECKOUT_URLS.anual,
+  },
 };
 
 function trackPlanSelection(planName: string) {
@@ -29,9 +61,9 @@ function trackPlanSelection(planName: string) {
   if (!plan) return;
   trackCustomMeta("SelecionouPlano", {
     plan_name: planName,
-    plan_id: plan.id,
+    plan_id: plan.alias,
     content_name: plan.contentName,
-    content_ids: [plan.id],
+    content_ids: [plan.alias],
     content_type: "product",
     currency: "BRL",
     value: plan.value,
@@ -58,6 +90,7 @@ export default function Home() {
   const pricingRef = useRef<HTMLElement>(null);
   const plansRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const checkoutInFlightRef = useRef(false);
 
   useEffect(() => {
     resolveMetaTracking();
@@ -88,67 +121,123 @@ export default function Home() {
 
   async function submitLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedPlan || checkoutLoading) return;
+    if (!selectedPlan || checkoutLoading || checkoutInFlightRef.current) return;
     const plan = checkoutPlans[selectedPlan];
     if (!plan) {
       setCheckoutError("Não foi possível identificar o plano selecionado.");
       return;
     }
+
     const form = new FormData(event.currentTarget);
-    const leadEventId = createMetaEventId("lead");
-    const initiateCheckoutEventId = createMetaEventId("ic");
+    const customerName = String(form.get("name") || "")
+      .trim()
+      .replace(/\s+/g, " ");
+    const customerEmail = String(form.get("email") || "").trim().toLowerCase();
+    const customerWhatsapp = String(form.get("whatsapp") || "")
+      .replace(/\D+/g, "");
+    if (
+      customerName.length < 2 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail) ||
+      customerWhatsapp.length < 10 ||
+      customerWhatsapp.length > 13
+    ) {
+      setCheckoutError(CHECKOUT_ERROR_MESSAGE);
+      return;
+    }
+
+    let checkoutUrl: URL;
+    try {
+      checkoutUrl = new URL(plan.checkoutUrl);
+    } catch {
+      console.error("[Ticto checkout] Link do plano não configurado.", {
+        plan: plan.alias,
+      });
+      setCheckoutError(CHECKOUT_ERROR_MESSAGE);
+      return;
+    }
+
+    checkoutInFlightRef.current = true;
+    setCheckoutLoading(true);
+    setCheckoutError("");
     const metaTracking = resolveMetaTracking();
     const utmTracking = resolveUtmTracking();
     const payload = {
-      plan: plan.id,
-      name: String(form.get("name") || "").trim(),
-      email: String(form.get("email") || "").trim().toLowerCase(),
-      whatsapp: String(form.get("whatsapp") || "").replace(/\D+/g, ""),
-      tracking: {
-        fbp: metaTracking.fbp || null,
-        fbc: metaTracking.fbc || null,
-        ...utmTracking,
-        lead_event_id: leadEventId,
-        initiate_checkout_event_id: initiateCheckoutEventId,
-        event_source_url: window.location.href,
-      },
+      plan: plan.alias,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_whatsapp: customerWhatsapp,
+      reseller_id: null,
+      fbp: metaTracking.fbp,
+      fbc: metaTracking.fbc,
+      utm_source: utmTracking.utm_source,
+      utm_campaign: utmTracking.utm_campaign,
+      utm_content: utmTracking.utm_content,
+      fbclid: utmTracking.fbclid,
+      src: utmTracking.src,
+      sck: utmTracking.sck,
     };
-    trackMeta("Lead", {
-      content_name: `Lead - ${selectedPlan}`,
-      content_category: "Seleção de plano",
-      currency: "BRL",
-      value: plan.value,
-      plan: plan.id,
-    }, leadEventId);
-    setCheckoutLoading(true);
-    setCheckoutError("");
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      REGISTER_LEAD_TIMEOUT_MS,
+    );
+
     try {
-      const response = await fetch(CREATE_PREFERENCE_URL, {
+      const response = await fetch(REGISTER_LEAD_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
       const data = await response.json().catch(() => null) as {
         success?: boolean;
-        init_point?: string;
-        error?: string;
+        session_id?: string;
+        external_reference?: string;
       } | null;
-      if (!response.ok || !data?.success || !data.init_point) {
-        throw new Error(data?.error || "Não foi possível iniciar o pagamento.");
+      if (
+        !response.ok ||
+        data?.success !== true ||
+        !data.session_id ||
+        !data.external_reference
+      ) {
+        throw new Error("invalid_register_lead_response");
       }
-      resolveMetaTracking();
-      trackMeta("InitiateCheckout", {
-        content_ids: [plan.id],
+
+      const leadEventId = createMetaEventId("lead");
+      trackMeta("Lead", {
+        content_name: `Lead - ${selectedPlan}`,
+        content_category: "Seleção de plano",
+        content_ids: [plan.alias],
         content_type: "product",
-        content_name: plan.contentName,
         currency: "BRL",
         value: plan.value,
-        num_items: 1,
-      }, initiateCheckoutEventId);
-      window.location.assign(data.init_point);
+        plan: plan.alias,
+      }, leadEventId);
+
+      checkoutUrl.searchParams.set("sck", data.external_reference);
+      for (const key of [
+        "utm_source",
+        "utm_campaign",
+        "utm_content",
+        "fbclid",
+        "src",
+      ] as const) {
+        const value = utmTracking[key];
+        if (value) checkoutUrl.searchParams.set(key, value);
+      }
+      window.location.assign(checkoutUrl.toString());
     } catch (error) {
-      setCheckoutError(error instanceof Error ? error.message : "Não foi possível iniciar o pagamento.");
+      console.error("[Ticto checkout] Não foi possível continuar.", {
+        code: error instanceof DOMException && error.name === "AbortError"
+          ? "timeout"
+          : "register_lead_failed",
+        plan: plan.alias,
+      });
+      checkoutInFlightRef.current = false;
       setCheckoutLoading(false);
+      setCheckoutError(CHECKOUT_ERROR_MESSAGE);
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }
 
@@ -321,7 +410,7 @@ export default function Home() {
       <section ref={pricingRef} id="planos" className="container pricing"><h2>Escolha seu acesso aos créditos infinitos:</h2><p>Escolha o período ideal para continuar criando no Lovable sem ficar sem créditos.</p>
         <div className="plans" ref={plansRef} onScroll={updateActivePlan}>
           <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={setSelectedPlan} />
-          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 101,13 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={setSelectedPlan} />
+          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={setSelectedPlan} />
           <GiftPlan onSelect={setSelectedPlan} />
         </div>
         <div className="plan-dots" aria-label="Navegação dos planos">
@@ -363,7 +452,7 @@ export default function Home() {
               <button type="submit" className="cta" disabled={checkoutLoading}>
                 {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span>→</span>
               </button>
-              <em>🔒 Pagamento processado com segurança pelo Mercado Pago.</em>
+              <em>🔒 Pagamento processado com segurança pela Ticto.</em>
             </form>
           </div>
         </div>
@@ -386,7 +475,7 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
         <div className="annual-access-badge">ACESSO TOTAL</div>
         <h3>Plano Anual</h3>
         <strong className="annual-price"><small>12× de</small>R$ 27</strong>
-        <em>R$ 261,42 à vista</em>
+        <em>R$ 324 à vista</em>
         <ul className="annual-core-list">
           <li>Tudo dos outros planos</li>
           <li>Suporte VIP</li>
