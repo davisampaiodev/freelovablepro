@@ -17,10 +17,11 @@ const Button = ({ children, href = "#planos", secondary = false }: { children: R
 );
 
 const REGISTER_LEAD_URL =
-  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-ticto";
+  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-cartpanda";
 const REGISTER_LEAD_TIMEOUT_MS = 12_000;
 const CHECKOUT_ERROR_MESSAGE =
   "Não foi possível continuar agora. Verifique seus dados e tente novamente.";
+const CARTPANDA_REFERENCE_PARAM = "cid" as const;
 
 type CheckoutPlan = {
   alias: "mensal" | "trimestral" | "anual";
@@ -29,10 +30,10 @@ type CheckoutPlan = {
   checkoutUrl: string;
 };
 
-const TICTO_CHECKOUT_URLS = {
-  mensal: "https://checkout.ticto.app/O6D10A539",
-  trimestral: "https://checkout.ticto.app/OB2852D90",
-  anual: "https://checkout.ticto.app/OC4D85FE3",
+const CARTPANDA_CHECKOUT_URLS = {
+  mensal: "https://freelovablepro.mycartpanda.com/checkout/211813313:1",
+  trimestral: "https://freelovablepro.mycartpanda.com/checkout/211866949:1",
+  anual: "https://freelovablepro.mycartpanda.com/checkout/211866981:1",
 } as const;
 
 const checkoutPlans: Record<string, CheckoutPlan> = {
@@ -40,19 +41,19 @@ const checkoutPlans: Record<string, CheckoutPlan> = {
     alias: "mensal",
     value: 47,
     contentName: "FreeLovable 30 dias",
-    checkoutUrl: TICTO_CHECKOUT_URLS.mensal,
+    checkoutUrl: CARTPANDA_CHECKOUT_URLS.mensal,
   },
   "Plano Trimestral": {
     alias: "trimestral",
     value: 111,
     contentName: "FreeLovable 90 dias",
-    checkoutUrl: TICTO_CHECKOUT_URLS.trimestral,
+    checkoutUrl: CARTPANDA_CHECKOUT_URLS.trimestral,
   },
   "Oferta Especial": {
     alias: "anual",
     value: 324,
     contentName: "FreeLovable Anual",
-    checkoutUrl: TICTO_CHECKOUT_URLS.anual,
+    checkoutUrl: CARTPANDA_CHECKOUT_URLS.anual,
   },
 };
 
@@ -149,7 +150,7 @@ export default function Home() {
     try {
       checkoutUrl = new URL(plan.checkoutUrl);
     } catch {
-      console.error("[Ticto checkout] Link do plano não configurado.", {
+      console.error("[CartPanda checkout] Link do plano não configurado.", {
         plan: plan.alias,
       });
       setCheckoutError(CHECKOUT_ERROR_MESSAGE);
@@ -193,12 +194,15 @@ export default function Home() {
         success?: boolean;
         session_id?: string;
         external_reference?: string;
+        provider?: string;
       } | null;
       if (
         !response.ok ||
         data?.success !== true ||
         !data.session_id ||
-        !data.external_reference
+        !data.external_reference ||
+        data.provider !== "cartpanda" ||
+        !data.external_reference.startsWith("cartpanda_")
       ) {
         throw new Error("invalid_register_lead_response");
       }
@@ -214,7 +218,10 @@ export default function Home() {
         plan: plan.alias,
       }, leadEventId);
 
-      checkoutUrl.searchParams.set("sck", data.external_reference);
+      checkoutUrl.searchParams.set(
+        CARTPANDA_REFERENCE_PARAM,
+        data.external_reference,
+      );
       for (const key of [
         "utm_source",
         "utm_campaign",
@@ -227,7 +234,7 @@ export default function Home() {
       }
       window.location.assign(checkoutUrl.toString());
     } catch (error) {
-      console.error("[Ticto checkout] Não foi possível continuar.", {
+      console.error("[CartPanda checkout] Não foi possível continuar.", {
         code: error instanceof DOMException && error.name === "AbortError"
           ? "timeout"
           : "register_lead_failed",
@@ -452,7 +459,7 @@ export default function Home() {
               <button type="submit" className="cta" disabled={checkoutLoading}>
                 {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span>→</span>
               </button>
-              <em>🔒 Pagamento processado com segurança pela Ticto.</em>
+              <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
             </form>
           </div>
         </div>
