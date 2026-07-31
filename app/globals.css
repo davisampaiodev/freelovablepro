@@ -3444,3 +3444,76 @@ h1,h2,h3{
   .hero-new-headline>span{white-space:normal}
   .hero-new-headline>span:first-child{margin-bottom:7px}
 }
+
+.payment-result:has(.thank-you-brand){background:radial-gradient(circle at 50% -8%,#613dd62c,transparent 36%),radial-gradient(circle at 0% 100%,#0f8dd324,transparent 34%),#090912}
+.payment-result:has(.thank-you-brand):before{background-size:44px 44px;opacity:.45}
+.payment-result-card:has(.thank-you-brand){
+  width:min(660px,100%);
+  box-sizing:border-box;
+  padding:26px 32px 30px;
+  border-color:#8e91c53b;
+  border-radius:22px;
+  background:linear-gradient(145deg,#151522f5,#0d0d16f7);
+  box-shadow:0 30px 100px #000b,0 0 0 1px #ffffff06 inset;
+}
+.thank-you-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:24px;border-bottom:1px solid #ffffff0d}
+.thank-you-brand{font-size:17px;opacity:.94}
+.thank-you-confirmation{display:inline-flex;align-items:center;gap:8px;padding:7px 11px 7px 8px;border:1px solid #63e7a240;border-radius:999px;background:#2ee7830d;color:#83f0b3;font-size:10px;font-weight:800;letter-spacing:.065em;text-transform:uppercase}
+.thank-you-confirmation-icon{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:#4fe38d;color:#092616;font-size:13px;line-height:1}
+.thank-you-title-block{padding:35px 0 29px;text-align:left}
+.thank-you-eyebrow{display:block;margin-bottom:11px;color:#9291b3;font-size:9px;font-weight:900;letter-spacing:.18em}
+.payment-result-card:has(.thank-you-brand) h1{max-width:590px;margin:0 0 14px;font-size:clamp(37px,5.3vw,50px);line-height:1.03;letter-spacing:-.058em}
+.payment-result-card:has(.thank-you-brand) h1 em{font-style:normal;background:linear-gradient(100deg,#ff5cae,#9c83ff 54%,#69b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.payment-result-card .thank-you-lead{max-width:485px;margin:0;color:#aaaabb;font-size:15px;line-height:1.68}
+.payment-result-card .thank-you-token-notice{display:flex;gap:15px;align-items:flex-start;margin:0;padding:18px;border:1px solid #f0bd7235;border-radius:13px;background:#f6ad4210;text-align:left;color:inherit}
+.thank-you-notice-mark{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid #ffc47450;border-radius:9px;background:#ffc47312;color:#ffd098;font-size:17px;font-weight:700}
+.payment-result-card .thank-you-token-notice strong{display:block;margin:1px 0 5px;color:#f4dbbb;font-size:13px;font-weight:800;letter-spacing:.01em}
+.payment-result-card .thank-you-token-notice p{margin:0;color:#b7aaa0;font-size:12px;line-height:1.55}
+.payment-result-card .thank-you-whatsapp{
+  width:100%;
+  min-height:82px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-top:20px;
+  padding:16px 18px 16px 21px;
+  border:1px solid #79f2a780;
+  border-radius:13px;
+  background:linear-gradient(110deg,#1ccd6b,#0ca452);
+  color:#fff;
+  text-align:left;
+  text-decoration:none;
+  box-shadow:0 14px 36px #14af583b,inset 0 1px #ffffff38;
+  transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;
+}
+.payment-result-card .thank-you-whatsapp:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+  box-shadow:0 22px 58px #16bd5c5c,inset 0 1px #ffffff40;
+}
+.payment-result-card .thank-you-whatsapp:focus-visible{
+  outline:3px solid #fff;
+  outline-offset:4px;
+}
+.thank-you-whatsapp-copy{display:flex;flex-direction:column;gap:4px}
+.thank-you-whatsapp-copy strong{font-size:16px;letter-spacing:.01em}
+.thank-you-whatsapp-copy small{color:#e2ffec;font-size:11px;font-weight:600}
+.thank-you-whatsapp-arrow{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:#ffffff1f;font-size:21px}
+.payment-result-card .thank-you-assistance{margin:15px 0 0;color:#777488;font-size:10px}
+@media(max-width:560px){
+  .payment-result-card:has(.thank-you-brand){padding:22px 18px 26px;border-radius:19px}
+  .thank-you-header{padding-bottom:20px}
+  .thank-you-brand{font-size:15px}
+  .thank-you-confirmation{font-size:8px;letter-spacing:.04em}
+  .thank-you-confirmation-icon{width:18px;height:18px;font-size:12px}
+  .thank-you-title-block{padding:29px 0 24px}
+  .payment-result-card:has(.thank-you-brand) h1{font-size:34px}
+  .payment-result-card .thank-you-lead{font-size:13px}
+  .payment-result-card .thank-you-token-notice{padding:15px 14px}
+  .payment-result-card .thank-you-whatsapp{
+    min-height:74px;
+    padding:15px 14px 15px 18px;
+  }
+  .thank-you-whatsapp-copy strong{font-size:15px}
+}
