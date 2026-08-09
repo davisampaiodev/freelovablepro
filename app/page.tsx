@@ -368,7 +368,7 @@ export default function Home() {
         </div>
         <div className="steps-window">
           <div className="window-top"><i/><i/><i/><small>NA PRÁTICA</small></div>
-          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['infinity','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step">{x[0] === 'infinity' ? <span className="step-infinity-icon" aria-hidden="true"><i>∞</i></span> : <TechIcon type={x[0]}/>}<span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
+          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['infinity','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step">{x[0] === 'download' || x[0] === 'infinity' ? <AboutStepIcon type={x[0] as 'download' | 'infinity'} /> : <TechIcon type={x[0]}/>}<span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
         </div>
       </section>
 
@@ -470,6 +470,20 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+function AboutStepIcon({ type }: { type: 'download' | 'infinity' }) {
+  return (
+    <span className={`about-step-icon about-step-icon-${type}`} aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        {type === 'download' ? <>
+          <path d="M12 4v10" />
+          <path d="m8.5 10.8 3.5 3.6 3.5-3.6" />
+          <path d="M5.5 17v1.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V17" />
+        </> : <path d="M8.1 8.4C5.8 8.4 4 10 4 12s1.8 3.6 4.1 3.6c3.5 0 4.5-7.2 7.8-7.2 2.3 0 4.1 1.6 4.1 3.6s-1.8 3.6-4.1 3.6c-3.3 0-4.3-7.2-7.8-7.2Z" />}
+      </svg>
+    </span>
   );
 }
 

@@ -623,12 +623,18 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
   text-shadow:none;
   box-shadow:inset 0 1px #ffffff22,0 0 28px #c13cff36;
   position:relative;
+  overflow:hidden;
 }
 .about .step-infinity-icon i{
-  position:relative;
-  display:block;
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
   margin:0;
-  padding:0 0 .09em;
+  padding:0 0 .08em;
+  width:100%;
+  height:100%;
+  font-size:.9em;
   line-height:1;
   background:linear-gradient(90deg,#ff3c9f,#b84be9 48%,#399fff);
   -webkit-background-clip:text;
@@ -3771,4 +3777,85 @@ h1,h2,h3{
 .plans>.gift.gift-opened .annual-core-list li{
   color:#69c8ff!important;
   text-shadow:0 0 12px #299dff2e;
+}
+
+/* Keep the complete feature demo visible on phones. Earlier tablet styles
+   reset this transform and crop the desktop-sized mockup on narrow screens. */
+@media(max-width:560px){
+  .feature-interactive{overflow:hidden}
+  .feature-demo-stage{
+    width:calc(100%/.72);
+    max-width:none;
+    transform:scale(.72);
+    transform-origin:top left;
+    margin:0 0 -185px;
+  }
+}
+
+/* Phone containment for the "O que é FreeLovable?" card. */
+@media(max-width:560px){
+  .about,
+  .about>div,
+  .about .steps-window,
+  .about .step,
+  .about .step>span:last-child{
+    min-width:0;
+    max-width:100%;
+  }
+  .about{padding-left:14px;padding-right:14px}
+  .about .steps-window{width:100%;padding:12px}
+  .about .step{width:100%;padding:13px 12px;gap:11px}
+  .about .step>span:last-child{
+    flex:1 1 auto;
+    width:auto;
+  }
+  .about .step b,
+  .about .step small,
+  .about .step-flow:last-child .step b{
+    width:auto;
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+}
+
+/* Isolated icons for the first and last items in the about walkthrough. */
+.about .about-step-icon{
+  position:relative;
+  width:60px;
+  height:60px;
+  flex:0 0 60px;
+  display:grid!important;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #9c62ff75;
+  border-radius:50%;
+  background:linear-gradient(145deg,#341548,#151842);
+  box-shadow:inset 0 1px #ffffff22,0 0 24px #7b32ba26;
+}
+.about .about-step-icon svg{
+  display:block;
+  width:29px;
+  height:29px;
+  overflow:visible;
+  fill:none;
+  stroke:#25aaff;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 5px #159fff70);
+}
+.about .about-step-icon-infinity svg{
+  stroke:#c055ff;
+  stroke-width:2;
+  filter:drop-shadow(0 0 5px #b83dff80);
+}
+@media(max-width:560px){
+  .about .about-step-icon{
+    width:48px;
+    height:48px;
+    flex:0 0 48px;
+  }
+  .about .about-step-icon svg{width:25px;height:25px}
 }
