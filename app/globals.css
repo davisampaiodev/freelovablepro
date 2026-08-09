@@ -606,6 +606,46 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
 }
 .about .step .tech-icon:after{display:none}
 .about .step .tech-icon svg{width:29px;height:29px;stroke:#13aaff}
+.about .step-infinity-icon{
+  width:60px;
+  height:60px;
+  flex:0 0 60px;
+  display:grid;
+  place-items:center;
+  border:1px solid #9c62ff75;
+  border-radius:50%;
+  background:linear-gradient(145deg,#341548,#151842);
+  color:transparent;
+  font-family:"Plus Jakarta Sans","Segoe UI",sans-serif;
+  font-size:42px;
+  font-weight:900;
+  line-height:1;
+  text-shadow:none;
+  box-shadow:inset 0 1px #ffffff22,0 0 28px #c13cff36;
+  position:relative;
+}
+.about .step-infinity-icon i{
+  position:relative;
+  display:block;
+  margin:0;
+  padding:0 0 .09em;
+  line-height:1;
+  background:linear-gradient(90deg,#ff3c9f,#b84be9 48%,#399fff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  font-style:normal;
+  filter:drop-shadow(0 0 8px #b83dff75);
+}
+.about .step-flow:last-child .step b{
+  width:max-content;
+  max-width:100%;
+  background:linear-gradient(90deg,#ff3c9f 0%,#c342df 42%,#795fff 72%,#35a4ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 10px #a941ff32);
+}
 .about .step b{font-size:16px;line-height:1.25}
 .about .step small{margin-top:5px;color:#b3aebd;font-size:12px;line-height:1.45}
 .step-connector{
@@ -653,6 +693,7 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
   .about .window-top i{width:10px;height:10px}
   .about .step{min-height:88px;margin-top:16px;padding:14px;gap:13px;border-radius:14px}
   .about .step .tech-icon{width:48px;height:48px;flex-basis:48px}
+  .about .step-infinity-icon{width:48px;height:48px;flex-basis:48px;font-size:35px}
   .about .step .tech-icon svg{width:24px;height:24px}
   .about .step b{font-size:14px}.about .step small{font-size:11px}
   .step-connector{height:27px;margin-bottom:-11px;font-size:24px}
@@ -1133,10 +1174,92 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
   text-shadow:none;
   filter:drop-shadow(0 0 18px #d73cff42);
 }
+.free-panel>div:first-of-type strong,
+.free-panel>div:nth-of-type(2) strong{
+  background:linear-gradient(90deg,#ff3c9f 0%,#d43cda 34%,#855cff 68%,#2aa8ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  text-shadow:none;
+  filter:drop-shadow(0 0 18px #d73cff42);
+}
+.free-panel>div:first-of-type strong em{
+  color:transparent;
+  font-weight:800;
+}
 
 /* Slightly tighter explanatory copy in the FreeLovable introduction */
 .about p{
   line-height:1.66;
+}
+.about .about-simple-copy{
+  max-width:470px;
+  margin:18px 0 0;
+  color:#d4d3df;
+  font-size:16px;
+  font-weight:600;
+  line-height:1.55;
+  letter-spacing:-.01em;
+  text-align:left;
+  text-wrap:pretty;
+}
+.about .about-simple-copy>span{
+  display:block;
+  max-width:44ch;
+}
+.about .about-simple-copy strong{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin-top:14px;
+  background:linear-gradient(90deg,#ff6545,#ff3c9f 38%,#a84eff 68%,#3d9dff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  font-weight:850;
+  font-size:1.08em;
+  line-height:1.35;
+  filter:drop-shadow(0 0 12px #a747ff38);
+}
+@media(max-width:620px){
+  .about .about-simple-copy{
+    max-width:34ch;
+    margin-top:14px;
+    font-size:15px;
+    line-height:1.52;
+  }
+}
+.feature-tab-title{display:flex!important;align-items:center;gap:8px}
+.feature-bonus-badge{display:inline-flex;align-items:center;padding:3px 7px;border:1px solid #42d9ff70;border-radius:999px;background:linear-gradient(90deg,#20cfff20,#477dff24);color:#65ddff;font-size:7px;font-weight:950;font-style:normal;letter-spacing:.12em;line-height:1;box-shadow:0 0 13px #1bbcff24}
+.feature-tabs button.selected .feature-bonus-badge{border-color:#72e6ff9c;background:linear-gradient(90deg,#19cfff3d,#426eff40);color:#dffaff;box-shadow:0 0 16px #24c7ff3d}
+.plan .plan-bonus-item{display:flex;align-items:center;gap:9px;color:#fff!important;font-weight:700}
+.plan .plan-bonus-item:before{display:none!important;content:none!important}
+.plan .plan-bonus-heading{margin-top:17px;padding-top:14px;border-top:1px solid #ffffff12;color:#fff!important;font-size:9px;font-weight:950;letter-spacing:.16em}
+.plan .plan-bonus-heading:before{display:none!important;content:none!important}
+.plan .plan-bonus-icon{width:23px;height:23px;flex:0 0 23px;border-radius:7px;background:#ffffff09;border-color:#58bfff4a;box-shadow:none}
+.plan .plan-bonus-icon:after{display:none}
+.plan .plan-bonus-icon svg{width:14px;height:14px;stroke:#fff;filter:drop-shadow(0 0 4px #4ebdff80)}
+.plan .plan-bonus-icon svg .tech-accent{stroke:#fff}
+.plans>.plan,
+.plans>.gift:not(.gift-opened){
+  height:720px;
+  min-height:720px;
+  overflow:hidden;
+}
+.plans>.plan ul{
+  min-width:0;
+  padding-bottom:82px;
+}
+.plans>.plan li{
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+@media(max-width:800px){
+  .plans>.plan,
+  .plans>.gift:not(.gift-opened){
+    height:720px;
+    min-height:720px;
+  }
 }
 
 /* Functionalities displayed as a top navigation menu */
@@ -1146,6 +1269,14 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
   -webkit-background-clip:initial;
   background-clip:initial;
   color:#f5f3f7;
+}
+.feature-experience h2 .feature-brand .feature-word,
+.feature-experience h2 .feature-brand .feature-word b{
+  background:linear-gradient(90deg,#ff4a9e 5%,#b648ff 55%,#43adff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 14px #a747ff35);
 }
 .feature-interactive{
   display:flex;
@@ -1754,6 +1885,38 @@ h1,h2,h3,.price-panel strong,.plan>strong,.metrics strong,.payment-result-card h
   font-weight:800;
 }
 .comparison h2 .comparison-expensive{color:#f7f5f8}
+#como-funciona{scroll-margin-top:24px}
+.comparison h2 .comparison-credits-fast{
+  color:#fff;
+  font-weight:950;
+  text-decoration:underline;
+  text-decoration-color:#ff4f62;
+  text-decoration-thickness:3px;
+  text-underline-offset:5px;
+  text-shadow:0 0 20px #ff3f5438;
+}
+.comparison h2 .comparison-expensive b{
+  position:relative;
+  display:inline-block;
+  color:#ff4055;
+  font:inherit;
+  font-weight:950;
+  text-shadow:0 0 18px #ff304852;
+}
+.comparison h2 .comparison-expensive b:after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  left:-2%;
+  right:-2%;
+  top:56%;
+  height:3px;
+  border-radius:999px;
+  background:#ff4055;
+  box-shadow:0 0 8px #ff304870;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
 
 @media(min-width:801px) and (max-width:1100px){
   .comparison.container{
@@ -3560,4 +3723,52 @@ h1,h2,h3{
     padding:15px 14px 15px 18px;
   }
   .thank-you-whatsapp-copy strong{font-size:15px}
+}
+
+/* Keep expanded pricing benefits contained inside equal-height cards */
+.plans>.plan,
+.plans>.gift:not(.gift-opened){
+  height:720px!important;
+  min-height:720px!important;
+  overflow:hidden!important;
+}
+.plans>.plan ul{min-width:0;padding-bottom:0}
+.plans>.plan li{max-width:100%;overflow-wrap:anywhere}
+.plans>.plan .cta{bottom:20px!important}
+.plans>.gift .gift-wrap{padding-bottom:14px}
+.plans>.gift.gift-opened .gift-surprise{padding-bottom:0}
+.plans>.gift.gift-opened .gift-surprise .lead-cta{margin-bottom:-14px}
+
+/* Revealed annual plan must size itself from its real content on every viewport */
+.plans>.gift.gift-opened{
+  height:auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.plans>.gift.gift-opened .gift-wrap{display:none!important}
+.plans>.gift.gift-opened .gift-surprise{
+  position:relative!important;
+  inset:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  padding-bottom:14px!important;
+  opacity:1!important;
+  transform:none!important;
+}
+.plans>.gift.gift-opened .gift-surprise .lead-cta{margin-bottom:0!important}
+
+/* Keep pricing ribbons fully visible inside clipped cards */
+.plans .plan-badge,
+.plans .annual-access-badge{
+  top:14px!important;
+  left:50%!important;
+  width:min(178px,calc(100% - 40px));
+  transform:translateX(-50%)!important;
+  z-index:8;
+}
+.plans>.quarterly-plan{padding-top:58px!important}
+.plans>.gift.gift-opened .gift-surprise{padding-top:58px!important}
+.plans>.gift.gift-opened .annual-core-list li{
+  color:#69c8ff!important;
+  text-shadow:0 0 12px #299dff2e;
 }

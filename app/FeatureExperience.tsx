@@ -5,9 +5,9 @@ import TechIcon from "./TechIcon";
 
 const tabs = [
   { icon: "infinity", title: "Créditos ilimitados", description: "Mande quantos prompts quiser, sem consumir créditos e crie o quanto quiser!" },
-  { icon: "download", title: "Download de projetos", description: "Faça o download do código fonte dos seus projetos em um único zip com apenas um clique." },
-  { icon: "shield", title: "Sem marca d’água", description: "Remova as tags da Lovable e dê um ar mais profissional ao seu projeto com um clique!" },
-  { icon: "ai", title: "Melhore o prompt com I.A", description: "Descreva em poucas palavras o que você quer e a I.A detalha e melhora o seu prompt." },
+  { icon: "download", title: "Download de projetos", description: "Faça o download do código fonte dos seus projetos em um único zip com apenas um clique.", bonus: true },
+  { icon: "shield", title: "Sem marca d’água", description: "Remova as tags da Lovable e dê um ar mais profissional ao seu projeto com um clique!", bonus: true },
+  { icon: "ai", title: "Melhore o prompt com I.A", description: "Descreva em poucas palavras o que você quer e a I.A detalha e melhora o seu prompt.", bonus: true },
 ];
 
 export default function FeatureExperience() {
@@ -31,7 +31,7 @@ export default function FeatureExperience() {
       <div className="feature-experience-inner">
         <h2 id="features-title">
           Confira as funcionalidades<br /> exclusivas do{" "}
-          <span className="feature-brand"><img className="feature-logo" src="/freelovable-logo-transparent.png" alt="" /><span className="feature-word"><b>Free</b>Lovable</span></span>
+          <span className="feature-brand"><img className="feature-logo" src="/freelovable-logo-transparent.png" alt="" /><span className="feature-word">FreeLovable</span></span>
         </h2>
         <div className="feature-interactive">
           <div className="feature-tabs" role="tablist" aria-label="Funcionalidades do FreeLovable">
@@ -50,7 +50,10 @@ export default function FeatureExperience() {
                 }}
               >
                 <TechIcon type={tab.icon} />
-                <span><strong>{tab.title}</strong><small>{tab.description}</small></span>
+                <span>
+                  <span className="feature-tab-title"><strong>{tab.title}</strong>{tab.bonus && <em className="feature-bonus-badge">BÔNUS</em>}</span>
+                  <small>{tab.description}</small>
+                </span>
               </button>
             ))}
           </div>

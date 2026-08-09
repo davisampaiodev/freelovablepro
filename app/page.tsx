@@ -291,13 +291,13 @@ export default function Home() {
           <div className="hero-brand"><img src="/freelovable-logo-transparent.png" alt="FreeLovable" /></div>
           <div className="eyebrow"><span /> NOVA EXTENSÃO · ACESSO ILIMITADO</div>
           <h1 className="hero-new-headline">
-            <span>Seu <Gradient>Lovable</Gradient> agora é <Gradient>Free.</Gradient></span>
+            <span>Seu <Gradient>Lovable</Gradient> agora é <Gradient>infinito.</Gradient></span>
             <span>Crie seus projetos</span>
             <span><Gradient>sem consumir créditos.</Gradient></span>
           </h1>
           <p>Instale em menos de 1 minuto e continue criando apps, automações e<br className="desktop"/> projetos sem interrupções, filas ou bloqueios.</p>
           <div className="hero-benefits"><span>✓ WINDOWS & MAC</span><span>✓ ACESSO IMEDIATO</span><span>✓ INSTALAÇÃO SIMPLES</span></div>
-          <Button>VER COMO FUNCIONA</Button>
+          <Button href="#como-funciona">VER COMO FUNCIONA</Button>
           <div className="avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt="" />)}<i/><b>28907 USUÁRIOS ATIVOS</b></div>
           <button
             className={`video-phone ${playing ? "playing" : ""}`}
@@ -324,14 +324,14 @@ export default function Home() {
 
       <Arrow />
 
-      <section className="container comparison glow-card">
+      <section id="como-funciona" className="container comparison glow-card">
         <div className="eyebrow blue">✣ O MELHOR DO LOVABLE, SEM A PARTE RUIM</div>
         <h2>
           <span className="comparison-line comparison-line-primary">O Lovable é uma ferramenta incrível para tirar projetos do papel.</span>
           <span className="comparison-line comparison-line-secondary">
             <span>O problema é que </span>
-            <strong>os créditos acabam rápido</strong>
-            <span className="comparison-expensive"> e os planos para continuar criando são caros demais.</span>
+            <strong className="comparison-credits-fast">os créditos acabam rápido</strong>
+            <span className="comparison-expensive"> e os planos para continuar criando são <b>caros demais</b>.</span>
           </span>
         </h2>
         <div className="price-panel lovable-price">
@@ -356,15 +356,20 @@ export default function Home() {
 
       <section className="container about glow-card split">
         <div>
-          <div className="eyebrow blue">EXTENSÃO PARA CHROME</div>
-          <h2>O que é o <Gradient>FreeLovable?</Gradient></h2>
-          <p><b>FreeLovable é uma extensão para Chrome que libera créditos ilimitados no Lovable durante o período do seu plano, para você continuar criando com créditos infinitos sem interromper seus projetos.</b></p>
+          <div className="eyebrow blue">EXTENSÃO PARA NAVEGADOR</div>
+          <h2>O que é <Gradient>FreeLovable?</Gradient></h2>
+          <p className="about-simple-copy">
+            <span>
+              O FreeLovable é uma extensão para navegador. Instale, ative com
+              seu token e envie seus prompts no Lovable sem gastar créditos.
+            </span>
+            <strong>Créditos infinitos para criar sem parar.</strong>
+          </p>
         </div>
         <div className="steps-window">
           <div className="window-top"><i/><i/><i/><small>NA PRÁTICA</small></div>
-          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['check','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step"><TechIcon type={x[0]}/><span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
+          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['infinity','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step">{x[0] === 'infinity' ? <span className="step-infinity-icon" aria-hidden="true"><i>∞</i></span> : <TechIcon type={x[0]}/>}<span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
         </div>
-        <div className="full-cta"><Button>COMO RECEBO MEU ACESSO</Button></div>
       </section>
 
       <FeatureExperience />
@@ -404,7 +409,7 @@ export default function Home() {
           ['Gabriel C.','“Crio para clientes sem medo de parar no meio do processo. Simples, rápido e funciona.”','Freelancer'],
           ['Juliana A.','“Instalei em poucos minutos. Foi a solução mais prática que encontrei para continuar no Lovable.”','Empreendedora']
         ].map(([n,t,r],i)=><article key={n}><img className="review-portrait" src={`/testimonials/testimonial-${i+1}.jpg`} alt="" aria-hidden="true"/><div className="stars">★★★★★</div><p>{t}</p><footer><img src={`/testimonials/testimonial-${i+1}.jpg`} alt={n}/><b>{n}<small>{r}</small></b><img className="review-brand-mark" src="/freelovable-logo-transparent.png" alt="FreeLovable"/></footer></article>)}</div>
-        <div className="metrics"><div><TechIcon type="users"/><span className="metric-avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt=""/>)}</span><strong>28937</strong><small>USUÁRIOS ATIVOS</small></div><div><TechIcon type="projects"/><strong>+12 mil</strong><small>PROJETOS CRIADOS</small></div><div><TechIcon type="check"/><strong>97%</strong><small>SATISFAÇÃO</small></div></div>
+        <div className="metrics"><div><TechIcon type="users"/><span className="metric-avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt=""/>)}</span><strong>28937</strong><small>USUÁRIOS ATIVOS</small></div><div><TechIcon type="projects"/><strong>+12 mil</strong><small>PROJETOS CRIADOS</small></div><div><TechIcon type="check"/><strong>97%</strong><small>DOS USUÁRIOS RECOMENDAM</small></div></div>
         <div className="community-strip">
           <div>{Array.from({length:12},(_,i)=><img key={i} src={`/user-avatars/avatar-${String(i+6).padStart(2,'0')}.jpg`} alt="" />)}</div>
           <span><b>Uma comunidade inteira criando</b><small>Novos projetos ganham vida todos os dias com FreeLovable.</small></span>
@@ -470,7 +475,7 @@ export default function Home() {
 
 function Plan({title,price,note,button,badge,featured=false,onSelect}:{title:string;price:string;note:string;button:string;badge?:string;featured?:boolean;onSelect:(plan:string)=>void}){
   const quarterly = title === "Plano Trimestral";
-  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos ilimitados</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{button}<TechIcon type="tap" className="cta-tap"/></button></article>
+  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos infinitos</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li><li className="plan-bonus-heading">BÔNUS:</li><li className="plan-bonus-item"><TechIcon type="download" className="plan-bonus-icon"/>Download dos projetos</li><li className="plan-bonus-item"><TechIcon type="shield" className="plan-bonus-icon"/>Sem marca d’água</li><li className="plan-bonus-item"><TechIcon type="ai" className="plan-bonus-icon"/>Melhorador de prompts</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{button}<TechIcon type="tap" className="cta-tap"/></button></article>
 }
 
 function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
