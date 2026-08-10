@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import FeatureExperience from "./FeatureExperience";
 import TechIcon from "./TechIcon";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
@@ -10,10 +9,10 @@ const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
 );
 
-const Arrow = () => <div className="section-arrow" aria-hidden="true">↕</div>;
+const Arrow = () => <div className="section-arrow" aria-hidden="true">↓</div>;
 
 const Button = ({ children, href = "#planos", secondary = false }: { children: React.ReactNode; href?: string; secondary?: boolean }) => (
-  <a href={href} className={`cta ${secondary ? "cta-secondary" : ""}`}>{children}<span>→</span></a>
+  <a href={href} className={`cta site-cta ${secondary ? "cta-secondary" : ""}`}>{children}<span className="cta-accent" aria-hidden="true">✦</span></a>
 );
 
 const REGISTER_LEAD_URL =
@@ -322,9 +321,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Arrow />
-
-      <section id="como-funciona" className="container comparison glow-card">
+      {false && <section id="como-funciona" className="container comparison glow-card">
         <div className="eyebrow blue">✣ O MELHOR DO LOVABLE, SEM A PARTE RUIM</div>
         <h2>
           <span className="comparison-line comparison-line-primary">O Lovable é uma ferramenta incrível para tirar projetos do papel.</span>
@@ -352,9 +349,9 @@ export default function Home() {
           <div><small>CRÉDITOS INCLUÍDOS</small><strong>∞</strong><span>Sem custo por crédito</span></div>
           <footer>Continue criando sem contar cada tentativa.</footer>
         </div>
-      </section>
+      </section>}
 
-      <section className="container about glow-card split">
+      <section id="como-funciona" className="container about glow-card split">
         <div>
           <div className="eyebrow blue">EXTENSÃO PARA NAVEGADOR</div>
           <h2>O que é <Gradient>FreeLovable?</Gradient></h2>
@@ -370,14 +367,13 @@ export default function Home() {
           <div className="window-top"><i/><i/><i/><small>NA PRÁTICA</small></div>
           {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['infinity','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step">{x[0] === 'download' || x[0] === 'infinity' ? <AboutStepIcon type={x[0] as 'download' | 'infinity'} /> : <TechIcon type={x[0]}/>}<span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
         </div>
+        <div className="about-cta"><Button href="#como-recebo">COMO RECEBO</Button></div>
       </section>
-
-      <FeatureExperience />
 
       <Arrow />
 
-      <section className="container access split">
-        <div><div className="eyebrow blue">✉ ENTREGA DO ACESSO</div><h2>Como recebo meu<br className="title-break"/>{" "}<Gradient>token de acesso?</Gradient></h2><p className="access-intro"><b>Assim que o pagamento for aprovado, você recebe seu token por e-mail junto com o link da extensão e o tutorial rápido de ativação.</b></p><div className="access-instructions"><div className="mini-steps"><span><b>1</b> ESCOLHA SEU PLANO</span><span><b>2</b> RECEBA O TOKEN POR E-MAIL</span><span><b>3</b> INSTALE E ATIVE</span></div><p>O token é sua chave de ativação. Basta colar na extensão e usar na sua própria conta Lovable.</p></div></div>
+      <section id="como-recebo" className="container access split">
+        <div><div className="eyebrow blue">✉ ENTREGA DO ACESSO</div><h2>Como recebo meu<br className="title-break"/>{" "}<Gradient>token de acesso?</Gradient></h2><p className="access-intro"><b>Assim que o pagamento for aprovado, você recebe seu token por e-mail junto com o link da extensão e o tutorial rápido de ativação.</b></p><div className="access-instructions"><div className="mini-steps"><span><b>1</b><em>ESCOLHA SEU PLANO</em></span><span><b>2</b><em>RECEBA O TOKEN POR E-MAIL</em></span><span><b>3</b><em>INSTALE E ATIVE</em></span></div><p>O token é sua chave de ativação. Basta colar na extensão e usar na sua própria conta Lovable.</p></div></div>
         <div className="access-ui">
           <div className="access-delivery">
             <div className="access-card mail-card"><TechIcon type="mail"/><span><small>E-MAIL RECEBIDO</small><b>Seu acesso FreeLovable chegou</b></span><i className="mail-notification">1</i></div>
@@ -395,6 +391,7 @@ export default function Home() {
             </span>
           </div>
         </div>
+        <div className="access-cta"><Button href="#planos">QUERO ACESSAR O FREELOVABLE</Button></div>
       </section>
 
       <Arrow />
@@ -462,7 +459,7 @@ export default function Home() {
               <label>WhatsApp<input name="whatsapp" inputMode="tel" autoComplete="tel" required disabled={checkoutLoading} minLength={10} placeholder="(11) 99999-9999" /></label>
               {checkoutError && <div className="lead-error" role="alert">{checkoutError}</div>}
               <button type="submit" className="cta" disabled={checkoutLoading}>
-                {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span>→</span>
+                {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
               </button>
               <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
             </form>
@@ -493,11 +490,11 @@ function Plan({title,price,note,button,badge,featured=false,onSelect}:{title:str
 }
 
 function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
-  const [opened, setOpened] = useState(false);
+  const [bonusOpened, setBonusOpened] = useState(false);
 
   return (
-    <article className={`gift ${opened ? "gift-opened" : ""}`}>
-      <div className="gift-surprise" aria-hidden={!opened}>
+    <article className="gift gift-opened">
+      <div className="gift-surprise">
         <div className="annual-access-badge">ACESSO TOTAL</div>
         <h3>Plano Anual</h3>
         <strong className="annual-price"><small>12× de</small>R$ 27</strong>
@@ -507,23 +504,40 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
           <li>Suporte VIP</li>
           <li>Updates por 1 ano</li>
         </ul>
-        <div className="annual-bonus-box">
-          <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
-          <ul className="annual-bonus-list">
-            <li>Guia Prático - Do Lovable para o Ar</li>
-            <li>Gemini Pro por 18 meses</li>
-            <li>Gemini 3 + Nano Banana 2</li>
-            <li>Veo 3.1 para vídeos com IA</li>
-            <li>5 TB + Google Workspace</li>
-            <li>Ativação por link na conta atual</li>
-          </ul>
+        <div className={`annual-bonus-gift ${bonusOpened ? "is-open" : ""}`}>
+          {!bonusOpened ? (
+            <div className="annual-present-closed">
+              <div className="annual-present-illustration" aria-hidden="true">
+                <span className="annual-present-lid" />
+                <span className="annual-present-ribbon" />
+                <span className="annual-present-bow"><i/><i/><b/></span>
+              </div>
+              <strong>PRESENTE ESPECIAL</strong>
+              <small>Bônus exclusivos do Plano Anual</small>
+              <button type="button" onClick={() => setBonusOpened(true)} aria-expanded="false">
+                ABRIR O PRESENTE <span aria-hidden="true">✦</span>
+              </button>
+            </div>
+          ) : (
+            <div className="annual-bonus-box">
+              <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
+              <ul className="annual-bonus-list">
+                <li>Guia Prático - Do Lovable para o Ar</li>
+                <li>Gemini Pro por 18 meses</li>
+                <li>Gemini 3 + Nano Banana 2</li>
+                <li>Veo 3.1 para vídeos com IA</li>
+                <li>5 TB + Google Workspace</li>
+                <li>Ativação por link na conta atual</li>
+              </ul>
+            </div>
+          )}
         </div>
         <button className="cta lead-cta" onClick={() => { trackPlanSelection("Oferta Especial"); onSelect("Oferta Especial"); }}>
           QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
         </button>
       </div>
 
-      <div className="gift-wrap" aria-hidden={opened}>
+      <div className="gift-wrap" aria-hidden="true">
         <div className="front-gift-box" aria-hidden="true">
           <div className="front-gift-body" />
           <div className="front-gift-lid" />
@@ -539,7 +553,7 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
           <h3>Um presente para você</h3>
           <p>Abra para revelar a melhor condição do plano anual.</p>
         </div>
-        <button className="gift-open-button" onClick={() => setOpened(true)}>
+        <button className="gift-open-button" type="button">
           <span>ABRIR MEU PRESENTE</span>
           <b aria-hidden="true">✦</b>
         </button>

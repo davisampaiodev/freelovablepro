@@ -2869,6 +2869,39 @@ h1,h2,h3{
   font-size:11px;
   letter-spacing:1.7px;
 }
+.annual-mini-gift{
+  position:relative;
+  width:24px;
+  height:19px;
+  flex:0 0 24px;
+  margin-top:5px;
+  border:1px solid #ffd15a;
+  border-radius:3px;
+  background:linear-gradient(135deg,#f43748,#bd182c);
+  box-shadow:0 4px 10px #ff9d1d35;
+}
+.annual-mini-gift:before{
+  content:"";
+  position:absolute;
+  left:-3px;
+  right:-3px;
+  top:-6px;
+  height:6px;
+  border:1px solid #ffe078;
+  border-radius:3px 3px 2px 2px;
+  background:linear-gradient(180deg,#ff5b62,#d52337);
+}
+.annual-mini-gift:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-7px;
+  bottom:-1px;
+  width:5px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,#f3a814,#ffe788,#e9950d);
+  box-shadow:-5px -5px 0 -2px #ffc83d,5px -5px 0 -2px #ffc83d;
+}
 .gift-surprise .annual-bonus-box h4 .tech-icon{
   width:19px;
   height:19px;
@@ -3858,4 +3891,527 @@ h1,h2,h3{
     flex:0 0 48px;
   }
   .about .about-step-icon svg{width:25px;height:25px}
+}
+
+/* Present-shaped container for the annual plan's exclusive bonuses. */
+.gift-surprise .annual-bonus-box{
+  position:relative;
+  isolation:isolate;
+  margin-top:23px;
+  padding:24px 18px 16px 55px;
+  overflow:visible;
+  border:2px solid #ffcf55;
+  border-radius:10px 10px 18px 18px;
+  background:
+    radial-gradient(circle at 88% 18%,#ff7f8a55,transparent 31%),
+    linear-gradient(145deg,#c51f3a,#8f102c 70%,#65102a);
+  box-shadow:inset 0 1px #fff5,0 16px 34px #0007,0 0 25px #ffb52e24;
+}
+.gift-surprise .annual-bonus-box:before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:-7px;
+  right:-7px;
+  top:-15px;
+  height:22px;
+  border:2px solid #ffe080;
+  border-radius:10px 10px 5px 5px;
+  background:linear-gradient(180deg,#f74855,#b81331);
+  box-shadow:0 7px 12px #42081766;
+}
+.gift-surprise .annual-bonus-box:after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  left:25px;
+  top:-15px;
+  bottom:0;
+  width:17px;
+  background:linear-gradient(90deg,#e99508,#ffe686 48%,#e99408);
+  box-shadow:inset 1px 0 #fff7,inset -1px 0 #9a5108;
+}
+.gift-surprise .annual-bonus-box h4,
+.gift-surprise .annual-bonus-box .annual-bonus-list{
+  position:relative;
+  z-index:2;
+}
+.gift-surprise .annual-bonus-box h4{color:#fff3b4;text-shadow:0 2px 8px #560518}
+.gift-surprise .annual-bonus-box .annual-bonus-list li{color:#fff2f4}
+@media(max-width:560px){
+  .gift-surprise .annual-bonus-box{
+    margin-top:22px;
+    padding:22px 12px 13px 44px;
+  }
+  .gift-surprise .annual-bonus-box:after{left:18px;width:14px}
+}
+
+/* Only the annual bonuses start as a literal, interactive present. */
+.annual-bonus-gift{width:100%;margin:10px 0 18px}
+.annual-present-closed{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:285px;
+  padding:28px 18px 20px;
+  border:1px solid #ffca4f88;
+  border-radius:20px;
+  background:radial-gradient(circle at 50% 35%,#ffb62b20,transparent 42%),linear-gradient(145deg,#211021,#120a1d);
+  box-shadow:inset 0 1px #fff1,0 14px 30px #0005;
+}
+.annual-present-illustration{
+  position:relative;
+  width:138px;
+  height:105px;
+  margin:17px 0 20px;
+  border:2px solid #ffdc6b;
+  border-radius:7px 7px 13px 13px;
+  background:linear-gradient(145deg,#f23b4f,#a9102e);
+  box-shadow:inset 0 1px #fff5,0 15px 25px #5f0c2570,0 0 25px #ffb72b28;
+}
+.annual-present-lid{
+  position:absolute;
+  z-index:3;
+  left:-9px;
+  right:-9px;
+  top:-14px;
+  height:25px;
+  border:2px solid #ffe27d;
+  border-radius:8px 8px 4px 4px;
+  background:linear-gradient(#ff5a63,#c61c38);
+  box-shadow:0 7px 12px #53091f66;
+}
+.annual-present-ribbon{
+  position:absolute;
+  z-index:4;
+  left:50%;
+  top:-14px;
+  bottom:0;
+  width:24px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,#dd8705,#ffe989 48%,#df8905);
+  box-shadow:inset 1px 0 #fff7,inset -1px 0 #9b5208;
+}
+.annual-present-bow{position:absolute;z-index:5;left:50%;top:-37px;width:88px;height:42px;transform:translateX(-50%)}
+.annual-present-bow i{position:absolute;top:4px;width:42px;height:28px;border:8px solid #ffc83d;background:#ffe28128}
+.annual-present-bow i:first-child{right:42px;border-radius:70% 28% 65% 30%;transform:rotate(10deg)}
+.annual-present-bow i:nth-child(2){left:42px;border-radius:28% 70% 30% 65%;transform:rotate(-10deg)}
+.annual-present-bow b{position:absolute;z-index:2;left:50%;top:12px;width:23px;height:23px;transform:translateX(-50%) rotate(45deg);border-radius:5px;background:linear-gradient(135deg,#ffe98a,#efa30f)}
+.annual-present-closed>strong{color:#ffe17b;font-size:13px;letter-spacing:2px}
+.annual-present-closed>small{margin:8px 0 17px;color:#d8cfdb;font-size:11px}
+.annual-present-closed>button{
+  border:1px solid #ffdd75;
+  border-radius:10px;
+  padding:12px 17px;
+  background:linear-gradient(90deg,#ff9f19,#ffcf36);
+  color:#351009;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.7px;
+  cursor:pointer;
+  box-shadow:0 9px 20px #ff9e2735;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.annual-present-closed>button:hover{transform:translateY(-2px);box-shadow:0 13px 25px #ff9e274d}
+.annual-present-closed>button:focus-visible{outline:3px solid #42b8ff;outline-offset:3px}
+.annual-bonus-gift.is-open{animation:annual-present-reveal .35s ease both}
+@keyframes annual-present-reveal{from{opacity:.25;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@media(max-width:560px){
+  .annual-present-closed{min-height:270px;padding-inline:12px}
+  .annual-present-illustration{width:125px;height:96px}
+}
+@media(prefers-reduced-motion:reduce){.annual-bonus-gift.is-open{animation:none}}
+
+/* Opened annual gift: bonuses return inside the original golden panel. */
+.annual-bonus-gift.is-open .annual-bonus-box{
+  margin:0;
+  padding:21px 18px 16px;
+  overflow:hidden;
+  border:2px solid #ffe17a;
+  border-radius:18px;
+  background:#e4b22f;
+  box-shadow:inset 0 1px #fff2ad,0 14px 30px #0006,0 0 24px #ffc84126;
+}
+.annual-bonus-gift.is-open .annual-bonus-box:before,
+.annual-bonus-gift.is-open .annual-bonus-box:after{display:none}
+.annual-bonus-gift.is-open .annual-bonus-box h4{
+  justify-content:center;
+  margin-bottom:14px;
+  color:#3a2100;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:1.9px;
+  text-shadow:0 1px #ffeca4;
+}
+.annual-bonus-gift.is-open .annual-bonus-list{
+  padding:5px 14px!important;
+  border:1px solid #76500055!important;
+  border-radius:13px;
+  background:#ffe8a4;
+  box-shadow:inset 0 1px #fff9dd;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li,
+.annual-bonus-gift.is-open .annual-bonus-list li:nth-child(-n+2){
+  margin:0;
+  padding:10px 2px 10px 30px;
+  border-bottom:1px solid #8b610026;
+  color:#382300;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.38;
+  text-align:left;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li:last-child{border-bottom:0}
+.annual-bonus-gift.is-open .annual-bonus-list li:before{
+  left:1px;
+  width:19px;
+  height:19px;
+  background:#5b3900;
+  color:#ffe58a;
+  box-shadow:none;
+}
+.annual-bonus-gift.is-open .annual-mini-gift{
+  border-color:#6b4300;
+  box-shadow:none;
+}
+
+/* Mobile annual card: content-driven height and strict horizontal containment. */
+@media(max-width:640px){
+  .plans{align-items:flex-start}
+  .plans>.gift.gift-opened{
+    flex:0 0 calc(100% - 32px);
+    width:calc(100% - 32px);
+    max-width:calc(100% - 32px);
+    height:auto!important;
+    min-height:0!important;
+    align-self:flex-start;
+    overflow:hidden!important;
+  }
+  .plans>.gift.gift-opened .gift-surprise{
+    width:100%;
+    max-width:100%;
+    height:auto!important;
+    min-height:0!important;
+    padding:58px 20px 20px!important;
+    overflow:visible;
+  }
+  .annual-bonus-gift,
+  .annual-present-closed,
+  .annual-bonus-gift.is-open .annual-bonus-box,
+  .plans>.gift.gift-opened .lead-cta{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+  }
+  .annual-bonus-gift.is-open .annual-bonus-box{padding:18px 12px 13px}
+  .annual-bonus-gift.is-open .annual-bonus-list{padding:4px 10px!important}
+  .annual-bonus-gift.is-open .annual-bonus-list li{
+    max-width:100%;
+    padding:10px 0 10px 28px;
+    font-size:11.5px;
+    overflow-wrap:anywhere;
+  }
+}
+
+/* Final annual bonus reveal: one clean, premium golden surface. */
+.annual-bonus-gift.is-open .annual-bonus-box{
+  padding:22px 20px 17px;
+  border:1px solid #ffe69a;
+  border-radius:18px;
+  background:linear-gradient(145deg,#f9dd78 0%,#e8b936 48%,#c88c12 100%);
+  box-shadow:inset 0 1px #fff8d7,0 15px 32px #6f45004d,0 0 26px #ffca4130;
+}
+.annual-bonus-gift.is-open .annual-bonus-box h4{
+  justify-content:flex-start;
+  margin:0 0 12px;
+  color:#4a2b00;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:1.8px;
+  text-shadow:0 1px #fff0ad;
+}
+.annual-bonus-gift.is-open .annual-bonus-list{
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li,
+.annual-bonus-gift.is-open .annual-bonus-list li:nth-child(-n+2){
+  margin:0;
+  padding:10px 0 10px 29px;
+  border-bottom:1px solid #5b350024;
+  color:#392100;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.4;
+  text-align:left;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li:last-child{border-bottom:0}
+.annual-bonus-gift.is-open .annual-bonus-list li:before{
+  left:0;
+  width:18px;
+  height:18px;
+  border:1px solid #fff0a3;
+  background:#5a3500;
+  color:#ffe681;
+}
+@media(max-width:640px){
+  .annual-bonus-gift.is-open .annual-bonus-box{padding:19px 16px 14px}
+  .annual-bonus-gift.is-open .annual-bonus-list li{padding:10px 0 10px 27px;font-size:11.5px}
+}
+
+/* Annual bonus panel matched to the supplied visual reference. */
+.annual-bonus-gift.is-open .annual-bonus-box{
+  padding:18px 14px 14px;
+  border:1px solid #9a6818;
+  border-radius:17px;
+  background:#1b0d20;
+  box-shadow:inset 0 1px #ffffff08,0 12px 28px #0005;
+}
+.annual-bonus-gift.is-open .annual-bonus-box h4{
+  justify-content:flex-start;
+  gap:9px;
+  margin:0 0 12px;
+  color:#ffc531;
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:1.5px;
+  text-shadow:none;
+}
+.annual-bonus-gift.is-open .annual-bonus-box h4 .tech-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+  border:0;
+  background:none;
+  box-shadow:none;
+}
+.annual-bonus-gift.is-open .annual-bonus-box h4 .tech-icon:after{display:none}
+.annual-bonus-gift.is-open .annual-bonus-box h4 svg{
+  width:17px;
+  height:17px;
+  stroke:#ffc531;
+  filter:none;
+}
+.annual-bonus-gift.is-open .annual-bonus-list{
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent;
+  box-shadow:none;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li,
+.annual-bonus-gift.is-open .annual-bonus-list li:nth-child(-n+2){
+  margin:0;
+  padding:7px 0 7px 29px;
+  border:0;
+  color:#f1edf2;
+  font-size:11.5px;
+  font-weight:500;
+  line-height:1.35;
+  text-align:left;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li:nth-child(-n+2){
+  color:#fff;
+  font-weight:850;
+}
+.annual-bonus-gift.is-open .annual-bonus-list li:before{
+  left:0;
+  width:19px;
+  height:19px;
+  border:0;
+  background:#ffa915;
+  color:#2a1500;
+  font-size:12px;
+  font-weight:950;
+  box-shadow:0 3px 8px #ff9f182b;
+}
+@media(max-width:640px){
+  .annual-bonus-gift.is-open .annual-bonus-box{padding:17px 13px 13px}
+  .annual-bonus-gift.is-open .annual-bonus-list li,
+  .annual-bonus-gift.is-open .annual-bonus-list li:nth-child(-n+2){
+    padding:7px 0 7px 28px;
+    font-size:11px;
+  }
+}
+
+.about .cta{margin-top:18px}
+.access-cta{grid-column:1/-1;text-align:center;margin-top:6px}
+.access-cta .cta{min-width:min(100%,340px);justify-content:center}
+@media(max-width:560px){.access-cta{margin-top:0}.access-cta .cta{width:100%;min-width:0}}
+
+/* Keep the complete "O que é FreeLovable?" section visible at every breakpoint. */
+.about{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+.about>div,
+.about .steps-window,
+.about .step,
+.about .step>span:last-child{
+  min-width:0;
+  max-width:100%;
+}
+.about .steps-window,
+.about .step{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible;
+}
+.about .step-flow:last-child .step b,
+.about .step small{
+  width:auto!important;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+@media(max-width:800px){
+  .about{min-height:0!important;padding-bottom:36px}
+}
+
+/* Larger non-pricing CTAs with a compact sparkle detail instead of arrows. */
+.site-cta{
+  min-height:58px;
+  gap:14px;
+  padding:19px 34px;
+  border-radius:14px;
+  font-size:13.5px;
+  letter-spacing:.65px;
+  animation:site-cta-pulse 2.2s ease-in-out infinite;
+}
+.site-cta .cta-accent{
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+  display:grid;
+  place-items:center;
+  border:1px solid #ffffff4a;
+  border-radius:50%;
+  background:#ffffff18;
+  color:#fff;
+  font-size:12px;
+  line-height:1;
+  box-shadow:inset 0 1px #ffffff38,0 0 14px #ffffff20;
+  transition:transform .25s ease,background .25s ease;
+}
+.site-cta:hover .cta-accent{transform:rotate(18deg) scale(1.08);background:#ffffff28}
+.hero .site-cta,
+.final-cta .site-cta{
+  min-height:64px;
+  padding:21px 40px;
+  font-size:16.5px;
+}
+.about-cta{
+  grid-column:1/-1;
+  display:flex;
+  justify-content:center;
+  width:100%;
+  margin-top:4px;
+}
+.about-cta .site-cta{
+  width:min(100%,460px);
+  min-height:66px;
+  justify-content:center;
+  margin:0;
+  padding:21px 42px;
+  font-size:15px;
+}
+@keyframes site-cta-pulse{
+  0%,100%{transform:scale(1);filter:brightness(1);box-shadow:0 12px 32px #d92d8950,0 8px 38px #2c8fff30}
+  50%{transform:scale(1.045);filter:brightness(1.12);box-shadow:0 15px 42px #ff34827a,0 9px 52px #2c8fff58,0 0 0 5px #b640ff14}
+}
+@media(max-width:620px){
+  .site-cta{min-height:56px;padding:17px 24px;font-size:12.5px}
+  .hero .site-cta,.final-cta .site-cta{min-height:59px;padding:18px 26px;font-size:14px}
+  .about-cta{margin-top:2px}
+  .about-cta .site-cta{width:100%;min-height:60px;padding:18px 24px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.site-cta{animation:none}}
+
+/* Responsive delivery steps: never squeeze the labels into clipped columns. */
+.access-instructions .mini-steps span{
+  min-width:0;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+@media(max-width:900px){
+  .access-instructions .mini-steps{grid-template-columns:1fr}
+  .access-instructions .mini-steps span{
+    grid-template-columns:38px minmax(0,1fr);
+    min-height:76px;
+    padding:16px 18px;
+  }
+}
+
+/* Pricing CTAs keep their existing size, but gain safe room for the pulse. */
+.plans>.plan{overflow:hidden}
+.plans>.plan .cta{
+  min-height:54px;
+  white-space:normal;
+  line-height:1.2;
+  text-wrap:balance;
+}
+.plans>.quarterly-plan .cta .cta-tap{
+  position:relative;
+  right:auto;
+  margin-left:3px;
+}
+.plans>.gift.gift-opened .lead-cta{
+  width:calc(100% - 10px);
+  max-width:calc(100% - 10px);
+  margin-left:auto!important;
+  margin-right:auto!important;
+  white-space:normal;
+  line-height:1.2;
+  text-wrap:balance;
+}
+@media(max-width:800px){
+  .plans>.plan .cta{left:25px;right:25px;min-height:52px;padding-inline:8px}
+  .plans>.gift.gift-opened .lead-cta{width:calc(100% - 12px);max-width:calc(100% - 12px)}
+}
+
+/* Keep the FreeLovable introduction title balanced on one line. */
+.about h2{
+  width:100%;
+  max-width:100%;
+  white-space:nowrap;
+  text-wrap:nowrap;
+  font-size:clamp(26px,3.35vw,47px);
+  letter-spacing:-.045em;
+}
+.about h2 .gradient-text{white-space:inherit}
+@media(max-width:800px){.about h2{font-size:clamp(27px,6.4vw,38px)}}
+@media(max-width:420px){.about h2{font-size:clamp(25px,7.6vw,30px)}}
+
+/* Balanced delivery-step labels without awkward word wrapping. */
+.access-instructions .mini-steps span>em{
+  min-width:0;
+  color:inherit;
+  font-style:normal;
+  font-size:inherit;
+  font-weight:inherit;
+  line-height:1.3;
+  text-align:left;
+  text-wrap:balance;
+  white-space:normal;
+  word-break:normal;
+  overflow-wrap:normal;
+}
+@media(max-width:1100px){
+  .access-instructions .mini-steps{grid-template-columns:1fr}
+  .access-instructions .mini-steps span{
+    grid-template-columns:38px minmax(0,1fr);
+    min-height:76px;
+    padding:16px 18px;
+  }
+  .access-instructions .mini-steps span>em{text-wrap:pretty}
+}
+@media(max-width:560px){
+  .access-instructions .mini-steps span>em{font-size:12px;line-height:1.25}
 }
