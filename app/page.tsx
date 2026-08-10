@@ -452,14 +452,14 @@ export default function Home() {
             <img src="/freelovable-logo-transparent.png" alt="" />
             <small>VOCÊ ESCOLHEU</small>
             <h2 id="lead-title">{selectedPlan === "Oferta Especial" ? "Oferta Especial Anual" : selectedPlan}</h2>
-            <p>Preencha seus dados para liberar a próxima etapa do seu acesso.</p>
+            <p>Preencha seus dados para prosseguir com o pagamento.</p>
             <form onSubmit={submitLead}>
               <label>Nome completo<input name="name" autoComplete="name" required disabled={checkoutLoading} placeholder="Digite seu nome" /></label>
               <label>E-mail<input name="email" type="email" autoComplete="email" required disabled={checkoutLoading} placeholder="voce@email.com" /></label>
               <label>WhatsApp<input name="whatsapp" inputMode="tel" autoComplete="tel" required disabled={checkoutLoading} minLength={10} placeholder="(11) 99999-9999" /></label>
               {checkoutError && <div className="lead-error" role="alert">{checkoutError}</div>}
               <button type="submit" className="cta" disabled={checkoutLoading}>
-                {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
+                {checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
               </button>
               <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
             </form>
