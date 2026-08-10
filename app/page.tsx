@@ -490,8 +490,6 @@ function Plan({title,price,note,button,badge,featured=false,onSelect}:{title:str
 }
 
 function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
-  const [bonusOpened, setBonusOpened] = useState(false);
-
   return (
     <article className="gift gift-opened">
       <div className="gift-surprise">
@@ -504,60 +502,24 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
           <li>Suporte VIP</li>
           <li>Updates por 1 ano</li>
         </ul>
-        <div className={`annual-bonus-gift ${bonusOpened ? "is-open" : ""}`}>
-          {!bonusOpened ? (
-            <div className="annual-present-closed">
-              <div className="annual-present-illustration" aria-hidden="true">
-                <span className="annual-present-lid" />
-                <span className="annual-present-ribbon" />
-                <span className="annual-present-bow"><i/><i/><b/></span>
-              </div>
-              <strong>PRESENTE ESPECIAL</strong>
-              <small>Bônus exclusivos do Plano Anual</small>
-              <button type="button" onClick={() => setBonusOpened(true)} aria-expanded="false">
-                ABRIR O PRESENTE <span aria-hidden="true">✦</span>
-              </button>
-            </div>
-          ) : (
-            <div className="annual-bonus-box">
-              <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
-              <ul className="annual-bonus-list">
-                <li>Guia Prático - Do Lovable para o Ar</li>
-                <li>Gemini Pro por 18 meses</li>
-                <li>Gemini 3 + Nano Banana 2</li>
-                <li>Veo 3.1 para vídeos com IA</li>
-                <li>5 TB + Google Workspace</li>
-                <li>Ativação por link na conta atual</li>
-              </ul>
-            </div>
-          )}
+        <div className="annual-bonus-gift is-open">
+          <div className="annual-bonus-box">
+            <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
+            <ul className="annual-bonus-list">
+              <li>Guia Prático - Do Lovable para o Ar</li>
+              <li>Gemini Pro por 18 meses</li>
+              <li>Gemini 3 + Nano Banana 2</li>
+              <li>Veo 3.1 para vídeos com IA</li>
+              <li>5 TB + Google Workspace</li>
+              <li>Ativação por link na conta atual</li>
+            </ul>
+          </div>
         </div>
         <button className="cta lead-cta" onClick={() => { trackPlanSelection("Oferta Especial"); onSelect("Oferta Especial"); }}>
           QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
         </button>
       </div>
 
-      <div className="gift-wrap" aria-hidden="true">
-        <div className="front-gift-box" aria-hidden="true">
-          <div className="front-gift-body" />
-          <div className="front-gift-lid" />
-          <div className="front-gift-ribbon" />
-          <div className="front-gift-bow">
-            <i className="bow-loop bow-loop-left" />
-            <i className="bow-loop bow-loop-right" />
-            <b />
-          </div>
-        </div>
-        <div className="gift-wrap-copy">
-          <small>OFERTA SECRETA</small>
-          <h3>Um presente para você</h3>
-          <p>Abra para revelar a melhor condição do plano anual.</p>
-        </div>
-        <button className="gift-open-button" type="button">
-          <span>ABRIR MEU PRESENTE</span>
-          <b aria-hidden="true">✦</b>
-        </button>
-      </div>
     </article>
   );
 }
