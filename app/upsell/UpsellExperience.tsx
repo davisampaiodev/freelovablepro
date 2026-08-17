@@ -9,7 +9,7 @@ type UpsellOffer = {
   eyebrow: string;
   duration: string;
   price: number;
-  benefits: Array<{ title: string; copy: string; icon: string; material?: boolean; featured?: boolean }>;
+  benefits: Array<{ title: string; copy: string; icon: string; material?: boolean }>;
 };
 
 const OFFERS: Record<string, UpsellOffer> = {
@@ -22,7 +22,7 @@ const OFFERS: Record<string, UpsellOffer> = {
     benefits: [
       { title: "Gemini Pro", copy: "Planeje projetos, analise arquivos, revise códigos e desenvolva ideias.", icon: "/upsell-icons/gemini.svg" },
       { title: "Nano Banana Pro", copy: "Crie imagens, edite artes e produza variações visuais.", icon: "/upsell-icons/nano-banana.png" },
-      { title: "Google AI Studio", copy: "Teste prompts e modelos, crie protótipos e integre o Gemini aos seus projetos.", icon: "/upsell-icons/studio.svg", material: true, featured: true },
+      { title: "Google AI Studio", copy: "Teste prompts e modelos, crie protótipos e integre o Gemini aos seus projetos.", icon: "/upsell-icons/studio.svg", material: true },
       { title: "Deep Research", copy: "Pesquise várias fontes, compare dados e receba sínteses organizadas.", icon: "/upsell-icons/research.svg", material: true },
       { title: "Ecossistema Google", copy: "Conecte IA, pesquisa, arquivos e ferramentas Google no mesmo fluxo.", icon: "/upsell-icons/google.svg" },
       { title: "5 TB de armazenamento", copy: "Guarde projetos, imagens, vídeos e documentos no Google Drive.", icon: "/upsell-icons/drive.svg" },
@@ -52,7 +52,7 @@ function ProductArtwork() {
   );
 }
 
-function NativeCartPandaControls({ offer }: { offer: UpsellOffer }) {
+function NativeCartPandaControls() {
   const configured = Boolean(ACCEPT_URL && DECLINE_URL);
 
   return (
@@ -61,7 +61,6 @@ function NativeCartPandaControls({ offer }: { offer: UpsellOffer }) {
         <>
           <a className="up-accept" href={ACCEPT_URL} rel="nofollow">
             <span>Sim! Quero adicionar o Google AI Pro</span>
-            <small>Adicionar {offer.duration} ao meu pedido por R$ 97</small>
           </a>
           <div className="up-trust" aria-label="Informações da oferta">
             <span>✓ Compra segura</span><span>✓ Pagamento único</span><span>✓ Sem novo formulário</span>
@@ -72,7 +71,6 @@ function NativeCartPandaControls({ offer }: { offer: UpsellOffer }) {
         <>
           <button className="up-accept up-accept-preview" type="button" disabled aria-describedby="cartpanda-config-note">
             <span>Sim! Quero adicionar o Google AI Pro</span>
-            <small>Adicionar {offer.duration} ao meu pedido por R$ 97</small>
           </button>
           <div className="up-trust" aria-label="Informações da oferta">
             <span>✓ Pagamento único</span><span>✓ 18 meses de acesso</span><span>✓ Sem novo formulário</span>
@@ -160,7 +158,7 @@ export default function UpsellExperience() {
               <ProductArtwork />
               <div className="up-card-benefits" aria-label="Benefícios do Google AI Pro">
                 {offer.benefits.map((benefit) => (
-                  <div key={benefit.title} className={benefit.featured ? "featured" : ""}>
+                  <div key={benefit.title}>
                     <i aria-hidden="true">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -173,7 +171,6 @@ export default function UpsellExperience() {
                       <b>{benefit.title}</b>
                       <small>{benefit.copy}</small>
                     </span>
-                    {benefit.featured && <em>PARA QUEM CRIA COM IA</em>}
                   </div>
                 ))}
               </div>
@@ -182,7 +179,7 @@ export default function UpsellExperience() {
                 <div className="up-price"><small>R$</small><strong>{offer.price}</strong></div>
                 <b className="up-duration">{offer.duration} de acesso</b>
                 <p>Equivale a aproximadamente <strong>R$ {monthlyPrice}/mês</strong> durante o período.</p>
-                <div ref={controlsRef}><NativeCartPandaControls offer={offer} /></div>
+                <div ref={controlsRef}><NativeCartPandaControls /></div>
               </div>
             </div>
           </div>
