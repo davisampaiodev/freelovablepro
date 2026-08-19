@@ -244,6 +244,15 @@ export default function Home() {
         const value = utmTracking[key];
         if (value) checkoutUrl.searchParams.set(key, value);
       }
+      for (const [key, value] of [
+        ["campaign_id", utmTracking.meta_campaign_id],
+        ["adset_id", utmTracking.meta_adset_id],
+        ["ad_id", utmTracking.meta_ad_id],
+        ["fbp", metaTracking.fbp],
+        ["fbc", metaTracking.fbc],
+      ] as const) {
+        if (value) checkoutUrl.searchParams.set(key, value);
+      }
       window.location.assign(checkoutUrl.toString());
     } catch (error) {
       console.error("[CartPanda checkout] Não foi possível continuar.", {

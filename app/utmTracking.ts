@@ -1,4 +1,7 @@
 const UTM_STORAGE_PREFIX = "utmify_";
+const ATTRIBUTION_SNAPSHOT_STORAGE_KEY = `${UTM_STORAGE_PREFIX}attribution_snapshot_v1`;
+const ATTRIBUTION_SNAPSHOT_VERSION = 1;
+const ATTRIBUTION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type UtmTracking = {
   src: string | null;
@@ -53,6 +56,14 @@ const VALUE_LIMITS: Partial<Record<(typeof TRACKING_KEYS)[number], number>> = {
 const LANDING_PAGE_STORAGE_KEY = `${UTM_STORAGE_PREFIX}landing_page_url`;
 const REFERRER_STORAGE_KEY = `${UTM_STORAGE_PREFIX}referrer_url`;
 
+type AttributionValues = Pick<UtmTracking, (typeof TRACKING_KEYS)[number]>;
+
+type AttributionSnapshot = {
+  version: typeof ATTRIBUTION_SNAPSHOT_VERSION;
+  captured_at: number;
+  values: AttributionValues;
+};
+
 function readStorage(storage: Storage, key: string) {
   try {
     return String(storage.getItem(key) || "").trim() || null;
@@ -67,6 +78,92 @@ function writeStorage(storage: Storage, key: string, value: string) {
     storage.setItem(key, value);
   } catch {
     // Tracking must not interrupt checkout.
+  }
+}
+
+function removeStorage(storage: Storage, key: string) {
+  try {
+    storage.removeItem(key);
+  } catch {
+    // Storage restrictions must not interrupt checkout.
+  }
+}
+
+function emptyAttributionValues(): AttributionValues {
+  return Object.fromEntries(
+    TRACKING_KEYS.map((key) => [key, null]),
+  ) as AttributionValues;
+}
+
+function readAttributionSnapshot(
+  storage: Storage,
+  enforceExpiration: boolean,
+): AttributionSnapshot | null {
+  const raw = readStorage(storage, ATTRIBUTION_SNAPSHOT_STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<AttributionSnapshot>;
+    if (
+      parsed.version !== ATTRIBUTION_SNAPSHOT_VERSION ||
+      typeof parsed.captured_at !== "number" ||
+      !Number.isFinite(parsed.captured_at) ||
+      !parsed.values ||
+      typeof parsed.values !== "object"
+    ) return null;
+    if (
+      enforceExpiration &&
+      Date.now() - parsed.captured_at > ATTRIBUTION_MAX_AGE_MS
+    ) {
+      removeStorage(storage, ATTRIBUTION_SNAPSHOT_STORAGE_KEY);
+      for (const key of TRACKING_KEYS) {
+        removeStorage(storage, `${UTM_STORAGE_PREFIX}${key}`);
+      }
+      return null;
+    }
+
+    const values = emptyAttributionValues();
+    for (const key of TRACKING_KEYS) {
+      const value = parsed.values[key];
+      values[key] = typeof value === "string" && value.trim()
+        ? value.trim().slice(0, VALUE_LIMITS[key] || 1000)
+        : null;
+    }
+    return {
+      version: ATTRIBUTION_SNAPSHOT_VERSION,
+      captured_at: parsed.captured_at,
+      values,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeAttributionSnapshot(snapshot: AttributionSnapshot) {
+  const serialized = JSON.stringify(snapshot);
+  writeStorage(
+    window.sessionStorage,
+    ATTRIBUTION_SNAPSHOT_STORAGE_KEY,
+    serialized,
+  );
+  writeStorage(
+    window.localStorage,
+    ATTRIBUTION_SNAPSHOT_STORAGE_KEY,
+    serialized,
+  );
+
+  // Keep the existing per-key values for compatibility with scripts that
+  // already consume the utmify_* keys. Resolution uses only the coherent
+  // snapshot, so missing fields from a new click cannot inherit old values.
+  for (const key of TRACKING_KEYS) {
+    const value = snapshot.values[key];
+    const storageKey = `${UTM_STORAGE_PREFIX}${key}`;
+    if (value) {
+      writeStorage(window.sessionStorage, storageKey, value);
+      writeStorage(window.localStorage, storageKey, value);
+    } else {
+      removeStorage(window.sessionStorage, storageKey);
+      removeStorage(window.localStorage, storageKey);
+    }
   }
 }
 
@@ -110,23 +207,35 @@ export function resolveUtmTracking(): UtmTracking {
 
   const params = new URLSearchParams(window.location.search);
   const resolved = { ...empty };
-
+  const currentValues = emptyAttributionValues();
+  let hasCurrentAttribution = false;
   for (const key of TRACKING_KEYS) {
-    const storageKey = `${UTM_STORAGE_PREFIX}${key}`;
-    const currentValue = readQueryValue(params, key);
+    currentValues[key] = readQueryValue(params, key);
+    if (currentValues[key]) hasCurrentAttribution = true;
+  }
 
-    if (currentValue) {
-      writeStorage(window.localStorage, storageKey, currentValue);
-      writeStorage(window.sessionStorage, storageKey, currentValue);
-      resolved[key] = currentValue;
-      continue;
+  let snapshot: AttributionSnapshot | null;
+  if (hasCurrentAttribution) {
+    snapshot = {
+      version: ATTRIBUTION_SNAPSHOT_VERSION,
+      captured_at: Date.now(),
+      values: currentValues,
+    };
+    writeAttributionSnapshot(snapshot);
+  } else {
+    snapshot = readAttributionSnapshot(window.sessionStorage, false) ||
+      readAttributionSnapshot(window.localStorage, true);
+    if (snapshot) {
+      writeStorage(
+        window.sessionStorage,
+        ATTRIBUTION_SNAPSHOT_STORAGE_KEY,
+        JSON.stringify(snapshot),
+      );
     }
+  }
 
-    resolved[key] =
-      (
-        readStorage(window.sessionStorage, storageKey) ||
-        readStorage(window.localStorage, storageKey)
-      )?.slice(0, VALUE_LIMITS[key] || 1000) || null;
+  if (snapshot) {
+    for (const key of TRACKING_KEYS) resolved[key] = snapshot.values[key];
   }
 
   resolved.landing_page_url = resolveFirstTouchValue(
