@@ -169,12 +169,19 @@ export default function Home() {
       reseller_id: null,
       fbp: metaTracking.fbp,
       fbc: metaTracking.fbc,
+      meta_campaign_id: utmTracking.meta_campaign_id,
+      meta_adset_id: utmTracking.meta_adset_id,
+      meta_ad_id: utmTracking.meta_ad_id,
       utm_source: utmTracking.utm_source,
+      utm_medium: utmTracking.utm_medium,
       utm_campaign: utmTracking.utm_campaign,
       utm_content: utmTracking.utm_content,
+      utm_term: utmTracking.utm_term,
       fbclid: utmTracking.fbclid,
       src: utmTracking.src,
       sck: utmTracking.sck,
+      landing_page_url: utmTracking.landing_page_url,
+      referrer_url: utmTracking.referrer_url,
     };
     const controller = new AbortController();
     const timeoutId = window.setTimeout(
@@ -223,10 +230,16 @@ export default function Home() {
       );
       for (const key of [
         "utm_source",
+        "utm_medium",
         "utm_campaign",
         "utm_content",
+        "utm_term",
         "fbclid",
         "src",
+        "sck",
+        "meta_campaign_id",
+        "meta_adset_id",
+        "meta_ad_id",
       ] as const) {
         const value = utmTracking[key];
         if (value) checkoutUrl.searchParams.set(key, value);
