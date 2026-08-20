@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import TechIcon from "./TechIcon";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
+import { normalizePhone } from "./trackingIdentifiers";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
@@ -133,13 +134,11 @@ export default function Home() {
       .trim()
       .replace(/\s+/g, " ");
     const customerEmail = String(form.get("email") || "").trim().toLowerCase();
-    const customerWhatsapp = String(form.get("whatsapp") || "")
-      .replace(/\D+/g, "");
+    const customerWhatsapp = normalizePhone(form.get("whatsapp"));
     if (
       customerName.length < 2 ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail) ||
-      customerWhatsapp.length < 10 ||
-      customerWhatsapp.length > 13
+      !customerWhatsapp
     ) {
       setCheckoutError(CHECKOUT_ERROR_MESSAGE);
       return;
@@ -166,6 +165,7 @@ export default function Home() {
       customer_name: customerName,
       customer_email: customerEmail,
       customer_whatsapp: customerWhatsapp,
+      client_user_agent: navigator.userAgent,
       reseller_id: null,
       fbp: metaTracking.fbp,
       fbc: metaTracking.fbc,

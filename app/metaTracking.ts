@@ -1,3 +1,9 @@
+import {
+  isValidFbc,
+  normalizeFbclid,
+  resolveFbcForClick,
+} from "./trackingIdentifiers";
+
 const META_FBC_STORAGE_KEY = "meta_fbc";
 const META_FBP_STORAGE_KEY = "meta_fbp";
 const TRACKING_MAX_AGE_SECONDS = 7776000;
@@ -29,11 +35,6 @@ export function readCookie(name: string) {
   }
 }
 
-export function isValidFbc(value: unknown) {
-  const normalized = String(value || "").trim();
-  return /^fb\.\d+\.\d+\..+$/.test(normalized);
-}
-
 function isValidFbp(value: unknown) {
   const normalized = String(value || "").trim();
   return /^fb\.\d+\.\d+\..+$/.test(normalized);
@@ -42,7 +43,7 @@ function isValidFbp(value: unknown) {
 function readCurrentFbclid() {
   if (typeof window === "undefined") return "";
   const searchParams = new URLSearchParams(window.location.search);
-  return String(searchParams.get("fbclid") || "").trim();
+  return normalizeFbclid(searchParams.get("fbclid")) || "";
 }
 
 function readStorage(storage: Storage, key: string) {
@@ -83,27 +84,16 @@ function persistFbp(value: string) {
   writeStorage(window.sessionStorage, META_FBP_STORAGE_KEY, value);
 }
 
-function fbcMatchesClick(fbc: string, fbclid: string) {
-  return isValidFbc(fbc) && fbc.endsWith(`.${fbclid}`);
-}
-
 function getOrCreateFbcFromCurrentFbclid(fbclid: string) {
   const candidates = [
     readCookie("_fbc"),
     readStorage(window.localStorage, META_FBC_STORAGE_KEY),
     readStorage(window.sessionStorage, META_FBC_STORAGE_KEY),
   ];
-  const existing = candidates.find(
-    (candidate): candidate is string =>
-      Boolean(candidate && fbcMatchesClick(candidate, fbclid)),
-  );
-  if (existing) {
-    persistFbc(existing);
-    return existing;
-  }
-  const generatedFbc = `fb.1.${Date.now()}.${fbclid}`;
-  persistFbc(generatedFbc);
-  return generatedFbc;
+  const resolvedFbc = resolveFbcForClick(candidates, fbclid);
+  if (!resolvedFbc) return null;
+  persistFbc(resolvedFbc);
+  return resolvedFbc;
 }
 
 function resolveMetaFbc() {
