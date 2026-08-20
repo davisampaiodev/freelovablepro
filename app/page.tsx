@@ -180,6 +180,7 @@ export default function Home() {
       fbclid: utmTracking.fbclid,
       src: utmTracking.src,
       sck: utmTracking.sck,
+      xcod: utmTracking.xcod,
       landing_page_url: utmTracking.landing_page_url,
       referrer_url: utmTracking.referrer_url,
     };
@@ -237,6 +238,7 @@ export default function Home() {
         "fbclid",
         "src",
         "sck",
+        "xcod",
         "meta_campaign_id",
         "meta_adset_id",
         "meta_ad_id",

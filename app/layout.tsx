@@ -26,6 +26,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           defer
           data-utmify-prevent-xcod-sck=""
           data-utmify-prevent-subids=""
+          data-utmify-ignore-iframe=""
+          data-utmify-is-cartpanda=""
         />
         <script
           type="text/javascript"

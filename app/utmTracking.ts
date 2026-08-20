@@ -6,6 +6,7 @@ const ATTRIBUTION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 export type UtmTracking = {
   src: string | null;
   sck: string | null;
+  xcod: string | null;
   fbclid: string | null;
   meta_campaign_id: string | null;
   meta_adset_id: string | null;
@@ -22,6 +23,7 @@ export type UtmTracking = {
 const TRACKING_KEYS = [
   "src",
   "sck",
+  "xcod",
   "fbclid",
   "meta_campaign_id",
   "meta_adset_id",
@@ -42,6 +44,7 @@ const QUERY_ALIASES: Partial<Record<(typeof TRACKING_KEYS)[number], string[]>> =
 const VALUE_LIMITS: Partial<Record<(typeof TRACKING_KEYS)[number], number>> = {
   src: 500,
   sck: 500,
+  xcod: 500,
   fbclid: 500,
   meta_campaign_id: 100,
   meta_adset_id: 100,
@@ -167,6 +170,32 @@ function writeAttributionSnapshot(snapshot: AttributionSnapshot) {
   }
 }
 
+function readStoredAttributionSnapshot() {
+  return readAttributionSnapshot(window.sessionStorage, false) ||
+    readAttributionSnapshot(window.localStorage, true);
+}
+
+function mergeAttributionValues(
+  previous: AttributionValues,
+  current: AttributionValues,
+) {
+  const merged = { ...previous };
+  for (const key of TRACKING_KEYS) {
+    if (current[key]) merged[key] = current[key];
+  }
+  return merged;
+}
+
+function belongsToSameClick(
+  previous: AttributionValues,
+  current: AttributionValues,
+) {
+  if (current.fbclid) return previous.fbclid === current.fbclid;
+  if (current.sck) return previous.sck === current.sck;
+  if (current.xcod) return previous.xcod === current.xcod;
+  return false;
+}
+
 function readQueryValue(
   params: URLSearchParams,
   key: (typeof TRACKING_KEYS)[number],
@@ -216,15 +245,19 @@ export function resolveUtmTracking(): UtmTracking {
 
   let snapshot: AttributionSnapshot | null;
   if (hasCurrentAttribution) {
+    const previousSnapshot = readStoredAttributionSnapshot();
+    const values = previousSnapshot &&
+        belongsToSameClick(previousSnapshot.values, currentValues)
+      ? mergeAttributionValues(previousSnapshot.values, currentValues)
+      : currentValues;
     snapshot = {
       version: ATTRIBUTION_SNAPSHOT_VERSION,
       captured_at: Date.now(),
-      values: currentValues,
+      values,
     };
     writeAttributionSnapshot(snapshot);
   } else {
-    snapshot = readAttributionSnapshot(window.sessionStorage, false) ||
-      readAttributionSnapshot(window.localStorage, true);
+    snapshot = readStoredAttributionSnapshot();
     if (snapshot) {
       writeStorage(
         window.sessionStorage,
@@ -252,6 +285,7 @@ export function resolveUtmTracking(): UtmTracking {
   console.log("utm tracking resolved:", {
     src_present: Boolean(resolved.src),
     sck_present: Boolean(resolved.sck),
+    xcod_present: Boolean(resolved.xcod),
     fbclid_present: Boolean(resolved.fbclid),
     utm_source_present: Boolean(resolved.utm_source),
     utm_campaign_present: Boolean(resolved.utm_campaign),
