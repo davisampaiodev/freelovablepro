@@ -159,12 +159,14 @@ export default function Home() {
     setCheckoutError("");
     const metaTracking = resolveMetaTracking();
     const utmTracking = resolveUtmTracking();
+    const leadEventId = createMetaEventId("lead");
     const payload = {
       plan: plan.alias,
       customer_name: customerName,
       customer_email: customerEmail,
       customer_whatsapp: customerWhatsapp,
       client_user_agent: navigator.userAgent,
+      lead_event_id: leadEventId,
       reseller_id: null,
       fbp: metaTracking.fbp,
       fbc: metaTracking.fbc,
@@ -201,6 +203,7 @@ export default function Home() {
         session_id?: string;
         external_reference?: string;
         provider?: string;
+        lead_event_id?: string;
       } | null;
       if (
         !response.ok ||
@@ -213,7 +216,7 @@ export default function Home() {
         throw new Error("invalid_register_lead_response");
       }
 
-      const leadEventId = createMetaEventId("lead");
+      const confirmedLeadEventId = data.lead_event_id || leadEventId;
       trackMeta("Lead", {
         content_name: `Lead - ${selectedPlan}`,
         content_category: "Seleção de plano",
@@ -222,7 +225,7 @@ export default function Home() {
         currency: "BRL",
         value: plan.value,
         plan: plan.alias,
-      }, leadEventId);
+      }, confirmedLeadEventId);
 
       const finalCheckoutUrl = appendGGCheckoutTracking(checkoutUrl, {
         src: utmTracking.src,

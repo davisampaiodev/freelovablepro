@@ -22,6 +22,10 @@ test("LP envia tracking ao Supabase GG e só redireciona após external_referenc
   assert.match(source, /registrar-lead-ggcheckout/);
   assert.match(source, /data\.provider !== "ggcheckout"/);
   assert.match(source, /startsWith\("ggcheckout_"\)/);
+  assert.match(source, /const leadEventId = createMetaEventId\("lead"\)/);
+  assert.match(source, /lead_event_id: leadEventId/);
+  assert.match(source, /const confirmedLeadEventId = data\.lead_event_id \|\| leadEventId/);
+  assert.match(source, /trackMeta\("Lead"[\s\S]*confirmedLeadEventId\)/);
 });
 
 test("proteções de duplo submit, timeout e idempotência permanecem intactas", async () => {
@@ -36,4 +40,23 @@ test("proteções de duplo submit, timeout e idempotência permanecem intactas",
   assert.match(edgeFunction, /IDEMPOTENCY_WINDOW_MS\s*=\s*60_000/);
   assert.match(edgeFunction, /currentBucket\s*-\s*1/);
   assert.match(edgeFunction, /return success\(existing, true, origin\)/);
+});
+
+test("Lead GG usa CAPI em segundo plano sem bloquear a resposta", async () => {
+  const edgeFunction = await readFile(functionPath, "utf8");
+
+  assert.match(edgeFunction, /event_name: "Lead"/);
+  assert.match(edgeFunction, /event_id: params\.eventId/);
+  assert.match(edgeFunction, /EdgeRuntime\.waitUntil\(metaLeadTask\)/);
+  assert.ok(
+    edgeFunction.indexOf("EdgeRuntime.waitUntil(metaLeadTask)") <
+      edgeFunction.lastIndexOf("return success(inserted, false, origin)"),
+  );
+  assert.match(edgeFunction, /const requestedLeadEventId = normalizeEventId\(/);
+  assert.match(edgeFunction, /const leadEventId = requestedLeadEventId \|\| createLeadEventId\(\)/);
+  assert.match(edgeFunction, /if \(requestedLeadEventId\)[\s\S]*EdgeRuntime\.waitUntil\(metaLeadTask\)/);
+  assert.match(edgeFunction, /missing_client_event_id/);
+  assert.match(edgeFunction, /META_LEAD_MAX_ATTEMPTS = 3/);
+  assert.match(edgeFunction, /meta_lead_status: "sent"/);
+  assert.match(edgeFunction, /meta_lead_status: attempt === META_LEAD_MAX_ATTEMPTS \? "failed" : "pending"/);
 });

@@ -10,6 +10,11 @@ const DEFAULT_ALLOWED_ORIGINS = ["https://freelovablepro.com.br"] as const;
 const BRAZIL_COUNTRY_CODE = "55";
 const MAX_PHONE_DIGITS = 15;
 const MAX_USER_AGENT_LENGTH = 512;
+const META_LEAD_MAX_ATTEMPTS = 3;
+
+declare const EdgeRuntime: {
+  waitUntil(promise: Promise<unknown>): void;
+};
 
 function normalizePhone(value: unknown): string | null {
   if (typeof value !== "string" && typeof value !== "number") return null;
@@ -84,6 +89,7 @@ type RequestBody = {
   email?: unknown;
   whatsapp?: unknown;
   client_user_agent?: unknown;
+  lead_event_id?: unknown;
   fbp?: unknown;
   fbc?: unknown;
   reseller_id?: unknown;
@@ -107,6 +113,7 @@ type RequestBody = {
   tracking?: {
     fbp?: unknown;
     fbc?: unknown;
+    lead_event_id?: unknown;
     meta_campaign_id?: unknown;
     meta_adset_id?: unknown;
     meta_ad_id?: unknown;
@@ -131,6 +138,7 @@ type ExistingSession = {
   id: string;
   external_reference: string;
   client_user_agent: string | null;
+  meta_lead_event_id: string | null;
 };
 
 function env(name: string) {
@@ -205,6 +213,16 @@ function isUuid(value: string) {
     .test(value);
 }
 
+function normalizeEventId(value: unknown) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return /^[A-Za-z0-9._:-]{1,160}$/.test(normalized) ? normalized : null;
+}
+
+function createLeadEventId() {
+  return `lead_${crypto.randomUUID()}`;
+}
+
 function clientIp(request: Request) {
   const candidate = request.headers.get("cf-connecting-ip")?.trim() ||
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -224,6 +242,131 @@ async function sha256(value: string) {
   return Array.from(new Uint8Array(digest))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+async function buildMetaUserData(params: {
+  name: string;
+  email: string;
+  whatsapp: string;
+  externalReference: string;
+  fbp: string | null;
+  fbc: string | null;
+  clientIp: string | null;
+  clientUserAgent: string | null;
+}) {
+  const nameParts = params.name.toLowerCase().split(/\s+/).filter(Boolean);
+  const firstName = nameParts.shift() || "";
+  const lastName = nameParts.join(" ");
+  const userData: Record<string, unknown> = {
+    em: [await sha256(params.email)],
+    ph: [await sha256(params.whatsapp)],
+    external_id: [await sha256(params.externalReference)],
+  };
+  if (firstName) userData.fn = [await sha256(firstName)];
+  if (lastName) userData.ln = [await sha256(lastName)];
+  if (params.fbp) userData.fbp = params.fbp;
+  if (params.fbc) userData.fbc = params.fbc;
+  if (params.clientIp) userData.client_ip_address = params.clientIp;
+  if (params.clientUserAgent) userData.client_user_agent = params.clientUserAgent;
+  return userData;
+}
+
+async function deliverMetaLead(params: {
+  supabase: ReturnType<typeof createClient>;
+  sessionId: string;
+  externalReference: string;
+  eventId: string;
+  eventTime: number;
+  eventSourceUrl: string;
+  name: string;
+  email: string;
+  whatsapp: string;
+  fbp: string | null;
+  fbc: string | null;
+  clientIp: string | null;
+  clientUserAgent: string | null;
+  planAlias: PlanAlias;
+  contentName: string;
+  value: number;
+}) {
+  const pixelId = env("GGCHECKOUT_FACEBOOK_PIXEL_ID") || env("MP_V2_FACEBOOK_PIXEL_ID");
+  const accessToken = env("GGCHECKOUT_FACEBOOK_ACCESS_TOKEN") || env("MP_V2_FACEBOOK_ACCESS_TOKEN");
+  const graphVersion = env("GGCHECKOUT_FACEBOOK_GRAPH_VERSION") || "v23.0";
+
+  if (!pixelId || !accessToken) {
+    const reason = !pixelId ? "missing_pixel_id" : "missing_access_token";
+    await params.supabase.from("checkout_sessions_v2").update({
+      meta_lead_status: "failed",
+      meta_lead_error: reason,
+      meta_lead_last_attempt_at: new Date().toISOString(),
+    }).eq("id", params.sessionId).eq("meta_lead_event_id", params.eventId);
+    logResult({ status: "meta_lead_failed", session_id: params.sessionId, event_id: params.eventId, error_code: reason });
+    return;
+  }
+
+  const userData = await buildMetaUserData(params);
+  const event = {
+    event_name: "Lead",
+    event_time: params.eventTime,
+    event_id: params.eventId,
+    action_source: "website",
+    event_source_url: params.eventSourceUrl,
+    user_data: userData,
+    custom_data: {
+      content_name: params.contentName,
+      content_category: "Seleção de plano",
+      content_ids: [params.planAlias],
+      content_type: "product",
+      currency: "BRL",
+      value: params.value,
+      plan: params.planAlias,
+    },
+  };
+  let lastError = "meta_delivery_failed";
+
+  for (let attempt = 1; attempt <= META_LEAD_MAX_ATTEMPTS; attempt += 1) {
+    const attemptedAt = new Date().toISOString();
+    try {
+      const response = await fetch(
+        `https://graph.facebook.com/${graphVersion}/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`,
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: [event] }) },
+      );
+      const responseText = await response.text().catch(() => "");
+      let responseBody: Record<string, unknown> = {};
+      try {
+        responseBody = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        responseBody = { raw: responseText.slice(0, 1000) };
+      }
+      if (!response.ok || Number(responseBody.events_received || 0) !== 1) {
+        throw new Error(`Meta HTTP ${response.status}: ${JSON.stringify(responseBody).slice(0, 1000)}`);
+      }
+
+      await params.supabase.from("checkout_sessions_v2").update({
+        meta_lead_status: "sent",
+        meta_lead_attempts: attempt,
+        meta_lead_last_attempt_at: attemptedAt,
+        meta_lead_sent_at: new Date().toISOString(),
+        meta_lead_error: null,
+        meta_lead_response: responseBody,
+      }).eq("id", params.sessionId).eq("meta_lead_event_id", params.eventId);
+      logResult({ status: "meta_lead_sent", session_id: params.sessionId, event_id: params.eventId, attempts: attempt });
+      return;
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+      await params.supabase.from("checkout_sessions_v2").update({
+        meta_lead_status: attempt === META_LEAD_MAX_ATTEMPTS ? "failed" : "pending",
+        meta_lead_attempts: attempt,
+        meta_lead_last_attempt_at: attemptedAt,
+        meta_lead_error: lastError.slice(0, 2000),
+      }).eq("id", params.sessionId).eq("meta_lead_event_id", params.eventId);
+      if (attempt < META_LEAD_MAX_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 350));
+      }
+    }
+  }
+
+  logResult({ status: "meta_lead_failed", session_id: params.sessionId, event_id: params.eventId, attempts: META_LEAD_MAX_ATTEMPTS, error_code: lastError.slice(0, 500) });
 }
 
 async function fingerprint(
@@ -248,6 +391,7 @@ function success(
     external_reference: row.external_reference,
     provider: PROVIDER,
     status: "lead_created",
+    lead_event_id: row.meta_lead_event_id,
     duplicate,
   }, duplicate ? 200 : 201, origin);
 }
@@ -312,6 +456,10 @@ serve(async (request: Request) => {
   const email = normalizeEmail(body.customer_email ?? body.email);
   const whatsapp = normalizePhone(body.customer_whatsapp ?? body.whatsapp);
   const browserUserAgent = normalizeClientUserAgent(body.client_user_agent);
+  const requestedLeadEventId = normalizeEventId(
+    body.lead_event_id ?? body.tracking?.lead_event_id,
+  );
+  const leadEventId = requestedLeadEventId || createLeadEventId();
   const fbp = optionalString(body.fbp ?? body.tracking?.fbp, 255);
   const fbc = optionalString(body.fbc ?? body.tracking?.fbc, 500);
   const resellerId = optionalString(body.reseller_id, 36);
@@ -427,7 +575,7 @@ serve(async (request: Request) => {
 
   const findRecentDuplicate = () => supabase
     .from("checkout_sessions_v2")
-    .select("id,external_reference,client_user_agent")
+    .select("id,external_reference,client_user_agent,meta_lead_event_id")
     .eq("provider", PROVIDER)
     .in("idempotency_fingerprint", [
       currentFingerprint,
@@ -524,11 +672,14 @@ serve(async (request: Request) => {
       requestUserAgent,
       browserUserAgent,
     ),
+    meta_lead_event_id: leadEventId,
+    meta_lead_event_time: Math.floor(now.getTime() / 1000),
+    meta_lead_status: "pending",
   };
   const { data: inserted, error: insertError } = await supabase
     .from("checkout_sessions_v2")
     .insert(insertPayload)
-    .select("id,external_reference,client_user_agent")
+    .select("id,external_reference,client_user_agent,meta_lead_event_id")
     .single<ExistingSession>();
 
   if (insertError || !inserted) {
@@ -588,5 +739,38 @@ serve(async (request: Request) => {
       user_agent_present: Boolean(inserted.client_user_agent),
     },
   });
+  if (requestedLeadEventId) {
+    const metaLeadTask = deliverMetaLead({
+      supabase,
+      sessionId: inserted.id,
+      externalReference: inserted.external_reference,
+      eventId: leadEventId,
+      eventTime: Math.floor(now.getTime() / 1000),
+      eventSourceUrl: landingPageUrl || origin,
+      name,
+      email,
+      whatsapp,
+      fbp,
+      fbc,
+      clientIp: requestIp,
+      clientUserAgent: inserted.client_user_agent,
+      planAlias,
+      contentName: `Lead - ${canonicalPlan}`,
+      value: selectedPlan.value,
+    }).catch((error) => {
+      logResult({
+        status: "meta_lead_failed",
+        session_id: inserted.id,
+        event_id: leadEventId,
+        error_code: error instanceof Error ? error.message : String(error),
+      });
+    });
+    EdgeRuntime.waitUntil(metaLeadTask);
+  } else {
+    await supabase.from("checkout_sessions_v2").update({
+      meta_lead_status: "failed",
+      meta_lead_error: "missing_client_event_id",
+    }).eq("id", inserted.id).eq("meta_lead_event_id", leadEventId);
+  }
   return success(inserted, false, origin);
 });

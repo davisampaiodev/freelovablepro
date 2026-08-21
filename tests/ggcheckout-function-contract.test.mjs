@@ -75,7 +75,7 @@ test("function GG preserva idempotência, race condition e response", async () =
   assert.match(source, /email,\s*whatsapp,\s*canonicalPlan,\s*currentBucket/s);
   assert.match(source, /insertError\?\.code === "23505"/);
   assert.match(source, /return success\(existing, true, origin\)/);
-  assert.match(source, /success: true,\s*session_id: row\.id,\s*external_reference: row\.external_reference,\s*provider: PROVIDER,\s*status: "lead_created",\s*duplicate/s);
+  assert.match(source, /success: true,\s*session_id: row\.id,\s*external_reference: row\.external_reference,\s*provider: PROVIDER,\s*status: "lead_created",\s*lead_event_id: row\.meta_lead_event_id,\s*duplicate/s);
   assert.match(source, /duplicate \? 200 : 201/);
 });
 
