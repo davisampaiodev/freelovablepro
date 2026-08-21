@@ -13,6 +13,7 @@ const webhookPath = new URL(
 
 test("Lead e InitiateCheckout mantêm IDs e cobrem customer information disponível", async () => {
   const source = await readFile(createPreferencePath, "utf8");
+  assert.doesNotMatch(source, /from\s+["']\.\.\//);
 
   for (const field of [
     "em", "ph", "fn", "ln", "external_id", "fbp", "fbc",
@@ -28,6 +29,7 @@ test("Lead e InitiateCheckout mantêm IDs e cobrem customer information disponí
 
 test("Purchase preserva event_id e envia mesmo quando fbp ou fbc não existem", async () => {
   const source = await readFile(webhookPath, "utf8");
+  assert.doesNotMatch(source, /from\s+["']\.\.\//);
   const purchaseFunction = source.slice(
     source.indexOf("async function sendMetaPurchaseEvent"),
     source.indexOf("async function sendUtmifyPurchase"),

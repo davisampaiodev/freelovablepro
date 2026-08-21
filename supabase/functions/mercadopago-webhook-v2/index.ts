@@ -1,6 +1,14 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
-import { splitMetaName } from "../../../app/trackingIdentifiers.ts";
+
+function splitMetaName(value: unknown) {
+  if (typeof value !== "string") return { firstName: null, lastName: null };
+  const parts = value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts.shift() || null,
+    lastName: parts.join(" ") || null,
+  };
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

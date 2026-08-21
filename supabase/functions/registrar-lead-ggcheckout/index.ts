@@ -1,10 +1,5 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
-import {
-  normalizeClientUserAgent,
-  normalizePhone,
-  preserveClientUserAgent,
-} from "../../../app/trackingIdentifiers.ts";
 
 const FUNCTION_NAME = "registrar-lead-ggcheckout";
 const LOG_PREFIX = "REGISTER_GGCHECKOUT_LEAD_RESULT";
@@ -12,6 +7,58 @@ const PROVIDER = "ggcheckout";
 const IDEMPOTENCY_WINDOW_MS = 60_000;
 const MAX_BODY_BYTES = 64 * 1024;
 const DEFAULT_ALLOWED_ORIGINS = ["https://freelovablepro.com.br"] as const;
+const BRAZIL_COUNTRY_CODE = "55";
+const MAX_PHONE_DIGITS = 15;
+const MAX_USER_AGENT_LENGTH = 512;
+
+function normalizePhone(value: unknown): string | null {
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  const explicitlyInternational = raw.startsWith("+") || raw.startsWith("00");
+  let digits = raw.replace(/\D+/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (!digits || digits.length > MAX_PHONE_DIGITS || /^(\d)\1+$/.test(digits)) {
+    return null;
+  }
+  if (explicitlyInternational && !digits.startsWith(BRAZIL_COUNTRY_CODE)) {
+    return digits.length >= 8 ? digits : null;
+  }
+  if (digits.length === 10 || digits.length === 11) {
+    const areaCode = digits.slice(0, 2);
+    const subscriber = digits.slice(2);
+    return /^[1-9]\d$/.test(areaCode) && /^[2-9]\d{7,8}$/.test(subscriber)
+      ? `${BRAZIL_COUNTRY_CODE}${digits}`
+      : null;
+  }
+  if (digits.startsWith(BRAZIL_COUNTRY_CODE)) {
+    const nationalNumber = digits.slice(BRAZIL_COUNTRY_CODE.length);
+    if (nationalNumber.length !== 10 && nationalNumber.length !== 11) return null;
+    const areaCode = nationalNumber.slice(0, 2);
+    const subscriber = nationalNumber.slice(2);
+    return /^[1-9]\d$/.test(areaCode) && /^[2-9]\d{7,8}$/.test(subscriber)
+      ? digits
+      : null;
+  }
+  return digits.length >= 8 ? digits : null;
+}
+
+function normalizeClientUserAgent(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized ? normalized.slice(0, MAX_USER_AGENT_LENGTH) : null;
+}
+
+function preserveClientUserAgent(
+  existingValue: unknown,
+  requestHeaderValue: unknown,
+  browserValue: unknown,
+): string | null {
+  return normalizeClientUserAgent(existingValue) ||
+    normalizeClientUserAgent(requestHeaderValue) ||
+    normalizeClientUserAgent(browserValue);
+}
 
 const ALLOWED_PLANS = {
   mensal: { canonicalPlan: "plan_30d", durationDays: 30, value: 47 },

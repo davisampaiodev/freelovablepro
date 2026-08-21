@@ -15,6 +15,7 @@ const cartPandaFunctionPath = new URL(
 
 test("function GG possui sintaxe TypeScript válida", async () => {
   const source = await readFile(ggFunctionPath, "utf8");
+  assert.doesNotMatch(source, /from\s+["']\.\.\//);
   const result = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
