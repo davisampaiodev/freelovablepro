@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import TechIcon from "./TechIcon";
-import { appendCheckoutTracking } from "./checkoutTracking";
+import { appendGGCheckoutTracking } from "./checkoutTracking";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
 import { normalizePhone } from "./trackingIdentifiers";
@@ -18,7 +18,7 @@ const Button = ({ children, href = "#planos", secondary = false }: { children: R
 );
 
 const REGISTER_LEAD_URL =
-  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-cartpanda";
+  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-ggcheckout";
 const REGISTER_LEAD_TIMEOUT_MS = 12_000;
 const CHECKOUT_ERROR_MESSAGE =
   "Não foi possível continuar agora. Verifique seus dados e tente novamente.";
@@ -29,10 +29,10 @@ type CheckoutPlan = {
   checkoutUrl: string;
 };
 
-const CARTPANDA_CHECKOUT_URLS = {
-  mensal: "https://freelovablepro.mycartpanda.com/checkout/211813313:1",
-  trimestral: "https://freelovablepro.mycartpanda.com/checkout/211866949:1",
-  anual: "https://freelovablepro.mycartpanda.com/checkout/211866981:1",
+const GGCHECKOUT_CHECKOUT_URLS = {
+  mensal: "https://ggcheckout.app/checkout/v5/YPuLMqO4wkPcifQLuo6b",
+  trimestral: "https://ggcheckout.app/checkout/v5/Sa96vM8bq37ZQQG67a7o",
+  anual: "https://ggcheckout.app/checkout/v5/O8zUpNFyFT9OiPcFQ98r",
 } as const;
 
 const checkoutPlans: Record<string, CheckoutPlan> = {
@@ -40,19 +40,19 @@ const checkoutPlans: Record<string, CheckoutPlan> = {
     alias: "mensal",
     value: 47,
     contentName: "FreeLovable 30 dias",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.mensal,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.mensal,
   },
   "Plano Trimestral": {
     alias: "trimestral",
     value: 111,
     contentName: "FreeLovable 90 dias",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.trimestral,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.trimestral,
   },
   "Oferta Especial": {
     alias: "anual",
     value: 324,
     contentName: "FreeLovable Anual",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.anual,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.anual,
   },
 };
 
@@ -147,7 +147,7 @@ export default function Home() {
     try {
       checkoutUrl = new URL(plan.checkoutUrl);
     } catch {
-      console.error("[CartPanda checkout] Link do plano não configurado.", {
+      console.error("[GGCheckout] Link do plano não configurado.", {
         plan: plan.alias,
       });
       setCheckoutError(CHECKOUT_ERROR_MESSAGE);
@@ -179,6 +179,7 @@ export default function Home() {
       fbclid: utmTracking.fbclid,
       src: utmTracking.src,
       sck: utmTracking.sck,
+      xcod: utmTracking.xcod,
       landing_page_url: utmTracking.landing_page_url,
       referrer_url: utmTracking.referrer_url,
     };
@@ -206,8 +207,8 @@ export default function Home() {
         data?.success !== true ||
         !data.session_id ||
         !data.external_reference ||
-        data.provider !== "cartpanda" ||
-        !data.external_reference.startsWith("cartpanda_")
+        data.provider !== "ggcheckout" ||
+        !data.external_reference.startsWith("ggcheckout_")
       ) {
         throw new Error("invalid_register_lead_response");
       }
@@ -223,29 +224,28 @@ export default function Home() {
         plan: plan.alias,
       }, leadEventId);
 
-      const finalCheckoutUrl = appendCheckoutTracking(checkoutUrl, {
-        cid: data.external_reference,
+      const finalCheckoutUrl = appendGGCheckoutTracking(checkoutUrl, {
+        src: utmTracking.src,
+        sck: utmTracking.sck,
+        xcod: utmTracking.xcod,
         fbclid: utmTracking.fbclid,
         fbc: metaTracking.fbc,
         fbp: metaTracking.fbp,
-        utm_source: utmTracking.utm_source,
-        utm_medium: utmTracking.utm_medium,
-        utm_campaign: utmTracking.utm_campaign,
-        utm_content: utmTracking.utm_content,
-        utm_term: utmTracking.utm_term,
         campaign_id: utmTracking.meta_campaign_id,
         adset_id: utmTracking.meta_adset_id,
         ad_id: utmTracking.meta_ad_id,
         meta_campaign_id: utmTracking.meta_campaign_id,
         meta_adset_id: utmTracking.meta_adset_id,
         meta_ad_id: utmTracking.meta_ad_id,
-        src: utmTracking.src,
-        sck: utmTracking.sck,
-        xcod: utmTracking.xcod,
+        utm_source: utmTracking.utm_source,
+        utm_medium: utmTracking.utm_medium,
+        utm_campaign: utmTracking.utm_campaign,
+        utm_content: utmTracking.utm_content,
+        utm_term: utmTracking.utm_term,
       });
       window.location.assign(finalCheckoutUrl.toString());
     } catch (error) {
-      console.error("[CartPanda checkout] Não foi possível continuar.", {
+      console.error("[GGCheckout] Não foi possível continuar.", {
         code: error instanceof DOMException && error.name === "AbortError"
           ? "timeout"
           : "register_lead_failed",
@@ -473,7 +473,7 @@ export default function Home() {
               <button type="submit" className="cta" disabled={checkoutLoading}>
                 {checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
               </button>
-              <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
+              <em>🔒 Pagamento processado com segurança pelo GGCheckout.</em>
             </form>
           </div>
         </div>

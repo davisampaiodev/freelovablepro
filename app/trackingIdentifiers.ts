@@ -50,6 +50,15 @@ export function normalizeClientUserAgent(value: unknown): string | null {
   return normalized ? normalized.slice(0, MAX_USER_AGENT_LENGTH) : null;
 }
 
+export function splitMetaName(value: unknown) {
+  if (typeof value !== "string") return { firstName: null, lastName: null };
+  const parts = value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts.shift() || null,
+    lastName: parts.join(" ") || null,
+  };
+}
+
 export function preserveClientUserAgent(
   existingValue: unknown,
   requestHeaderValue: unknown,

@@ -1,64 +1,69 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { appendCheckoutTracking } from "../app/checkoutTracking.ts";
+import { appendGGCheckoutTracking } from "../app/checkoutTracking.ts";
 
 const CHECKOUTS = [
-  "https://freelovablepro.mycartpanda.com/checkout/211813313:1",
-  "https://freelovablepro.mycartpanda.com/checkout/211866949:1",
-  "https://freelovablepro.mycartpanda.com/checkout/211866981:1",
+  "https://ggcheckout.app/checkout/v5/YPuLMqO4wkPcifQLuo6b",
+  "https://ggcheckout.app/checkout/v5/Sa96vM8bq37ZQQG67a7o",
+  "https://ggcheckout.app/checkout/v5/O8zUpNFyFT9OiPcFQ98r",
 ];
 
-test("preserva cid e tracking Meta/UTM nos três checkouts", () => {
+test("preserva todos os sinais não PII autorizados nos três checkouts GG", () => {
   for (const checkout of CHECKOUTS) {
-    const result = appendCheckoutTracking(new URL(checkout), {
-      cid: "cartpanda_123e4567-e89b-42d3-a456-426614174000",
-      fbclid: "click_123",
-      fbc: "fb.1.1700000000000.click_123",
-      fbp: "fb.1.1700000000000.browser_123",
+    const result = appendGGCheckoutTracking(new URL(checkout), {
       utm_source: "facebook",
       utm_medium: "paid",
       utm_campaign: "campaign-name",
       utm_content: "creative-name",
       utm_term: "audience-name",
-      campaign_id: "campaign-123",
-      adset_id: "adset-123",
-      ad_id: "ad-123",
-      meta_campaign_id: "campaign-123",
-      meta_adset_id: "adset-123",
-      meta_ad_id: "ad-123",
-      src: "source",
-      sck: "subclick",
-      xcod: "external-click",
+      src: "meta",
+      sck: "campaign|adset|ad",
+      xcod: "tracking-code",
+      fbclid: "click_123",
+      fbc: "fb.1.1700000000000.click_123",
+      fbp: "fb.1.1700000000000.987654321",
+      campaign_id: "campaign_1",
+      adset_id: "adset_2",
+      ad_id: "ad_3",
+      meta_campaign_id: "campaign_1",
+      meta_adset_id: "adset_2",
+      meta_ad_id: "ad_3",
     });
 
-    assert.equal(result.host, "freelovablepro.mycartpanda.com");
+    assert.equal(result.host, "ggcheckout.app");
     assert.equal(result.pathname, new URL(checkout).pathname);
-    assert.equal(result.searchParams.get("cid"), "cartpanda_123e4567-e89b-42d3-a456-426614174000");
+    assert.equal(result.searchParams.get("utm_source"), "facebook");
+    assert.equal(result.searchParams.get("utm_medium"), "paid");
+    assert.equal(result.searchParams.get("utm_campaign"), "campaign-name");
+    assert.equal(result.searchParams.get("utm_content"), "creative-name");
+    assert.equal(result.searchParams.get("utm_term"), "audience-name");
     assert.equal(result.searchParams.get("fbclid"), "click_123");
     assert.equal(result.searchParams.get("fbc"), "fb.1.1700000000000.click_123");
-    assert.equal(result.searchParams.get("campaign_id"), "campaign-123");
-    assert.equal(result.searchParams.get("meta_campaign_id"), "campaign-123");
-    assert.equal(result.searchParams.get("xcod"), "external-click");
+    assert.equal(result.searchParams.get("fbp"), "fb.1.1700000000000.987654321");
+    assert.equal(result.searchParams.get("campaign_id"), "campaign_1");
+    assert.equal(result.searchParams.get("meta_campaign_id"), "campaign_1");
+    assert.equal(result.searchParams.get("src"), "meta");
+    assert.equal(result.searchParams.get("sck"), "campaign|adset|ad");
+    assert.equal(result.searchParams.get("xcod"), "tracking-code");
   }
 });
 
-test("omite valores vazios e nunca inclui PII fora do contrato", () => {
-  const result = appendCheckoutTracking(new URL(CHECKOUTS[0]), {
-    cid: "cartpanda_session",
-    fbclid: null,
-    fbc: "   ",
-    fbp: undefined,
+test("omite vazios e bloqueia PII ou chaves fora da allowlist", () => {
+  const result = appendGGCheckoutTracking(new URL(CHECKOUTS[0]), {
     utm_source: "facebook",
+    utm_medium: "   ",
+    utm_campaign: null,
+    cid: "ggcheckout_session",
+    fbclid: "   ",
+    email: "lead@example.com",
   });
 
-  assert.equal(result.searchParams.get("cid"), "cartpanda_session");
   assert.equal(result.searchParams.get("utm_source"), "facebook");
-  assert.equal(result.searchParams.has("fbclid"), false);
-  assert.equal(result.searchParams.has("fbc"), false);
-  assert.equal(result.searchParams.has("fbp"), false);
-  for (const pii of ["name", "email", "phone", "ip", "user_agent", "reseller_id", "fingerprint", "attempt_id"]) {
-    assert.equal(result.searchParams.has(pii), false);
+  assert.equal(result.searchParams.has("utm_medium"), false);
+  assert.equal(result.searchParams.has("utm_campaign"), false);
+  for (const unsupported of ["cid", "fbclid", "email"]) {
+    assert.equal(result.searchParams.has(unsupported), false);
   }
   assert.doesNotMatch(result.toString(), /(?:null|undefined)/);
 });

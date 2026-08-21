@@ -22,7 +22,7 @@ async function render(pathname = "/") {
   );
 }
 
-test("renderiza a landing page FreeLovable e o checkout CartPanda", async () => {
+test("renderiza a landing page FreeLovable e integrações gerais", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);

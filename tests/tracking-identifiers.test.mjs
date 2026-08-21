@@ -6,7 +6,23 @@ import {
   normalizePhone,
   preserveClientUserAgent,
   resolveFbcForClick,
+  splitMetaName,
 } from "../app/trackingIdentifiers.ts";
+
+test("separa first name e last name sem enviar valores vazios", () => {
+  assert.deepEqual(splitMetaName("  Davi Sampaio Costa  "), {
+    firstName: "davi",
+    lastName: "sampaio costa",
+  });
+  assert.deepEqual(splitMetaName("Davi"), {
+    firstName: "davi",
+    lastName: null,
+  });
+  assert.deepEqual(splitMetaName("   "), {
+    firstName: null,
+    lastName: null,
+  });
+});
 
 test("normaliza telefones brasileiros para E.164 sem sinal de mais", () => {
   for (const input of [
