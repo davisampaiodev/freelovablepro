@@ -4850,3 +4850,130 @@ h1,h2,h3{
   filter:drop-shadow(0 0 7px #25d36666);
 }
 .lead-panel .cta .cta-whatsapp-icon{width:20px;height:20px;flex-basis:20px}
+
+/* Access-first WhatsApp workflow */
+.access-workflow{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.access-workflow span{min-width:0}
+.whatsapp-delivery-card>img{width:34px;height:34px;flex:0 0 34px;object-fit:contain;filter:drop-shadow(0 0 9px #25d36655)}
+.whatsapp-delivery-card .mail-notification{
+  left:47px;
+  top:26px;
+  z-index:1;
+  box-shadow:0 0 0 2px #0f1028,0 3px 10px #0008;
+}
+.trial-access-card{border-color:#45a0ff45;background:#0c1224}
+.trial-access-card>span{width:100%}
+.trial-access-card small{color:#69adff;letter-spacing:1.4px}
+.trial-access-card b{font-size:15px}
+.trial-access-card p{margin:2px 0 0;color:#aeb5c5;font-size:12px;line-height:1.55}
+@media(max-width:560px){
+  .access-workflow{grid-template-columns:1fr}
+  .trial-access-card p{font-size:13px}
+}
+
+/* Centered access-first section, scoped to /whatsapp */
+.whatsapp-hero{
+  min-height:auto;
+  padding-bottom:20px;
+}
+.whatsapp-about{
+  margin-top:0;
+  padding-top:48px;
+  padding-bottom:88px;
+  align-items:start;
+  border:0;
+  border-radius:0;
+  background:
+    radial-gradient(circle at 88% 45%,#531d7417,transparent 34%),
+    radial-gradient(circle at 12% 72%,#146ab817,transparent 32%);
+  box-shadow:none;
+}
+.whatsapp-access{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  max-width:960px;
+  padding:58px 64px;
+  text-align:center;
+}
+.whatsapp-access-copy{width:min(760px,100%)}
+.whatsapp-access .eyebrow{justify-content:center}
+.whatsapp-access h2{max-width:680px;margin-left:auto;margin-right:auto}
+.whatsapp-access .access-intro{max-width:720px;margin-left:auto;margin-right:auto}
+.whatsapp-access .access-instructions{margin-top:30px}
+.whatsapp-access .access-workflow{width:min(700px,100%);margin:0 auto}
+.whatsapp-access .access-workflow span{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center}
+.whatsapp-access .access-workflow span b{margin:0;flex:0 0 auto}
+.whatsapp-access .access-workflow span em{font-style:normal}
+.whatsapp-access .access-instructions>p{max-width:650px;margin:24px auto 0}
+.whatsapp-access .access-ui{width:min(680px,100%);margin-top:34px}
+.whatsapp-access .access-delivery{width:100%}
+.whatsapp-access .access-card{width:100%}
+.whatsapp-access .whatsapp-delivery-card{text-align:left}
+.whatsapp-access .access-delivery ul{max-width:520px;margin-left:auto;margin-right:auto;text-align:left}
+.whatsapp-access .trial-access-card{text-align:center}
+.whatsapp-access .trial-access-card>span{align-items:center}
+.whatsapp-access .trial-access-card p{max-width:520px;text-align:center}
+.whatsapp-access .access-cta{width:100%;margin-top:30px;text-align:center}
+.whatsapp-access .access-cta .site-cta{max-width:100%;overflow:hidden}
+
+/* Compact plan labels stay readable on a single line at every breakpoint. */
+.plans>.plan .cta,
+.plans>.gift.gift-opened .gift-surprise .lead-cta{
+  white-space:nowrap;
+}
+.whatsapp-pricing .plans .cta{
+  max-width:100%;
+  overflow:hidden;
+}
+
+@media(max-width:1100px){
+  .whatsapp-pricing .plans .cta{
+    gap:7px;
+    padding-right:10px;
+    padding-left:10px;
+  }
+  .whatsapp-pricing .plans .cta-tap{display:none!important}
+  .whatsapp-pricing .plans .cta-whatsapp-icon{
+    width:20px;
+    height:20px;
+    flex-basis:20px;
+  }
+}
+
+@media(max-width:700px){
+  .whatsapp-hero{padding-bottom:20px}
+  .whatsapp-about{
+    margin-top:0;
+    padding-top:36px;
+    padding-bottom:52px;
+    border-radius:0;
+  }
+  .whatsapp-access{padding:36px 20px}
+  .whatsapp-access .access-instructions{margin-top:24px}
+  .whatsapp-access .access-workflow{grid-template-columns:1fr;gap:8px}
+  .whatsapp-access .access-workflow span{min-height:58px;padding:12px 16px}
+  .whatsapp-access .access-ui{margin-top:26px}
+  .whatsapp-access .whatsapp-delivery-card{padding:16px 14px}
+  .whatsapp-access .whatsapp-delivery-card .mail-notification{left:37px;top:26px}
+  .whatsapp-access .whatsapp-delivery-card>span{min-width:0}
+  .whatsapp-access .whatsapp-delivery-card b{overflow-wrap:anywhere}
+  .whatsapp-access .access-delivery ul{padding:16px 14px}
+  .whatsapp-access .trial-access-card{padding:18px 16px}
+  .whatsapp-access .access-cta{margin-top:24px}
+  .whatsapp-access .access-cta .site-cta{
+    width:100%;
+    min-width:0;
+    gap:9px;
+    padding:15px 16px;
+    white-space:normal;
+    line-height:1.25;
+  }
+  .plans>.plan .cta,
+  .plans>.gift.gift-opened .gift-surprise .lead-cta{
+    gap:7px;
+    font-size:10.5px;
+    letter-spacing:0;
+  }
+}

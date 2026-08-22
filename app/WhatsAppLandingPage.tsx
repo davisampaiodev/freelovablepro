@@ -97,14 +97,12 @@ const testimonials = [
 
 export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [playing, setPlaying] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [activePlan, setActivePlan] = useState(0);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const pricingRef = useRef<HTMLElement>(null);
   const plansRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const checkoutInFlightRef = useRef(false);
   const salesHref = "#planos";
 
@@ -299,23 +297,6 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
     }
   }
 
-  async function toggleVideo() {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      if (video.readyState === HTMLMediaElement.HAVE_NOTHING) video.load();
-      video.muted = false;
-      video.volume = 1;
-      try {
-        await video.play();
-      } catch (error) {
-        console.error("Não foi possível reproduzir o vídeo com áudio.", error);
-      }
-    } else {
-      video.pause();
-    }
-  }
-
   function updateActivePlan() {
     const track = plansRef.current;
     if (!track) return;
@@ -336,7 +317,7 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
 
   return (
     <main>
-      <section className="hero">
+      <section className="hero whatsapp-hero">
         <div className="aurora aurora-one" />
         <div className="container hero-content">
           <div className="hero-brand"><img src="/freelovable-logo-transparent.png" alt="FreeLovable" /></div>
@@ -350,26 +331,6 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
           <div className="hero-benefits"><span>✓ WINDOWS & MAC</span><span>✓ ACESSO IMEDIATO</span><span>✓ INSTALAÇÃO SIMPLES</span></div>
           <Button href="#como-funciona">VER COMO FUNCIONA</Button>
           <div className="avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt="" />)}<i/><b>28907 USUÁRIOS ATIVOS</b></div>
-          <button
-            className={`video-phone ${playing ? "playing" : ""}`}
-            onClick={toggleVideo}
-            aria-label={playing ? "Pausar vídeo de apresentação" : "Reproduzir vídeo de apresentação"}
-            aria-pressed={playing}
-          >
-            <span className="phone-notch"/>
-            <video
-              ref={videoRef}
-              loop
-              playsInline
-              preload="auto"
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-              onEnded={() => setPlaying(false)}
-            >
-              <source src="/videos/freelovable-4.mp4" type="video/mp4" />
-            </video>
-            <span className={`play ${playing ? "pause-indicator" : ""}`}>{playing ? "Ⅱ" : "▶"}</span>
-          </button>
         </div>
       </section>
 
@@ -403,7 +364,7 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
         </div>
       </section>}
 
-      <section id="como-funciona" className="container about glow-card split">
+      <section id="como-funciona" className="container about glow-card split whatsapp-about">
         <div>
           <div className="eyebrow blue">EXTENSÃO PARA NAVEGADOR</div>
           <h2>O que é <Gradient>FreeLovable?</Gradient></h2>
@@ -422,28 +383,31 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
         <div className="about-cta"><Button href="#como-recebo">COMO RECEBO</Button></div>
       </section>
 
-      <Arrow />
-
-      <section id="como-recebo" className="container access split">
-        <div><div className="eyebrow blue">✉ ENTREGA DO ACESSO</div><h2>Como recebo meu<br className="title-break"/>{" "}<Gradient>token de acesso?</Gradient></h2><p className="access-intro"><b>Assim que o pagamento for aprovado, você recebe seu token por e-mail junto com o link da extensão e o tutorial rápido de ativação.</b></p><div className="access-instructions"><div className="mini-steps"><span><b>1</b><em>ESCOLHA SEU PLANO</em></span><span><b>2</b><em>RECEBA O TOKEN POR E-MAIL</em></span><span><b>3</b><em>INSTALE E ATIVE</em></span></div><p>O token é sua chave de ativação. Basta colar na extensão e usar na sua própria conta Lovable.</p></div></div>
-        <div className="access-ui">
-          <div className="access-delivery">
-            <div className="access-card mail-card"><TechIcon type="mail"/><span><small>E-MAIL RECEBIDO</small><b>Seu acesso FreeLovable chegou</b></span><i className="mail-notification">1</i></div>
-            <ul><li><i>✓</i> Link para download da extensão</li><li><i>✓</i> Token de ativação</li><li><i>✓</i> Tutorial rápido</li></ul>
-          </div>
-          <div className="access-card bonus-card">
-            <span>
-              <small><TechIcon type="ai"/> BÔNUS LIBERADOS COM O ACESSO</small>
-              <span className="bonus-grid">
-                <b><i>✓</i> Download dos projetos</b>
-                <b><i>✓</i> Sem marca d’água</b>
-                <b><i>✓</i> Melhorador de prompts</b>
-                <b><i>✓</i> Atualizações incluídas</b>
-              </span>
-            </span>
+      <section id="como-recebo" className="container access split whatsapp-access">
+        <div className="whatsapp-access-copy">
+          <div className="eyebrow blue">ACESSO PRIMEIRO · PAGAMENTO DEPOIS</div>
+          <h2>Receba seu acesso agora<br className="title-break"/> e <Gradient>pague depois.</Gradient></h2>
+          <p className="access-intro"><b>Escolha seu plano, fale comigo pelo WhatsApp e receba tudo o que precisa para instalar e começar a usar antes da cobrança.</b></p>
+          <div className="access-instructions">
+            <div className="mini-steps access-workflow">
+              <span><b>1</b><em>ESCOLHA SEU PLANO</em></span>
+              <span><b>2</b><em>PREENCHA O FORMULÁRIO</em></span>
+              <span><b>3</b><em>RECEBA PELO WHATSAPP</em></span>
+              <span><b>4</b><em>INSTALE E USE</em></span>
+            </div>
+            <p>Você será redirecionado automaticamente para o WhatsApp. Por lá, envio o link de instalação, o tutorial e sua chave de acesso.</p>
           </div>
         </div>
-        <div className="access-cta"><Button href={salesHref} whatsappIcon={whatsappCta}>QUERO ACESSAR O FREELOVABLE</Button></div>
+        <div className="access-ui">
+          <div className="access-delivery">
+            <div className="access-card mail-card whatsapp-delivery-card"><img src="/whatsapp-logo.png" alt="" aria-hidden="true"/><span><small>MENSAGEM NO WHATSAPP</small><b>Seu acesso FreeLovable está pronto</b></span><i className="mail-notification">1</i></div>
+            <ul><li><i>✓</i> Link de instalação da extensão</li><li><i>✓</i> Tutorial rápido de ativação</li><li><i>✓</i> Sua chave de acesso</li></ul>
+          </div>
+          <div className="access-card trial-access-card">
+            <span><small>30 MINUTOS PARA COMEÇAR</small><b>Instale, ative e use o FreeLovable.</b><p>Você recebe o acesso primeiro. Após os 30 minutos iniciais, enviamos a cobrança do plano escolhido.</p></span>
+          </div>
+        </div>
+        <div className="access-cta"><Button href={salesHref} whatsappIcon={whatsappCta}>ESCOLHER MEU PLANO</Button></div>
       </section>
 
       <Arrow />
@@ -461,10 +425,10 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
 
       <Arrow />
 
-      <section ref={pricingRef} id="planos" className="container pricing"><h2>Escolha seu acesso aos créditos infinitos:</h2><p>Escolha o período ideal para continuar criando no Lovable sem ficar sem créditos.</p>
+      <section ref={pricingRef} id="planos" className="container pricing whatsapp-pricing"><h2>Escolha seu acesso aos créditos infinitos:</h2><p>Escolha o período ideal para continuar criando no Lovable sem ficar sem créditos.</p>
         <div className="plans" ref={plansRef} onScroll={updateActivePlan}>
-          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={selectPlan} whatsappCta={whatsappCta} />
-          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={selectPlan} whatsappCta={whatsappCta} />
+          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO MEU MENSAL" featured onSelect={selectPlan} whatsappCta={whatsappCta} />
+          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO MEU TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={selectPlan} whatsappCta={whatsappCta} />
           <GiftPlan onSelect={selectPlan} whatsappCta={whatsappCta} />
         </div>
         <div className="plan-dots" aria-label="Navegação dos planos">
@@ -633,7 +597,7 @@ function GiftPlan({onSelect,whatsappCta=false}:{onSelect:(plan:string)=>void;wha
           </div>
         </div>
         <button className="cta lead-cta" onClick={() => { trackPlanSelection("Oferta Especial"); onSelect("Oferta Especial"); }}>
-          {whatsappCta&&<img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true"/>}QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
+          {whatsappCta&&<img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true"/>}QUERO MEU ANUAL <TechIcon type="tap" className="cta-tap"/>
         </button>
       </div>
 
