@@ -13,8 +13,8 @@ const Gradient = ({ children }: { children: React.ReactNode }) => (
 
 const Arrow = () => <div className="section-arrow" aria-hidden="true">↓</div>;
 
-const Button = ({ children, href = "#planos", secondary = false }: { children: React.ReactNode; href?: string; secondary?: boolean }) => (
-  <a href={href} className={`cta site-cta ${secondary ? "cta-secondary" : ""}`}>{children}<span className="cta-accent" aria-hidden="true">✦</span></a>
+const Button = ({ children, href = "#planos", secondary = false, whatsappIcon = false }: { children: React.ReactNode; href?: string; secondary?: boolean; whatsappIcon?: boolean }) => (
+  <a href={href} className={`cta site-cta ${secondary ? "cta-secondary" : ""}`}>{whatsappIcon && <img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true" />}{children}<span className="cta-accent" aria-hidden="true">✦</span></a>
 );
 
 const REGISTER_LEAD_URL =
@@ -106,14 +106,27 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
   const plansRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const checkoutInFlightRef = useRef(false);
-  const salesHref = whatsappCta ? createWhatsAppUrl() : "#planos";
+  const salesHref = "#planos";
 
   function selectPlan(planName: string) {
-    if (whatsappCta) {
-      window.location.href = createWhatsAppUrl(`Olá! Tenho interesse no ${planName} do FreeLovable.`);
+    setSelectedPlan(planName);
+  }
+
+  function submitWhatsAppContact(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedPlan) return;
+    const form = new FormData(event.currentTarget);
+    const customerName = String(form.get("name") || "").trim().replace(/\s+/g, " ");
+    const customerEmail = String(form.get("email") || "").trim().toLowerCase();
+    const customerWhatsapp = normalizePhone(form.get("whatsapp"));
+    if (customerName.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail) || !customerWhatsapp) {
+      setCheckoutError(CHECKOUT_ERROR_MESSAGE);
       return;
     }
-    setSelectedPlan(planName);
+    setCheckoutError("");
+    window.location.href = createWhatsAppUrl(
+      `Olá! Meu nome é ${customerName}. Quero o ${selectedPlan} do FreeLovable.\nE-mail: ${customerEmail}\nTelefone: ${customerWhatsapp}`,
+    );
   }
 
   useEffect(() => {
@@ -430,7 +443,7 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
             </span>
           </div>
         </div>
-        <div className="access-cta"><Button href={salesHref}>QUERO ACESSAR O FREELOVABLE</Button></div>
+        <div className="access-cta"><Button href={salesHref} whatsappIcon={whatsappCta}>QUERO ACESSAR O FREELOVABLE</Button></div>
       </section>
 
       <Arrow />
@@ -450,9 +463,9 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
 
       <section ref={pricingRef} id="planos" className="container pricing"><h2>Escolha seu acesso aos créditos infinitos:</h2><p>Escolha o período ideal para continuar criando no Lovable sem ficar sem créditos.</p>
         <div className="plans" ref={plansRef} onScroll={updateActivePlan}>
-          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={selectPlan} />
-          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={selectPlan} />
-          <GiftPlan onSelect={selectPlan} />
+          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={selectPlan} whatsappCta={whatsappCta} />
+          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={selectPlan} whatsappCta={whatsappCta} />
+          <GiftPlan onSelect={selectPlan} whatsappCta={whatsappCta} />
         </div>
         <div className="plan-dots" aria-label="Navegação dos planos">
           {[0,1,2].map(index=><button key={index} type="button" className={`${activePlan===index?"active":""} ${index===2?"gift-dot":""}`} aria-label={index===2?"Ver oferta secreta":`Ver plano ${index+1}`} aria-current={activePlan===index?"true":undefined} onClick={()=>showPlan(index)}>{index===2&&<TechIcon type="gift"/>}</button>)}
@@ -474,7 +487,7 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
 
       <section className="container faq"><h2>Perguntas frequentes</h2>{faqs.map(([q,a],i)=><div className={`faq-item ${openFaq===i?'open':''}`} key={q}><button onClick={()=>setOpenFaq(openFaq===i?null:i)} aria-expanded={openFaq===i}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><p>{a}</p></div>)}</section>
 
-      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href={salesHref}>LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
+      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href={salesHref} whatsappIcon={whatsappCta}>LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
       <footer className="site-footer"><div className="container"><span className="footer-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span><b>Free</b>Lovable</span></span><small>© 2026 FreeLovable. Todos os direitos reservados.</small><nav className="footer-legal" aria-label="Documentos legais"><a href="/politica-de-privacidade">Política de Privacidade</a><a href="/termos-de-servico">Termos de Serviço</a></nav></div></footer>
       {selectedPlan && (
         <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-title">
@@ -484,16 +497,17 @@ export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) 
             <img src="/freelovable-logo-transparent.png" alt="" />
             <small>VOCÊ ESCOLHEU</small>
             <h2 id="lead-title">{selectedPlan === "Oferta Especial" ? "Oferta Especial Anual" : selectedPlan}</h2>
-            <p>Preencha seus dados para prosseguir com o pagamento.</p>
-            <form onSubmit={submitLead}>
+            <p>{whatsappCta ? "Preencha seus dados para continuar pelo WhatsApp." : "Preencha seus dados para prosseguir com o pagamento."}</p>
+            <form onSubmit={whatsappCta ? submitWhatsAppContact : submitLead}>
               <label>Nome completo<input name="name" autoComplete="name" required disabled={checkoutLoading} placeholder="Digite seu nome" /></label>
               <label>E-mail<input name="email" type="email" autoComplete="email" required disabled={checkoutLoading} placeholder="voce@email.com" /></label>
               <label>WhatsApp<input name="whatsapp" inputMode="tel" autoComplete="tel" required disabled={checkoutLoading} minLength={10} placeholder="(11) 99999-9999" /></label>
               {checkoutError && <div className="lead-error" role="alert">{checkoutError}</div>}
               <button type="submit" className="cta" disabled={checkoutLoading}>
-                {checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
+                {whatsappCta && <img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true" />}
+                {whatsappCta ? "CONTINUAR NO WHATSAPP" : checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
               </button>
-              <em>🔒 Pagamento processado com segurança pelo GGCheckout.</em>
+              <em>{whatsappCta ? "Seus dados são usados apenas para iniciar este atendimento." : "🔒 Pagamento processado com segurança pelo GGCheckout."}</em>
             </form>
           </div>
         </div>
@@ -587,12 +601,12 @@ function AboutStepIcon({ type }: { type: 'download' | 'infinity' }) {
   );
 }
 
-function Plan({title,price,note,button,badge,featured=false,onSelect}:{title:string;price:string;note:string;button:string;badge?:string;featured?:boolean;onSelect:(plan:string)=>void}){
+function Plan({title,price,note,button,badge,featured=false,onSelect,whatsappCta=false}:{title:string;price:string;note:string;button:string;badge?:string;featured?:boolean;onSelect:(plan:string)=>void;whatsappCta?:boolean}){
   const quarterly = title === "Plano Trimestral";
-  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos infinitos</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li><li className="plan-bonus-heading">BÔNUS:</li><li className="plan-bonus-item"><TechIcon type="download" className="plan-bonus-icon"/>Download dos projetos</li><li className="plan-bonus-item"><TechIcon type="shield" className="plan-bonus-icon"/>Sem marca d’água</li><li className="plan-bonus-item"><TechIcon type="ai" className="plan-bonus-icon"/>Melhorador de prompts</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{button}<TechIcon type="tap" className="cta-tap"/></button></article>
+  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos infinitos</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li><li className="plan-bonus-heading">BÔNUS:</li><li className="plan-bonus-item"><TechIcon type="download" className="plan-bonus-icon"/>Download dos projetos</li><li className="plan-bonus-item"><TechIcon type="shield" className="plan-bonus-icon"/>Sem marca d’água</li><li className="plan-bonus-item"><TechIcon type="ai" className="plan-bonus-icon"/>Melhorador de prompts</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{whatsappCta&&<img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true"/>}{button}<TechIcon type="tap" className="cta-tap"/></button></article>
 }
 
-function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
+function GiftPlan({onSelect,whatsappCta=false}:{onSelect:(plan:string)=>void;whatsappCta?:boolean}) {
   return (
     <article className="gift gift-opened">
       <div className="gift-surprise">
@@ -619,7 +633,7 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
           </div>
         </div>
         <button className="cta lead-cta" onClick={() => { trackPlanSelection("Oferta Especial"); onSelect("Oferta Especial"); }}>
-          QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
+          {whatsappCta&&<img className="cta-whatsapp-icon" src="/whatsapp-logo.png" alt="" aria-hidden="true"/>}QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
         </button>
       </div>
 

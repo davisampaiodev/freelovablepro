@@ -4838,3 +4838,15 @@ h1,h2,h3{
   .testimonial-carousel .review-grid article{height:400px;padding:22px 20px}
   .testimonial-carousel .review-grid article p{font-size:14px;line-height:1.5}
 }
+
+/* WhatsApp conversion CTAs */
+.cta .cta-whatsapp-icon,
+.plan .cta .cta-whatsapp-icon,
+.gift .cta .cta-whatsapp-icon{
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 7px #25d36666);
+}
+.lead-panel .cta .cta-whatsapp-icon{width:20px;height:20px;flex-basis:20px}
