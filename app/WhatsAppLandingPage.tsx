@@ -2,12 +2,10 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import TechIcon from "./TechIcon";
-import { appendCheckoutTracking } from "./checkoutTracking";
+import { appendGGCheckoutTracking } from "./whatsappCheckoutTracking";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
 import { normalizePhone } from "./trackingIdentifiers";
-import { TestimonialCarousel } from "./WhatsAppLandingPage";
-import "./whatsapp/whatsapp.css";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
@@ -20,7 +18,7 @@ const Button = ({ children, href = "#planos", secondary = false }: { children: R
 );
 
 const REGISTER_LEAD_URL =
-  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-cartpanda";
+  "https://dxqkzcyzlsnzhqlfybwu.supabase.co/functions/v1/registrar-lead-ggcheckout";
 const REGISTER_LEAD_TIMEOUT_MS = 12_000;
 const CHECKOUT_ERROR_MESSAGE =
   "Não foi possível continuar agora. Verifique seus dados e tente novamente.";
@@ -31,30 +29,36 @@ type CheckoutPlan = {
   checkoutUrl: string;
 };
 
-const CARTPANDA_CHECKOUT_URLS = {
-  mensal: "https://freelovablepro.mycartpanda.com/checkout/211813313:1",
-  trimestral: "https://freelovablepro.mycartpanda.com/checkout/211866949:1",
-  anual: "https://freelovablepro.mycartpanda.com/checkout/211866981:1",
+const GGCHECKOUT_CHECKOUT_URLS = {
+  mensal: "https://ggcheckout.app/checkout/v5/YPuLMqO4wkPcifQLuo6b",
+  trimestral: "https://ggcheckout.app/checkout/v5/Sa96vM8bq37ZQQG67a7o",
+  anual: "https://ggcheckout.app/checkout/v5/O8zUpNFyFT9OiPcFQ98r",
 } as const;
+
+const WHATSAPP_NUMBER = "5571983463684";
+
+function createWhatsAppUrl(message = "Olá! Quero saber mais sobre o FreeLovable.") {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
 
 const checkoutPlans: Record<string, CheckoutPlan> = {
   "Plano Mensal": {
     alias: "mensal",
     value: 47,
     contentName: "FreeLovable 30 dias",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.mensal,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.mensal,
   },
   "Plano Trimestral": {
     alias: "trimestral",
     value: 111,
     contentName: "FreeLovable 90 dias",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.trimestral,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.trimestral,
   },
   "Oferta Especial": {
     alias: "anual",
     value: 324,
     contentName: "FreeLovable Anual",
-    checkoutUrl: CARTPANDA_CHECKOUT_URLS.anual,
+    checkoutUrl: GGCHECKOUT_CHECKOUT_URLS.anual,
   },
 };
 
@@ -82,7 +86,16 @@ const faqs = [
   ["Quanto tempo tenho para usar?", "Você pode usar durante todo o período contratado, sem limite de projetos."],
 ];
 
-export default function Home() {
+const testimonials = [
+  ["Lucas M.", "Eu estava literalmente desistindo dos meus projetos porque os créditos acabavam toda hora. Depois que comecei a usar, consigo criar com liberdade.", "Desenvolvedor"],
+  ["Ana P.", "O que mais me surpreendeu foi continuar usando meus projetos sem me preocupar. Foi uma das melhores decisões.", "Product Designer"],
+  ["Rafael L.", "Eu sempre chegava naquele ponto em que queria testar mais uma coisa e os créditos acabavam. Agora simplesmente continuo.", "Programador"],
+  ["Mariana C.", "Consigo validar mais rápido e não preciso mais esperar o dia seguinte. Minha produtividade mudou.", "UX Designer"],
+  ["Gabriel C.", "Crio para clientes sem medo de parar no meio do processo. Simples, rápido e funciona.", "Freelancer"],
+  ["Juliana A.", "Instalei em poucos minutos. Foi a solução mais prática que encontrei para continuar no Lovable.", "Empreendedora"],
+] as const;
+
+export function LandingPage({ whatsappCta = false }: { whatsappCta?: boolean }) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [playing, setPlaying] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -93,6 +106,15 @@ export default function Home() {
   const plansRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const checkoutInFlightRef = useRef(false);
+  const salesHref = whatsappCta ? createWhatsAppUrl() : "#planos";
+
+  function selectPlan(planName: string) {
+    if (whatsappCta) {
+      window.location.href = createWhatsAppUrl(`Olá! Tenho interesse no ${planName} do FreeLovable.`);
+      return;
+    }
+    setSelectedPlan(planName);
+  }
 
   useEffect(() => {
     resolveMetaTracking();
@@ -149,7 +171,7 @@ export default function Home() {
     try {
       checkoutUrl = new URL(plan.checkoutUrl);
     } catch {
-      console.error("[CartPanda checkout] Link do plano não configurado.", {
+      console.error("[GGCheckout] Link do plano não configurado.", {
         plan: plan.alias,
       });
       setCheckoutError(CHECKOUT_ERROR_MESSAGE);
@@ -161,12 +183,14 @@ export default function Home() {
     setCheckoutError("");
     const metaTracking = resolveMetaTracking();
     const utmTracking = resolveUtmTracking();
+    const leadEventId = createMetaEventId("lead");
     const payload = {
       plan: plan.alias,
       customer_name: customerName,
       customer_email: customerEmail,
       customer_whatsapp: customerWhatsapp,
       client_user_agent: navigator.userAgent,
+      lead_event_id: leadEventId,
       reseller_id: null,
       fbp: metaTracking.fbp,
       fbc: metaTracking.fbc,
@@ -181,6 +205,7 @@ export default function Home() {
       fbclid: utmTracking.fbclid,
       src: utmTracking.src,
       sck: utmTracking.sck,
+      xcod: utmTracking.xcod,
       landing_page_url: utmTracking.landing_page_url,
       referrer_url: utmTracking.referrer_url,
     };
@@ -202,19 +227,20 @@ export default function Home() {
         session_id?: string;
         external_reference?: string;
         provider?: string;
+        lead_event_id?: string;
       } | null;
       if (
         !response.ok ||
         data?.success !== true ||
         !data.session_id ||
         !data.external_reference ||
-        data.provider !== "cartpanda" ||
-        !data.external_reference.startsWith("cartpanda_")
+        data.provider !== "ggcheckout" ||
+        !data.external_reference.startsWith("ggcheckout_")
       ) {
         throw new Error("invalid_register_lead_response");
       }
 
-      const leadEventId = createMetaEventId("lead");
+      const confirmedLeadEventId = data.lead_event_id || leadEventId;
       trackMeta("Lead", {
         content_name: `Lead - ${selectedPlan}`,
         content_category: "Seleção de plano",
@@ -223,31 +249,30 @@ export default function Home() {
         currency: "BRL",
         value: plan.value,
         plan: plan.alias,
-      }, leadEventId);
+      }, confirmedLeadEventId);
 
-      const finalCheckoutUrl = appendCheckoutTracking(checkoutUrl, {
-        cid: data.external_reference,
+      const finalCheckoutUrl = appendGGCheckoutTracking(checkoutUrl, {
+        src: utmTracking.src,
+        sck: utmTracking.sck,
+        xcod: utmTracking.xcod,
         fbclid: utmTracking.fbclid,
         fbc: metaTracking.fbc,
         fbp: metaTracking.fbp,
-        utm_source: utmTracking.utm_source,
-        utm_medium: utmTracking.utm_medium,
-        utm_campaign: utmTracking.utm_campaign,
-        utm_content: utmTracking.utm_content,
-        utm_term: utmTracking.utm_term,
         campaign_id: utmTracking.meta_campaign_id,
         adset_id: utmTracking.meta_adset_id,
         ad_id: utmTracking.meta_ad_id,
         meta_campaign_id: utmTracking.meta_campaign_id,
         meta_adset_id: utmTracking.meta_adset_id,
         meta_ad_id: utmTracking.meta_ad_id,
-        src: utmTracking.src,
-        sck: utmTracking.sck,
-        xcod: utmTracking.xcod,
+        utm_source: utmTracking.utm_source,
+        utm_medium: utmTracking.utm_medium,
+        utm_campaign: utmTracking.utm_campaign,
+        utm_content: utmTracking.utm_content,
+        utm_term: utmTracking.utm_term,
       });
       window.location.assign(finalCheckoutUrl.toString());
     } catch (error) {
-      console.error("[CartPanda checkout] Não foi possível continuar.", {
+      console.error("[GGCheckout] Não foi possível continuar.", {
         code: error instanceof DOMException && error.name === "AbortError"
           ? "timeout"
           : "register_lead_failed",
@@ -405,7 +430,7 @@ export default function Home() {
             </span>
           </div>
         </div>
-        <div className="access-cta"><Button href="#planos">QUERO ACESSAR O FREELOVABLE</Button></div>
+        <div className="access-cta"><Button href={salesHref}>QUERO ACESSAR O FREELOVABLE</Button></div>
       </section>
 
       <Arrow />
@@ -425,9 +450,9 @@ export default function Home() {
 
       <section ref={pricingRef} id="planos" className="container pricing"><h2>Escolha seu acesso aos créditos infinitos:</h2><p>Escolha o período ideal para continuar criando no Lovable sem ficar sem créditos.</p>
         <div className="plans" ref={plansRef} onScroll={updateActivePlan}>
-          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={setSelectedPlan} />
-          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={setSelectedPlan} />
-          <GiftPlan onSelect={setSelectedPlan} />
+          <Plan title="Plano Mensal" price="R$ 47" note="/mês" button="QUERO O PLANO MENSAL" featured onSelect={selectPlan} />
+          <Plan title="Plano Trimestral" price="3× de R$ 37" note="R$ 111 à vista" button="QUERO O PLANO TRIMESTRAL" badge="MAIS ESCOLHIDO" onSelect={selectPlan} />
+          <GiftPlan onSelect={selectPlan} />
         </div>
         <div className="plan-dots" aria-label="Navegação dos planos">
           {[0,1,2].map(index=><button key={index} type="button" className={`${activePlan===index?"active":""} ${index===2?"gift-dot":""}`} aria-label={index===2?"Ver oferta secreta":`Ver plano ${index+1}`} aria-current={activePlan===index?"true":undefined} onClick={()=>showPlan(index)}>{index===2&&<TechIcon type="gift"/>}</button>)}
@@ -449,7 +474,7 @@ export default function Home() {
 
       <section className="container faq"><h2>Perguntas frequentes</h2>{faqs.map(([q,a],i)=><div className={`faq-item ${openFaq===i?'open':''}`} key={q}><button onClick={()=>setOpenFaq(openFaq===i?null:i)} aria-expanded={openFaq===i}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><p>{a}</p></div>)}</section>
 
-      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href="#planos">LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
+      <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href={salesHref}>LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
       <footer className="site-footer"><div className="container"><span className="footer-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span><b>Free</b>Lovable</span></span><small>© 2026 FreeLovable. Todos os direitos reservados.</small><nav className="footer-legal" aria-label="Documentos legais"><a href="/politica-de-privacidade">Política de Privacidade</a><a href="/termos-de-servico">Termos de Serviço</a></nav></div></footer>
       {selectedPlan && (
         <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-title">
@@ -468,12 +493,94 @@ export default function Home() {
               <button type="submit" className="cta" disabled={checkoutLoading}>
                 {checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
               </button>
-              <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
+              <em>🔒 Pagamento processado com segurança pelo GGCheckout.</em>
             </form>
           </div>
         </div>
       )}
     </main>
+  );
+}
+
+export default function Home() {
+  return <LandingPage />;
+}
+
+export function TestimonialCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeReview, setActiveReview] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const carouselItems = [testimonials[testimonials.length - 1], ...testimonials, testimonials[0]];
+
+  function showReview(index: number) {
+    const nextIndex = (index + testimonials.length) % testimonials.length;
+    const physicalIndex = index < 0 ? 0 : index >= testimonials.length ? testimonials.length + 1 : nextIndex + 1;
+    const card = trackRef.current?.children[physicalIndex] as HTMLElement | undefined;
+    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    setActiveReview(nextIndex);
+    if (physicalIndex === 0 || physicalIndex === testimonials.length + 1) {
+      window.setTimeout(() => {
+        const realCard = trackRef.current?.children[nextIndex + 1] as HTMLElement | undefined;
+        const track = trackRef.current;
+        if (track && realCard) track.scrollLeft = realCard.offsetLeft - track.offsetLeft - (track.clientWidth - realCard.offsetWidth) / 2;
+      }, 650);
+    }
+  }
+
+  useEffect(() => {
+    const track = trackRef.current;
+    const firstCard = track?.children[1] as HTMLElement | undefined;
+    if (track && firstCard) track.scrollLeft = firstCard.offsetLeft - track.offsetLeft - (track.clientWidth - firstCard.offsetWidth) / 2;
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = window.setInterval(() => showReview(activeReview + 1), 4500);
+    return () => window.clearInterval(timer);
+  }, [activeReview, paused]);
+
+  function syncActiveReview() {
+    const track = trackRef.current;
+    if (!track) return;
+    const cards = Array.from(track.children) as HTMLElement[];
+    const closest = cards.reduce((best, card, index) => {
+      const distance = Math.abs(card.offsetLeft - track.scrollLeft);
+      return distance < best.distance ? { index, distance } : best;
+    }, { index: 0, distance: Number.POSITIVE_INFINITY });
+    setActiveReview((closest.index - 1 + testimonials.length) % testimonials.length);
+  }
+
+  return (
+    <div
+      className="testimonial-carousel"
+      aria-roledescription="carrossel"
+      aria-label="Depoimentos de usuários"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
+      <div className="review-grid" ref={trackRef} onScroll={syncActiveReview}>
+        {carouselItems.map(([name, text, role], physicalIndex) => {
+          const reviewIndex = (physicalIndex - 1 + testimonials.length) % testimonials.length;
+          const isClone = physicalIndex === 0 || physicalIndex === carouselItems.length - 1;
+          return (
+          <article key={`${name}-${physicalIndex}`} aria-hidden={isClone || undefined} aria-label={isClone ? undefined : `${reviewIndex + 1} de ${testimonials.length}`}>
+            <img className="review-portrait" src={`/testimonials/testimonial-${reviewIndex + 1}.jpg`} alt="" aria-hidden="true" />
+            <div className="review-rating" aria-label="5 de 5 estrelas"><div className="stars" aria-hidden="true">{Array.from({ length: 5 }, (_, star) => <span key={star}>★</span>)}</div><span>5,0</span></div>
+            <p>{text}</p>
+            <footer><img src={`/testimonials/testimonial-${reviewIndex + 1}.jpg`} alt={name} /><b>{name}<small>{role}</small></b><img className="review-brand-mark" src="/freelovable-logo-transparent.png" alt="FreeLovable" /></footer>
+          </article>
+        )})}
+      </div>
+      <button type="button" className="review-side-arrow review-side-arrow-previous" onClick={() => showReview(activeReview - 1)} aria-label="Depoimento anterior"><span aria-hidden="true" /></button>
+      <button type="button" className="review-side-arrow review-side-arrow-next" onClick={() => showReview(activeReview + 1)} aria-label="Próximo depoimento"><span aria-hidden="true" /></button>
+      <div className="review-controls">
+        <div className="review-dots" aria-label="Selecionar depoimento">
+          {testimonials.map((testimonial, index) => <button key={testimonial[0]} type="button" className={activeReview === index ? "active" : ""} onClick={() => showReview(index)} aria-label={`Ver depoimento ${index + 1}`} aria-current={activeReview === index ? "true" : undefined} />)}
+        </div>
+      </div>
+    </div>
   );
 }
 
