@@ -4778,3 +4778,63 @@ h1,h2,h3{
   .testimonial-carousel{width:100%}
   .review-side-arrow{display:none}
 }
+
+/* Stable three-position carousel: no duplicated loop cards */
+.testimonial-carousel .review-grid{
+  position:relative;
+  display:block;
+  width:min(560px,100%);
+  height:470px;
+  overflow:hidden;
+  scroll-snap-type:none;
+  touch-action:pan-y;
+}
+.testimonial-carousel .review-grid article{
+  position:absolute;
+  top:0;
+  width:470px;
+  height:470px;
+  min-height:0;
+  aspect-ratio:auto;
+  opacity:.42;
+  transition:left .42s ease,right .42s ease,opacity .3s ease,filter .3s ease;
+}
+.testimonial-carousel .review-grid .review-card-current{
+  left:50%;
+  z-index:2;
+  opacity:1;
+  transform:translateX(-50%);
+}
+.testimonial-carousel .review-grid .review-card-previous{right:calc(50% + 257px);z-index:1}
+.testimonial-carousel .review-grid .review-card-next{left:calc(50% + 257px);z-index:1}
+.testimonial-carousel .review-grid .review-card-current:hover{transform:translateX(-50%)}
+.testimonial-carousel .review-grid footer>img:not(.review-brand-mark){width:48px;height:48px;object-fit:cover}
+
+@media(max-width:700px){
+  .testimonial-carousel .review-grid{height:380px}
+  .testimonial-carousel .review-grid article{
+    width:calc(100% - 52px);
+    height:380px;
+    padding:24px 22px;
+    border-radius:8px;
+  }
+  .testimonial-carousel .review-grid .review-card-previous{right:calc(100% - 18px)}
+  .testimonial-carousel .review-grid .review-card-next{left:calc(100% - 18px)}
+  .testimonial-carousel .review-grid article p{
+    margin-top:18px;
+    font-size:15px;
+    line-height:1.5;
+    overflow-wrap:anywhere;
+  }
+  .testimonial-carousel .review-grid article footer{margin-top:auto;padding-top:14px}
+  .testimonial-carousel .review-grid footer>img:not(.review-brand-mark){width:42px;height:42px}
+  .testimonial-carousel .review-grid footer b{font-size:14px}
+  .testimonial-carousel .review-grid footer small{font-size:10px}
+  .testimonial-carousel .review-controls{margin-top:18px}
+}
+
+@media(max-width:380px){
+  .testimonial-carousel .review-grid{height:400px}
+  .testimonial-carousel .review-grid article{height:400px;padding:22px 20px}
+  .testimonial-carousel .review-grid article p{font-size:14px;line-height:1.5}
+}

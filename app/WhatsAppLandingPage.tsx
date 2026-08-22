@@ -507,31 +507,13 @@ export default function Home() {
 }
 
 export function TestimonialCarousel() {
-  const trackRef = useRef<HTMLDivElement>(null);
   const [activeReview, setActiveReview] = useState(0);
   const [paused, setPaused] = useState(false);
-  const carouselItems = [testimonials[testimonials.length - 1], ...testimonials, testimonials[0]];
+  const touchStartXRef = useRef<number | null>(null);
 
   function showReview(index: number) {
-    const nextIndex = (index + testimonials.length) % testimonials.length;
-    const physicalIndex = index < 0 ? 0 : index >= testimonials.length ? testimonials.length + 1 : nextIndex + 1;
-    const card = trackRef.current?.children[physicalIndex] as HTMLElement | undefined;
-    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-    setActiveReview(nextIndex);
-    if (physicalIndex === 0 || physicalIndex === testimonials.length + 1) {
-      window.setTimeout(() => {
-        const realCard = trackRef.current?.children[nextIndex + 1] as HTMLElement | undefined;
-        const track = trackRef.current;
-        if (track && realCard) track.scrollLeft = realCard.offsetLeft - track.offsetLeft - (track.clientWidth - realCard.offsetWidth) / 2;
-      }, 650);
-    }
+    setActiveReview((index + testimonials.length) % testimonials.length);
   }
-
-  useEffect(() => {
-    const track = trackRef.current;
-    const firstCard = track?.children[1] as HTMLElement | undefined;
-    if (track && firstCard) track.scrollLeft = firstCard.offsetLeft - track.offsetLeft - (track.clientWidth - firstCard.offsetWidth) / 2;
-  }, []);
 
   useEffect(() => {
     if (paused) return;
@@ -539,16 +521,19 @@ export function TestimonialCarousel() {
     return () => window.clearInterval(timer);
   }, [activeReview, paused]);
 
-  function syncActiveReview() {
-    const track = trackRef.current;
-    if (!track) return;
-    const cards = Array.from(track.children) as HTMLElement[];
-    const closest = cards.reduce((best, card, index) => {
-      const distance = Math.abs(card.offsetLeft - track.scrollLeft);
-      return distance < best.distance ? { index, distance } : best;
-    }, { index: 0, distance: Number.POSITIVE_INFINITY });
-    setActiveReview((closest.index - 1 + testimonials.length) % testimonials.length);
+  function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    const startX = touchStartXRef.current;
+    touchStartXRef.current = null;
+    if (startX === null) return;
+    const distance = event.changedTouches[0].clientX - startX;
+    if (Math.abs(distance) < 45) return;
+    showReview(activeReview + (distance < 0 ? 1 : -1));
   }
+
+  const visibleReviews = [-1, 0, 1].map((offset) => ({
+    position: offset === 0 ? "current" : offset < 0 ? "previous" : "next",
+    index: (activeReview + offset + testimonials.length) % testimonials.length,
+  }));
 
   return (
     <div
@@ -560,12 +545,16 @@ export function TestimonialCarousel() {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="review-grid" ref={trackRef} onScroll={syncActiveReview}>
-        {carouselItems.map(([name, text, role], physicalIndex) => {
-          const reviewIndex = (physicalIndex - 1 + testimonials.length) % testimonials.length;
-          const isClone = physicalIndex === 0 || physicalIndex === carouselItems.length - 1;
+      <div
+        className="review-grid"
+        onTouchStart={(event) => { touchStartXRef.current = event.touches[0].clientX; setPaused(true); }}
+        onTouchEnd={(event) => { handleTouchEnd(event); setPaused(false); }}
+      >
+        {visibleReviews.map(({ position, index: reviewIndex }) => {
+          const [name, text, role] = testimonials[reviewIndex];
+          const isCurrent = position === "current";
           return (
-          <article key={`${name}-${physicalIndex}`} aria-hidden={isClone || undefined} aria-label={isClone ? undefined : `${reviewIndex + 1} de ${testimonials.length}`}>
+          <article key={`${position}-${name}`} className={`review-card-${position}`} aria-hidden={!isCurrent || undefined} aria-label={isCurrent ? `${reviewIndex + 1} de ${testimonials.length}` : undefined}>
             <img className="review-portrait" src={`/testimonials/testimonial-${reviewIndex + 1}.jpg`} alt="" aria-hidden="true" />
             <div className="review-rating" aria-label="5 de 5 estrelas"><div className="stars" aria-hidden="true">{Array.from({ length: 5 }, (_, star) => <span key={star}>★</span>)}</div><span>5,0</span></div>
             <p>{text}</p>
