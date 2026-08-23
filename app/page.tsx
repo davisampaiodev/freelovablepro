@@ -2,11 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import TechIcon from "./TechIcon";
-import { appendCheckoutTracking } from "./checkoutTracking";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
-import { normalizePhone } from "./trackingIdentifiers";
-import { TestimonialCarousel } from "./WhatsAppLandingPage";
+import { TestimonialCarousel } from "./TestimonialCarousel";
 import "./whatsapp/whatsapp.css";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
@@ -24,6 +22,8 @@ const REGISTER_LEAD_URL =
 const REGISTER_LEAD_TIMEOUT_MS = 12_000;
 const CHECKOUT_ERROR_MESSAGE =
   "Não foi possível continuar agora. Verifique seus dados e tente novamente.";
+const CARTPANDA_REFERENCE_PARAM = "cid" as const;
+
 type CheckoutPlan = {
   alias: "mensal" | "trimestral" | "anual";
   value: number;
@@ -135,11 +135,13 @@ export default function Home() {
       .trim()
       .replace(/\s+/g, " ");
     const customerEmail = String(form.get("email") || "").trim().toLowerCase();
-    const customerWhatsapp = normalizePhone(form.get("whatsapp"));
+    const customerWhatsapp = String(form.get("whatsapp") || "")
+      .replace(/\D+/g, "");
     if (
       customerName.length < 2 ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(customerEmail) ||
-      !customerWhatsapp
+      customerWhatsapp.length < 10 ||
+      customerWhatsapp.length > 13
     ) {
       setCheckoutError(CHECKOUT_ERROR_MESSAGE);
       return;
@@ -166,23 +168,15 @@ export default function Home() {
       customer_name: customerName,
       customer_email: customerEmail,
       customer_whatsapp: customerWhatsapp,
-      client_user_agent: navigator.userAgent,
       reseller_id: null,
       fbp: metaTracking.fbp,
       fbc: metaTracking.fbc,
-      meta_campaign_id: utmTracking.meta_campaign_id,
-      meta_adset_id: utmTracking.meta_adset_id,
-      meta_ad_id: utmTracking.meta_ad_id,
       utm_source: utmTracking.utm_source,
-      utm_medium: utmTracking.utm_medium,
       utm_campaign: utmTracking.utm_campaign,
       utm_content: utmTracking.utm_content,
-      utm_term: utmTracking.utm_term,
       fbclid: utmTracking.fbclid,
       src: utmTracking.src,
       sck: utmTracking.sck,
-      landing_page_url: utmTracking.landing_page_url,
-      referrer_url: utmTracking.referrer_url,
     };
     const controller = new AbortController();
     const timeoutId = window.setTimeout(
@@ -225,27 +219,21 @@ export default function Home() {
         plan: plan.alias,
       }, leadEventId);
 
-      const finalCheckoutUrl = appendCheckoutTracking(checkoutUrl, {
-        cid: data.external_reference,
-        fbclid: utmTracking.fbclid,
-        fbc: metaTracking.fbc,
-        fbp: metaTracking.fbp,
-        utm_source: utmTracking.utm_source,
-        utm_medium: utmTracking.utm_medium,
-        utm_campaign: utmTracking.utm_campaign,
-        utm_content: utmTracking.utm_content,
-        utm_term: utmTracking.utm_term,
-        campaign_id: utmTracking.meta_campaign_id,
-        adset_id: utmTracking.meta_adset_id,
-        ad_id: utmTracking.meta_ad_id,
-        meta_campaign_id: utmTracking.meta_campaign_id,
-        meta_adset_id: utmTracking.meta_adset_id,
-        meta_ad_id: utmTracking.meta_ad_id,
-        src: utmTracking.src,
-        sck: utmTracking.sck,
-        xcod: utmTracking.xcod,
-      });
-      window.location.assign(finalCheckoutUrl.toString());
+      checkoutUrl.searchParams.set(
+        CARTPANDA_REFERENCE_PARAM,
+        data.external_reference,
+      );
+      for (const key of [
+        "utm_source",
+        "utm_campaign",
+        "utm_content",
+        "fbclid",
+        "src",
+      ] as const) {
+        const value = utmTracking[key];
+        if (value) checkoutUrl.searchParams.set(key, value);
+      }
+      window.location.assign(checkoutUrl.toString());
     } catch (error) {
       console.error("[CartPanda checkout] Não foi possível continuar.", {
         code: error instanceof DOMException && error.name === "AbortError"
