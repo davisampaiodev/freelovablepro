@@ -3,18 +3,12 @@ const UTM_STORAGE_PREFIX = "utmify_";
 export type UtmTracking = {
   src: string | null;
   sck: string | null;
-  xcod: string | null;
   fbclid: string | null;
-  meta_campaign_id: string | null;
-  meta_adset_id: string | null;
-  meta_ad_id: string | null;
   utm_source: string | null;
   utm_campaign: string | null;
   utm_medium: string | null;
   utm_content: string | null;
   utm_term: string | null;
-  landing_page_url: string | null;
-  referrer_url: string | null;
 };
 
 const TRACKING_KEYS = [
@@ -46,15 +40,9 @@ function writeStorage(storage: Storage, key: string, value: string) {
 }
 
 export function resolveUtmTracking(): UtmTracking {
-  const empty = {
-    ...Object.fromEntries(TRACKING_KEYS.map((key) => [key, null])),
-    xcod: null,
-    meta_campaign_id: null,
-    meta_adset_id: null,
-    meta_ad_id: null,
-    landing_page_url: null,
-    referrer_url: null,
-  } as UtmTracking;
+  const empty = Object.fromEntries(
+    TRACKING_KEYS.map((key) => [key, null]),
+  ) as UtmTracking;
 
   if (typeof window === "undefined") return empty;
 

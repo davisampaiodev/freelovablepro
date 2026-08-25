@@ -1,15 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
-function splitMetaName(value: unknown) {
-  if (typeof value !== "string") return { firstName: null, lastName: null };
-  const parts = value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  return {
-    firstName: parts.shift() || null,
-    lastName: parts.join(" ") || null,
-  };
-}
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -391,6 +382,22 @@ async function sendMetaPurchaseEvent(
     params.fbc || "",
   ).trim();
 
+  if (!fbp) {
+    return {
+      sent: false,
+      skipped: true,
+      reason: "missing_fbp",
+    };
+  }
+
+  if (!fbc) {
+    return {
+      sent: false,
+      skipped: true,
+      reason: "missing_fbc",
+    };
+  }
+
   const userData: Record<string, unknown> = {};
 
   const email = String(params.clientEmail || "")
@@ -399,7 +406,18 @@ async function sendMetaPurchaseEvent(
 
   const phone = normalizeMetaPhone(params.whatsapp);
 
-  const { firstName, lastName } = splitMetaName(params.clientName);
+  const nameParts = String(params.clientName || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const firstName = String(nameParts.shift() || "")
+    .trim()
+    .toLowerCase();
+
+  const lastName = String(nameParts.join(" ") || "")
+    .trim()
+    .toLowerCase();
 
   const externalId = String(
     params.externalId || "",
@@ -435,8 +453,8 @@ async function sendMetaPurchaseEvent(
     ];
   }
 
-  if (fbp) userData.fbp = fbp;
-  if (fbc) userData.fbc = fbc;
+  userData.fbp = fbp;
+  userData.fbc = fbc;
 
   if (clientIpAddress) {
     userData.client_ip_address =

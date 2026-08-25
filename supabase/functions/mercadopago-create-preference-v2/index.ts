@@ -1,15 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
-function splitMetaName(value: unknown) {
-  if (typeof value !== "string") return { firstName: null, lastName: null };
-  const parts = value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  return {
-    firstName: parts.shift() || null,
-    lastName: parts.join(" ") || null,
-  };
-}
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -140,29 +131,19 @@ async function buildMetaUserData(params: {
   whatsapp: string;
   fbp: string;
   fbc: string;
-  externalId: string;
-  clientIpAddress: string | null;
-  clientUserAgent: string;
 }) {
   const userData: Record<string, unknown> = {};
-  const { firstName, lastName } = splitMetaName(params.name);
+  const nameParts = params.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const firstName = nameParts.shift() || "";
+  const lastName = nameParts.join(" ");
   const phone = normalizeMetaPhone(params.whatsapp);
 
   if (params.email) userData.em = [await sha256Hex(params.email)];
   if (phone) userData.ph = [await sha256Hex(phone)];
   if (firstName) userData.fn = [await sha256Hex(firstName)];
   if (lastName) userData.ln = [await sha256Hex(lastName)];
-  if (params.externalId) {
-    userData.external_id = [await sha256Hex(params.externalId)];
-  }
   if (params.fbp) userData.fbp = params.fbp;
   if (params.fbc) userData.fbc = params.fbc;
-  if (params.clientIpAddress) {
-    userData.client_ip_address = params.clientIpAddress;
-  }
-  if (params.clientUserAgent) {
-    userData.client_user_agent = params.clientUserAgent;
-  }
 
   return userData;
 }
@@ -427,9 +408,6 @@ serve(async (req) => {
       whatsapp,
       fbp: normalizedFbp,
       fbc: normalizedFbc,
-      externalId: externalReference,
-      clientIpAddress,
-      clientUserAgent,
     });
     const eventTime = Math.floor(Date.now() / 1000);
     const commonCustomData = {

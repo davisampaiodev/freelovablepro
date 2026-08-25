@@ -1,20 +1,19 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import FeatureExperience from "./FeatureExperience";
 import TechIcon from "./TechIcon";
 import { resolveMetaTracking } from "./metaTracking";
 import { resolveUtmTracking } from "./utmTracking";
-import { TestimonialCarousel } from "./TestimonialCarousel";
-import "./whatsapp/whatsapp.css";
 
 const Gradient = ({ children }: { children: React.ReactNode }) => (
   <span className="gradient-text">{children}</span>
 );
 
-const Arrow = () => <div className="section-arrow" aria-hidden="true">↓</div>;
+const Arrow = () => <div className="section-arrow" aria-hidden="true">↕</div>;
 
 const Button = ({ children, href = "#planos", secondary = false }: { children: React.ReactNode; href?: string; secondary?: boolean }) => (
-  <a href={href} className={`cta site-cta ${secondary ? "cta-secondary" : ""}`}>{children}<span className="cta-accent" aria-hidden="true">✦</span></a>
+  <a href={href} className={`cta ${secondary ? "cta-secondary" : ""}`}>{children}<span>→</span></a>
 );
 
 const REGISTER_LEAD_URL =
@@ -292,13 +291,13 @@ export default function Home() {
           <div className="hero-brand"><img src="/freelovable-logo-transparent.png" alt="FreeLovable" /></div>
           <div className="eyebrow"><span /> NOVA EXTENSÃO · ACESSO ILIMITADO</div>
           <h1 className="hero-new-headline">
-            <span>Seu <Gradient>Lovable</Gradient> agora é <Gradient>infinito.</Gradient></span>
+            <span>Seu <Gradient>Lovable</Gradient> agora é <Gradient>Free.</Gradient></span>
             <span>Crie seus projetos</span>
             <span><Gradient>sem consumir créditos.</Gradient></span>
           </h1>
           <p>Instale em menos de 1 minuto e continue criando apps, automações e<br className="desktop"/> projetos sem interrupções, filas ou bloqueios.</p>
           <div className="hero-benefits"><span>✓ WINDOWS & MAC</span><span>✓ ACESSO IMEDIATO</span><span>✓ INSTALAÇÃO SIMPLES</span></div>
-          <Button href="#como-funciona">VER COMO FUNCIONA</Button>
+          <Button>VER COMO FUNCIONA</Button>
           <div className="avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt="" />)}<i/><b>28907 USUÁRIOS ATIVOS</b></div>
           <button
             className={`video-phone ${playing ? "playing" : ""}`}
@@ -323,14 +322,16 @@ export default function Home() {
         </div>
       </section>
 
-      {false && <section id="como-funciona" className="container comparison glow-card">
+      <Arrow />
+
+      <section className="container comparison glow-card">
         <div className="eyebrow blue">✣ O MELHOR DO LOVABLE, SEM A PARTE RUIM</div>
         <h2>
           <span className="comparison-line comparison-line-primary">O Lovable é uma ferramenta incrível para tirar projetos do papel.</span>
           <span className="comparison-line comparison-line-secondary">
             <span>O problema é que </span>
-            <strong className="comparison-credits-fast">os créditos acabam rápido</strong>
-            <span className="comparison-expensive"> e os planos para continuar criando são <b>caros demais</b>.</span>
+            <strong>os créditos acabam rápido</strong>
+            <span className="comparison-expensive"> e os planos para continuar criando são caros demais.</span>
           </span>
         </h2>
         <div className="price-panel lovable-price">
@@ -351,31 +352,27 @@ export default function Home() {
           <div><small>CRÉDITOS INCLUÍDOS</small><strong>∞</strong><span>Sem custo por crédito</span></div>
           <footer>Continue criando sem contar cada tentativa.</footer>
         </div>
-      </section>}
+      </section>
 
-      <section id="como-funciona" className="container about glow-card split">
+      <section className="container about glow-card split">
         <div>
-          <div className="eyebrow blue">EXTENSÃO PARA NAVEGADOR</div>
-          <h2>O que é <Gradient>FreeLovable?</Gradient></h2>
-          <p className="about-simple-copy">
-            <span>
-              O FreeLovable é uma extensão para navegador. Instale, ative com
-              seu token e envie seus prompts no Lovable sem gastar créditos.
-            </span>
-            <strong>Créditos infinitos para criar sem parar.</strong>
-          </p>
+          <div className="eyebrow blue">EXTENSÃO PARA CHROME</div>
+          <h2>O que é o <Gradient>FreeLovable?</Gradient></h2>
+          <p><b>FreeLovable é uma extensão para Chrome que libera créditos ilimitados no Lovable durante o período do seu plano, para você continuar criando com créditos infinitos sem interromper seus projetos.</b></p>
         </div>
         <div className="steps-window">
           <div className="window-top"><i/><i/><i/><small>NA PRÁTICA</small></div>
-          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['infinity','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step">{x[0] === 'download' || x[0] === 'infinity' ? <AboutStepIcon type={x[0] as 'download' | 'infinity'} /> : <TechIcon type={x[0]}/>}<span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
+          {[['download','Instala a extensão','Adicione o FreeLovable ao Chrome.'],['token','Ativa com seu token','Insira o token exclusivo recebido após a compra.'],['ai','Escreve seus prompts','Envie seus prompts normalmente pelo painel.'],['check','Continua criando com créditos infinitos','Use o Lovable sem se preocupar com créditos acabando.']].map((x,i)=><div className="step-flow" key={i}><div className="step"><TechIcon type={x[0]}/><span><b>{x[1]}</b><small>{x[2]}</small></span></div>{i<3&&<div className="step-connector" aria-hidden="true">↓</div>}</div>)}
         </div>
-        <div className="about-cta"><Button href="#como-recebo">COMO RECEBO</Button></div>
+        <div className="full-cta"><Button>COMO RECEBO MEU ACESSO</Button></div>
       </section>
+
+      <FeatureExperience />
 
       <Arrow />
 
-      <section id="como-recebo" className="container access split">
-        <div><div className="eyebrow blue">✉ ENTREGA DO ACESSO</div><h2>Como recebo meu<br className="title-break"/>{" "}<Gradient>token de acesso?</Gradient></h2><p className="access-intro"><b>Assim que o pagamento for aprovado, você recebe seu token por e-mail junto com o link da extensão e o tutorial rápido de ativação.</b></p><div className="access-instructions"><div className="mini-steps"><span><b>1</b><em>ESCOLHA SEU PLANO</em></span><span><b>2</b><em>RECEBA O TOKEN POR E-MAIL</em></span><span><b>3</b><em>INSTALE E ATIVE</em></span></div><p>O token é sua chave de ativação. Basta colar na extensão e usar na sua própria conta Lovable.</p></div></div>
+      <section className="container access split">
+        <div><div className="eyebrow blue">✉ ENTREGA DO ACESSO</div><h2>Como recebo meu<br className="title-break"/>{" "}<Gradient>token de acesso?</Gradient></h2><p className="access-intro"><b>Assim que o pagamento for aprovado, você recebe seu token por e-mail junto com o link da extensão e o tutorial rápido de ativação.</b></p><div className="access-instructions"><div className="mini-steps"><span><b>1</b> ESCOLHA SEU PLANO</span><span><b>2</b> RECEBA O TOKEN POR E-MAIL</span><span><b>3</b> INSTALE E ATIVE</span></div><p>O token é sua chave de ativação. Basta colar na extensão e usar na sua própria conta Lovable.</p></div></div>
         <div className="access-ui">
           <div className="access-delivery">
             <div className="access-card mail-card"><TechIcon type="mail"/><span><small>E-MAIL RECEBIDO</small><b>Seu acesso FreeLovable chegou</b></span><i className="mail-notification">1</i></div>
@@ -393,15 +390,21 @@ export default function Home() {
             </span>
           </div>
         </div>
-        <div className="access-cta"><Button href="#planos">QUERO ACESSAR O FREELOVABLE</Button></div>
       </section>
 
       <Arrow />
 
       <section className="container testimonials">
         <div className="eyebrow blue">FEEDBACKS DOS USUÁRIOS</div><h2>Quem testou, <Gradient>continuou usando</Gradient></h2><p>Relatos de usuários que queriam apenas uma forma de continuar criando sem interrupções.</p>
-        <TestimonialCarousel />
-        <div className="metrics"><div><TechIcon type="users"/><span className="metric-avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt=""/>)}</span><strong>28937</strong><small>USUÁRIOS ATIVOS</small></div><div><TechIcon type="projects"/><strong>+12 mil</strong><small>PROJETOS CRIADOS</small></div><div><TechIcon type="check"/><strong>97%</strong><small>DOS USUÁRIOS RECOMENDAM</small></div></div>
+        <div className="review-grid">{[
+          ['Lucas M.','“Eu estava literalmente desistindo dos meus projetos porque os créditos acabavam toda hora. Depois que comecei a usar, consigo criar com liberdade.”','Desenvolvedor'],
+          ['Ana P.','“O que mais me surpreendeu foi continuar usando meus projetos sem me preocupar. Foi uma das melhores decisões.”','Product Designer'],
+          ['Rafael L.','“Eu sempre chegava naquele ponto em que queria testar mais uma coisa e os créditos acabavam. Agora simplesmente continuo.”','Programador'],
+          ['Mariana C.','“Consigo validar mais rápido e não preciso mais esperar o dia seguinte. Minha produtividade mudou.”','UX Designer'],
+          ['Gabriel C.','“Crio para clientes sem medo de parar no meio do processo. Simples, rápido e funciona.”','Freelancer'],
+          ['Juliana A.','“Instalei em poucos minutos. Foi a solução mais prática que encontrei para continuar no Lovable.”','Empreendedora']
+        ].map(([n,t,r],i)=><article key={n}><img className="review-portrait" src={`/testimonials/testimonial-${i+1}.jpg`} alt="" aria-hidden="true"/><div className="stars">★★★★★</div><p>{t}</p><footer><img src={`/testimonials/testimonial-${i+1}.jpg`} alt={n}/><b>{n}<small>{r}</small></b><img className="review-brand-mark" src="/freelovable-logo-transparent.png" alt="FreeLovable"/></footer></article>)}</div>
+        <div className="metrics"><div><TechIcon type="users"/><span className="metric-avatars">{[1,2,3,4].map(n=><img key={n} src={`/user-avatars/avatar-${String(n).padStart(2,'0')}.jpg`} alt=""/>)}</span><strong>28937</strong><small>USUÁRIOS ATIVOS</small></div><div><TechIcon type="projects"/><strong>+12 mil</strong><small>PROJETOS CRIADOS</small></div><div><TechIcon type="check"/><strong>97%</strong><small>SATISFAÇÃO</small></div></div>
         <div className="community-strip">
           <div>{Array.from({length:12},(_,i)=><img key={i} src={`/user-avatars/avatar-${String(i+6).padStart(2,'0')}.jpg`} alt="" />)}</div>
           <span><b>Uma comunidade inteira criando</b><small>Novos projetos ganham vida todos os dias com FreeLovable.</small></span>
@@ -438,7 +441,7 @@ export default function Home() {
       <section className="container faq"><h2>Perguntas frequentes</h2>{faqs.map(([q,a],i)=><div className={`faq-item ${openFaq===i?'open':''}`} key={q}><button onClick={()=>setOpenFaq(openFaq===i?null:i)} aria-expanded={openFaq===i}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><p>{a}</p></div>)}</section>
 
       <section className="final-cta"><div className="container"><h2>Pronto para usar<br className="title-break"/>{" "}<Gradient>créditos infinitos no Lovable?</Gradient></h2><p>Instale em menos de 1 minuto e continue criando sem limites, interrupções ou créditos acabando.</p><Button href="#planos">LIBERAR MEU ACESSO ⚡</Button><div className="safe"><span>✓ Instalação em menos de 1 minuto</span><span>✓ Sem limites de uso</span><span>✓ Direto da sua própria conta</span></div></div></section>
-      <footer className="site-footer"><div className="container"><span className="footer-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span><b>Free</b>Lovable</span></span><small>© 2026 FreeLovable. Todos os direitos reservados.</small><nav className="footer-legal" aria-label="Documentos legais"><a href="/politica-de-privacidade">Política de Privacidade</a><a href="/termos-de-servico">Termos de Serviço</a></nav></div></footer>
+      <footer className="site-footer"><div className="container"><span className="footer-brand"><img src="/freelovable-logo-transparent.png" alt="" /><span><b>Free</b>Lovable</span></span><small>© 2026 FreeLovable. Todos os direitos reservados.</small></div></footer>
       {selectedPlan && (
         <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-title">
           <button className="lead-backdrop" aria-label="Fechar formulário" onClick={() => { if (!checkoutLoading) { setSelectedPlan(null); setCheckoutError(""); } }} />
@@ -447,14 +450,14 @@ export default function Home() {
             <img src="/freelovable-logo-transparent.png" alt="" />
             <small>VOCÊ ESCOLHEU</small>
             <h2 id="lead-title">{selectedPlan === "Oferta Especial" ? "Oferta Especial Anual" : selectedPlan}</h2>
-            <p>Preencha seus dados para prosseguir com o pagamento.</p>
+            <p>Preencha seus dados para liberar a próxima etapa do seu acesso.</p>
             <form onSubmit={submitLead}>
               <label>Nome completo<input name="name" autoComplete="name" required disabled={checkoutLoading} placeholder="Digite seu nome" /></label>
               <label>E-mail<input name="email" type="email" autoComplete="email" required disabled={checkoutLoading} placeholder="voce@email.com" /></label>
               <label>WhatsApp<input name="whatsapp" inputMode="tel" autoComplete="tel" required disabled={checkoutLoading} minLength={10} placeholder="(11) 99999-9999" /></label>
               {checkoutError && <div className="lead-error" role="alert">{checkoutError}</div>}
               <button type="submit" className="cta" disabled={checkoutLoading}>
-                {checkoutLoading ? "PREPARANDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span aria-hidden="true">✦</span>
+                {checkoutLoading ? "ABRINDO PAGAMENTO..." : "CONTINUAR COM ESTE PLANO"} <span>→</span>
               </button>
               <em>🔒 Pagamento processado com segurança pela CartPanda.</em>
             </form>
@@ -465,29 +468,17 @@ export default function Home() {
   );
 }
 
-function AboutStepIcon({ type }: { type: 'download' | 'infinity' }) {
-  return (
-    <span className={`about-step-icon about-step-icon-${type}`} aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false">
-        {type === 'download' ? <>
-          <path d="M12 4v10" />
-          <path d="m8.5 10.8 3.5 3.6 3.5-3.6" />
-          <path d="M5.5 17v1.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V17" />
-        </> : <path d="M8.1 8.4C5.8 8.4 4 10 4 12s1.8 3.6 4.1 3.6c3.5 0 4.5-7.2 7.8-7.2 2.3 0 4.1 1.6 4.1 3.6s-1.8 3.6-4.1 3.6c-3.3 0-4.3-7.2-7.8-7.2Z" />}
-      </svg>
-    </span>
-  );
-}
-
 function Plan({title,price,note,button,badge,featured=false,onSelect}:{title:string;price:string;note:string;button:string;badge?:string;featured?:boolean;onSelect:(plan:string)=>void}){
   const quarterly = title === "Plano Trimestral";
-  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos infinitos</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li><li className="plan-bonus-heading">BÔNUS:</li><li className="plan-bonus-item"><TechIcon type="download" className="plan-bonus-icon"/>Download dos projetos</li><li className="plan-bonus-item"><TechIcon type="shield" className="plan-bonus-icon"/>Sem marca d’água</li><li className="plan-bonus-item"><TechIcon type="ai" className="plan-bonus-icon"/>Melhorador de prompts</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{button}<TechIcon type="tap" className="cta-tap"/></button></article>
+  return <article className={`plan ${featured?'featured-plan':''} ${badge?'highlighted-plan':''} ${quarterly?'quarterly-plan':''}`}>{badge&&<div className="plan-badge">{badge}</div>}<h3>{title}</h3><strong className={quarterly ? "quarterly-price" : ""}>{quarterly&&<small>3× de</small>}{quarterly?'R$ 37':price}</strong>{featured&&<em>{note}</em>}<p>{featured?'Ideal para projetos rápidos.':note}</p><ul><li>Créditos ilimitados</li><li>Suporte prioritário</li><li>Atualizações</li><li>16 mil fluxos N8N</li></ul><button className="cta" onClick={() => { trackPlanSelection(title); onSelect(title); }}>{button}<TechIcon type="tap" className="cta-tap"/></button></article>
 }
 
 function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
+  const [opened, setOpened] = useState(false);
+
   return (
-    <article className="gift gift-opened">
-      <div className="gift-surprise">
+    <article className={`gift ${opened ? "gift-opened" : ""}`}>
+      <div className="gift-surprise" aria-hidden={!opened}>
         <div className="annual-access-badge">ACESSO TOTAL</div>
         <h3>Plano Anual</h3>
         <strong className="annual-price"><small>12× de</small>R$ 27</strong>
@@ -497,24 +488,43 @@ function GiftPlan({onSelect}:{onSelect:(plan:string)=>void}) {
           <li>Suporte VIP</li>
           <li>Updates por 1 ano</li>
         </ul>
-        <div className="annual-bonus-gift is-open">
-          <div className="annual-bonus-box">
-            <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
-            <ul className="annual-bonus-list">
-              <li>Guia Prático - Do Lovable para o Ar</li>
-              <li>Gemini Pro por 18 meses</li>
-              <li>Gemini 3 + Nano Banana 2</li>
-              <li>Veo 3.1 para vídeos com IA</li>
-              <li>5 TB + Google Workspace</li>
-              <li>Ativação por link na conta atual</li>
-            </ul>
-          </div>
+        <div className="annual-bonus-box">
+          <h4><TechIcon type="gift"/> BÔNUS EXCLUSIVOS</h4>
+          <ul className="annual-bonus-list">
+            <li>Guia Prático - Do Lovable para o Ar</li>
+            <li>Gemini Pro por 18 meses</li>
+            <li>Gemini 3 + Nano Banana 2</li>
+            <li>Veo 3.1 para vídeos com IA</li>
+            <li>5 TB + Google Workspace</li>
+            <li>Ativação por link na conta atual</li>
+          </ul>
         </div>
         <button className="cta lead-cta" onClick={() => { trackPlanSelection("Oferta Especial"); onSelect("Oferta Especial"); }}>
           QUERO MEU PLANO ANUAL <TechIcon type="tap" className="cta-tap"/>
         </button>
       </div>
 
+      <div className="gift-wrap" aria-hidden={opened}>
+        <div className="front-gift-box" aria-hidden="true">
+          <div className="front-gift-body" />
+          <div className="front-gift-lid" />
+          <div className="front-gift-ribbon" />
+          <div className="front-gift-bow">
+            <i className="bow-loop bow-loop-left" />
+            <i className="bow-loop bow-loop-right" />
+            <b />
+          </div>
+        </div>
+        <div className="gift-wrap-copy">
+          <small>OFERTA SECRETA</small>
+          <h3>Um presente para você</h3>
+          <p>Abra para revelar a melhor condição do plano anual.</p>
+        </div>
+        <button className="gift-open-button" onClick={() => setOpened(true)}>
+          <span>ABRIR MEU PRESENTE</span>
+          <b aria-hidden="true">✦</b>
+        </button>
+      </div>
     </article>
   );
 }
